@@ -1,0 +1,18 @@
+.notification-page {
+   // width: 95%;
+   // margin: auto;
+  //  margin-top: 36px;
+}
+
+
+.button-panel{
+  display: flex;
+  justify-content: end;
+
+  &__buttons {
+    margin-bottom: 13px;
+    width: 181px;
+    display: flex;
+    justify-content: space-between;
+  }
+}

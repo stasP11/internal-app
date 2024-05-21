@@ -1,0 +1,61 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  background-color: white;
+  padding: 20px;
+  padding-left: 28px;
+  font-weight: 400;
+  border-width: 0px 0px 1px 0px;
+  border-style: solid;
+  border-color: rgba(11, 11, 11, 0.1);
+
+  > h1 {
+    font-weight: 400;
+  }
+}
+
+.user-logo {
+  width: 160px;
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+
+  &__name {
+    margin-left: 15px;
+  }
+
+  &__avatar {
+    width: 24px;
+    height: 24px;
+
+    > img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+    }
+  }
+
+  &__text {
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    color: #10384f;
+  }
+}
+
+.header-popup {
+  position: relative;
+  position: absolute;
+  top: 65px;
+  width: 170px;
+  height: 60px;
+}
+
+.text {
+  line-height: 45px;
+}
+
+.page-name {
+  text-transform: capitalize;
+}

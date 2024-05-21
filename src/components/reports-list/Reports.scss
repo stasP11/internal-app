@@ -1,0 +1,87 @@
+.report-table {
+  min-height: 350px;
+}
+
+.table-header {
+  background-color: rgba(231, 248, 255, 1);
+  text-transform: uppercase;
+}
+
+.action-icon {
+  cursor: pointer;
+}
+
+.actions-list {
+  padding: 12px 0;
+}
+.action-list-item {
+  width: 120px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px; /* 142.857% */
+  letter-spacing: 0.28px;
+  padding: 4px 16px;
+
+  &:hover {
+    background: rgba(237, 235, 235, 0.5);
+  }
+}
+
+.column-head-cell {
+  > img {
+    width: 12px;
+    height: 12px;
+    line-height: none;
+    margin-top: 6px;
+    margin-left: 5px;
+  }
+}
+
+.selector-list {
+  list-style-type: none;
+  margin: 10px 0;
+  padding: 0;
+
+  > li {
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2.5px 20px;
+    font-size: 14px;
+
+    &:hover {
+      background: rgba(237, 235, 235, 0.5);
+    }
+  }
+}
+
+.distributor_name {
+  // VIKING BEMARKING
+  color: #10384f;
+  font-size: 14px;
+  text-transform: uppercase;
+  //font-family: Source Sans Pro;
+  font-weight: 400;
+  line-height: 22px;
+  word-wrap: break-word;
+}
+.distributor_id {
+  // 5684236526
+  color: #516e7f;
+  font-size: 12px;
+  //font-family: Helvetica Neue;
+  font-weight: 400;
+  line-height: 18px;
+  word-wrap: break-word;
+}
+
+.report-name {
+  color: #10384f;
+  font-size: 14px;
+  //font-family: Source Sans Pro;
+  font-weight: 400;
+  line-height: 22px;
+  word-wrap: break-word;
+}

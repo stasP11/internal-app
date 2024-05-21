@@ -1,0 +1,28 @@
+.pop-up {
+  // position: absolute;
+  //  z-index: 10;
+  // top: 35px;
+  right: 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  align-items: center;
+  text-align: justify;
+  width: auto;
+  border-radius: 6px;
+  gap: 1px;
+  background: white;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+}
+
+.--active {
+  display: flex;
+}
+
+.--inactive {
+  display: none;
+}

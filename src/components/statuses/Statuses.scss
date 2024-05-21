@@ -1,0 +1,41 @@
+.status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 18px; /* 150% */
+    letter-spacing: 0.36px;
+    padding: 0 10px;
+    border-radius: 10px;
+
+    > span:first-letter {
+        text-transform: uppercase;
+    }
+
+    &.--rework-status {
+        background-color: rgba(250, 240, 243, 1);
+        color: rgba(209, 41, 83, 1);
+    }
+
+    &.--pending-status {
+        background-color:#FCF2E6;
+        color: #AA5B00;
+
+    }
+     &.--correct-status {
+        background-color: rgba(225, 252, 239, 1);
+        color: rgba(20, 128, 74, 1);
+
+     } 
+     &.--done-status {
+        background-color: rgba(225, 252, 239, 1);
+        color: rgba(20, 128, 74, 1);
+     }
+
+      &.--alt-status {
+        background-color: rgba(233, 237, 245, 1);
+        color: rgba(0, 145, 223, 1);
+      }
+}

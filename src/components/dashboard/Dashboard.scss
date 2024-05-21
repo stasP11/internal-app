@@ -1,0 +1,34 @@
+.inform-cards {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+
+  &__inform-card {
+    width: 31%;
+  }
+}
+
+.panel {
+  display: flex;
+  justify-content: space-between;
+  width: auto;
+  height: 360px;
+  margin-top: 30px;
+
+  &__chart {
+    width: 31%;
+    .chart {
+      height: 318px;
+    }
+  }
+
+  &__table {
+    width: 65.5%;
+    height: auto;
+  }
+
+  .table__body {
+    height: 320px;
+    overflow-y: scroll;
+  }
+}

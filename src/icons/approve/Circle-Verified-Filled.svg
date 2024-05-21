@@ -1,0 +1,10 @@
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Circle-Verified-Filled">
+<mask id="mask0_377_6593" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="1" y="1" width="14" height="14">
+<path id="icon" fill-rule="evenodd" clip-rule="evenodd" d="M8 1.125C4.20304 1.125 1.125 4.20304 1.125 8C1.125 11.797 4.20304 14.875 8 14.875C11.797 14.875 14.875 11.797 14.875 8C14.875 4.20304 11.797 1.125 8 1.125ZM11.3831 5.89601C11.7167 6.24567 11.7036 6.79954 11.354 7.13311L7.68524 10.6331C7.34696 10.9558 6.81473 10.9556 6.47673 10.6326L4.64547 8.88259C4.2961 8.54872 4.28354 7.99485 4.61741 7.64548C4.95128 7.2961 5.50515 7.28354 5.85453 7.61741L7.08177 8.7902L10.146 5.86689C10.4957 5.53332 11.0495 5.54636 11.3831 5.89601Z" fill="#0091DF"/>
+</mask>
+<g mask="url(#mask0_377_6593)">
+<rect id="color" width="16" height="16" fill="black" fill-opacity="0.87"/>
+</g>
+</g>
+</svg>

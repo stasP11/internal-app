@@ -1,0 +1,49 @@
+.App {
+  text-align: center;
+  background-image: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fknowmoregrowmore.com%2Fhow-to-identify-common-wheat-weeds%2F&psig=AOvVaw3al7Cq24intbeBxPkFtmyO&ust=1712149151176000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCICQpOPKo4UDFQAAAAAdAAAAABAE";
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.MuiChip-label.myChip {
+  background-color: rgba(225, 252, 239, 1);
+  color: #14804a;
+}
+
+.failChip {
+  background-color: rgba(250, 240, 243, 1);
+  color: rgba(209, 41, 83, 1);
+}

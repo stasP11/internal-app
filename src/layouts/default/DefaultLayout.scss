@@ -1,0 +1,23 @@
+// main.scss
+
+.default-layout {
+    display: grid;
+    width: auto;
+    grid-template-columns: 1fr 6fr; // 210px for the first column, equal fractions for the remaining columns
+    grid-template-rows: auto 1fr;
+    height: 100vh;
+  }
+
+  .sidebar {
+    grid-row: 1/3;
+  }
+  
+  .header {
+    grid-column: 2/3;
+  }
+  
+  main {
+    width: auto;
+    padding: 24px 47px 30px 47px;
+  }
+  

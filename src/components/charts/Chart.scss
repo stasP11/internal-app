@@ -1,0 +1,57 @@
+.chart {
+  width: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 30px 30px 16px 30px;
+
+  border-radius: 10px;
+  background: #fff;
+
+  &__name {
+    width: 100%;
+    text-align: start;
+    color: #10384f;
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  }
+
+  &__body {
+    width: 100%;
+  }
+
+  &__legend {
+    width: 100%;
+  }
+}
+
+.legend {
+  width: 200px;
+  > ul {
+    list-style: none;
+    padding: 0;
+    > li {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+  }
+
+  &__color {
+    display: block;
+    width: 14px;
+    height: 14px;
+    margin-right: 6px;
+    border-radius: 100%;
+  }
+
+  &__text {
+    color: #10384f;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 16px;
+  }
+}
