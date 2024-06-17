@@ -55,7 +55,7 @@ export const msalConfig = {
 
 export const protectedResources = {
     apiTodoList: {
-        endpoint: "http://localhost:5000/api/todolist",
+        endpoint: `${process.env.REACT_APP_API_URL}/api/todolist`,
         scopes: {
             read: [ "api://f6caac59-eebd-4f1c-a7bc-861487c37cfd/Reports.Read" ],
             write: [ "api://f6caac59-eebd-4f1c-a7bc-861487c37cfd/Reports.ReadWrite" ]

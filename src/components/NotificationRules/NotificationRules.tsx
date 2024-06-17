@@ -282,15 +282,15 @@ const NotificationRules: React.FC<AfterReportingDueDateInterface> = ({
 
         {period === "Custom" ? (
           <>
-          <BeforeReportingStartDate />
-          <BeforeReportingDueDate />
-          <AfterReportingDueDate
-            selectedFrequency={selectedFrequency}
-            onFrequencyChange={onFrequencyChange}
-            selectedDaysState={selectedDaysState}
-            onSelectedDaysState={onSelectedDaysState}
-          />
-        </>
+            <BeforeReportingStartDate />
+            <BeforeReportingDueDate />
+            <AfterReportingDueDate
+              selectedFrequency={selectedFrequency}
+              onFrequencyChange={onFrequencyChange}
+              selectedDaysState={selectedDaysState}
+              onSelectedDaysState={onSelectedDaysState}
+            />
+          </>
         ) : null}
       </div>
     </div>

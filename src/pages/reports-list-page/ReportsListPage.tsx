@@ -44,7 +44,7 @@ function useAuthRequest() {
   const { data: reportsData, error: reportsError, isLoading } = useReportsData([
     authResult,
     "GET",
-    "http://localhost:5000/api/reportslist",
+    `${process.env.REACT_APP_API_URL}/api/reportslist`,
     { selectedCountry },
   ]);
 

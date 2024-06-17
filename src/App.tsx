@@ -1,50 +1,69 @@
 import "./App.scss";
 import "./assets/index.scss";
+
 import Router from "./routes/Router";
-import { useEffect, useState, useLayoutEffect } from "react";
+import { useEffect, createContext, useState, useLayoutEffect } from "react";
 import { SWRConfig } from "swr";
 import {
   MsalProvider,
-  AuthenticatedTemplate,
   useMsal,
+  AuthenticatedTemplate,
   UnauthenticatedTemplate,
-  useIsAuthenticated,
 } from "@azure/msal-react";
-
 import getUserInfo from "./utils/getUserInfo";
 import { loginRequest, protectedResources } from "./authConfig";
 import { LicenseInfo } from "@mui/x-data-grid-pro";
+import {
+  useUserAutorization,
+  useFetchWithMsal,
+} from "../src/hooks/useFetchWithMsal";
+import { useReportsData } from "../src/hooks/swr-hooks/useReports";
+import {
+  getFromLocalStorage,
+  saveToLocalStorage,
+} from "./services/storageInterection";
+
+type UserDataContextType = {
+  pagesAccess?: Array<string>;
+  countries?: Array<string>;
+  roleName?: string;
+};
+export const UserDataContext = createContext<UserDataContextType>({});
 
 const MainContent = () => {
-  const { instance, inProgress } = useMsal();
-  const activeAccount = instance.getActiveAccount();
-  const [userProfile, setUserProfile] = useState<any>({});
+  const { isLoading, error, data, execute } = useFetchWithMsal({
+    scopes: protectedResources.apiTodoList.scopes.read,
+  });
 
-  const handleLoginRedirect = () => {
-    if (!activeAccount) {
-      instance.loginRedirect(loginRequest).catch((error) => console.log(error));
-    }
-  };
-
-  useLayoutEffect(() => {
-    if (
-      activeAccount?.idTokenClaims?.roles &&
-      !Object.keys(userProfile).length
-    ) {
-      const userInfo = getUserInfo(activeAccount?.idTokenClaims?.roles);
-      setUserProfile(userInfo);
-      console.log(userInfo, "userInfo");
-    }
-  }, []);
 
   useEffect(() => {
-    handleLoginRedirect();
-  }, [inProgress]);
+    const fetchData = async (): Promise<any> => {
+      try {
+        await execute("GET", `${process.env.REACT_APP_API_URL}/api/authorize`, null);
+      } catch (e) {
+        console.error("Fetch error:", e);
+      }
+    };
+
+    fetchData();
+  }, [execute]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  console.log(data, "data-01");
 
   return (
     <div className="App">
       <AuthenticatedTemplate>
-        <Router status={"OK"} userProfile={userProfile} />
+        <UserDataContext.Provider value={{ ...data?.userData }}>
+          <Router status={data?.status} userProfile={data?.userData} />
+        </UserDataContext.Provider>
       </AuthenticatedTemplate>
       <UnauthenticatedTemplate></UnauthenticatedTemplate>
     </div>

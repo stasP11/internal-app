@@ -26,8 +26,6 @@ function Router({ status, userProfile }: any) {
                 </ProtectedPages>
               }
             ></Route>
-            <Route element={<ProxyPage />} path="proxy.html" />
-            <Route path="login" element={<LoginPage />}></Route>
           </Routes>
         </BrowserRouter>
       ) : (

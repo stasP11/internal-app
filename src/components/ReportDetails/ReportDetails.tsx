@@ -1,18 +1,13 @@
 //base
-import React from "react";
+import React, { useContext } from "react";
 import {
   DataGridPro,
-  GridToolbar,
-  GridToolbarContainer,
-  GridToolbarColumnsButton,
-  GridToolbarFilterButton,
-  GridToolbarDensitySelector,
 } from "@mui/x-data-grid-pro";
 import CircularProgress from "@mui/material/CircularProgress";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import { mutate } from "swr";
 import approveAlternative from "./request";
+import { UserDataContext } from "../../App"
 
 type Alternativites = {
   material_number: number;
@@ -44,6 +39,9 @@ const MappingAlternativites: React.FC<any> = ({
 }): JSX.Element => {
   const { alternatives, matched, material_number, product_name } = params;
   const [selectedValue, selectValue] = React.useState<any>();
+  const userData = useContext(UserDataContext);
+
+  console.log(userData, 'test-context')
 
   function handleChange(e: any) {
     onAlternativeChoose({ ...e.target, params });

@@ -24,7 +24,7 @@ function DistributorsList() {
   const { data, error: reportsError } = useReportsData([
     authResult,
     "GET",
-    "http://localhost:5000/api/getdistributorslist",
+    `${process.env.REACT_APP_API_URL}/api/getdistributorslist`,
     { selectedCountry },
   ]);
 
@@ -91,10 +91,10 @@ function DistributorsList() {
   }, [data])
   
 
-console.log(cache, 'cache 2')
+console.log(data, 'data-11')
   return (
     <div>{
-      data&& <DistributorsTable 
+      data && <DistributorsTable 
       onFilterByReportName={handleModalWindowStatus}
       onClearFilter={handleClearFilter}
       usedFilter={usedFilter}

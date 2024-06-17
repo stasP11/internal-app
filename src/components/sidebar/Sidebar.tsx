@@ -9,9 +9,14 @@ import {
   getFromLocalStorage,
   saveToLocalStorage,
 } from "../../services/storageInterection";
+import { useContext } from "react";
+import { UserDataContext } from "../../App";
 
 function Sidebar({ onPageChoose, activePage, userProfile }: any) {
   const currentCountry = getFromLocalStorage("selectedCountry");
+  const userData = useContext(UserDataContext);
+  const { pagesAccess } = useContext(UserDataContext);
+  console.log(userData, pagesAccess, "test-context");
 
   function chooseCountry(country: string) {
     saveToLocalStorage("selectedCountry", country);
@@ -33,7 +38,7 @@ function Sidebar({ onPageChoose, activePage, userProfile }: any) {
             id="appSelector"
             onChange={(e) => chooseCountry(e.target.value)}
           >
-            {userProfile
+            {userProfile?.countries
               ? userProfile?.countries.map((country: any, index: number) => (
                   <option
                     key={index}
@@ -49,78 +54,111 @@ function Sidebar({ onPageChoose, activePage, userProfile }: any) {
       </div>
 
       <div className="navigation">
-        <div
-          className={`board-name
-            ${isActive("dashboard")}`}
-        >
-          <img src={iconReports} alt="icon" />
-          <Link
-            onClick={() => onPageChoose("dashboard")}
-            className="nav-link"
-            to="/dashboard"
-          >
-            Dashboard
-          </Link>
-        </div>
+        <>
+          {pagesAccess?.includes("dashboard") && (
+            <div
+              className={`board-name
+                    ${isActive("dashboard")}`}
+            >
+              <img src={iconReports} alt="icon" />
+              <Link
+                onClick={() => onPageChoose("dashboard")}
+                className="nav-link"
+                to="/dashboard"
+              >
+                Dashboard
+              </Link>
+            </div>
+          )}
+        </>
 
-        <div
-          className={`board-name
+        <>
+          {pagesAccess?.includes("reports") && (
+            <div
+              className={`board-name
           ${isActive("reports-list")}`}
-        >
-          <img src={iconDashboard} alt="icon" />
-          <Link
-            onClick={() => onPageChoose("reports-list")}
-            className="nav-link"
-            to="/reports-list"
-          >
-           <span>Reports</span>
-          </Link>
-        </div>
+            >
+              <img src={iconDashboard} alt="icon" />
+              <Link
+                onClick={() => onPageChoose("reports-list")}
+                className="nav-link"
+                to="/reports-list"
+              >
+                <span>Reports</span>
+              </Link>
+            </div>
+          )}
+        </>
 
-        <div
-          className={`board-name
-          ${isActive("distributors")}`}
-        >
-          <img src={iconDistributors} alt="icon" />
-          <Link
-            onClick={() => onPageChoose("distributors")}
-            className="nav-link"
-            to="/distributors"
-          >
-            Distributors
-          </Link>
-        </div>
+        <>
+          {pagesAccess?.includes("distributors") && (
+            <div
+              className={`board-name
+        ${isActive("distributors")}`}
+            >
+              <img src={iconDistributors} alt="icon" />
+              <Link
+                onClick={() => onPageChoose("distributors")}
+                className="nav-link"
+                to="/distributors"
+              >
+                Distributors
+              </Link>
+            </div>
+          )}
+        </>
 
+        <>
+          {pagesAccess?.includes("timelines") && (
+            <div
+              className={`board-name
+        ${isActive("timelines")}`}
+            >
+              <img src={ClockWithGear} alt="icon" />
+              <Link
+                onClick={() => onPageChoose("timelines")}
+                className="nav-link"
+                to="/timelines"
+              >
+                Timelines
+              </Link>
+            </div>
+          )}
+        </>
 
-        <div
-          className={`board-name
-          ${isActive("timelines")}`}
-        >
-          <img src={ClockWithGear} alt="icon" />
-          <Link
-            onClick={() => onPageChoose("timelines")}
-            className="nav-link"
-            to="/timelines"
-          >
-            Timelines
-          </Link>
-        </div>
+        <>
+          {pagesAccess?.includes("templates") && (
+            <div
+              className={`board-name
+          ${isActive("templates")}`}
+            >
+              <img src={iconDashboard} alt="icon" />
+              <Link
+                onClick={() => onPageChoose("templates")}
+                className="nav-link"
+                to="/templates"
+              >
+                Templates
+              </Link>
+            </div>
+          )}
+        </>
 
-        {userProfile?.isAdmin ? (
+        <>
           <div
             className={`board-name
-          ${isActive("templates")}`}
+          ${isActive("settings")}`}
           >
             <img src={iconDashboard} alt="icon" />
             <Link
-              onClick={() => onPageChoose("templates")}
+              onClick={() => onPageChoose("settings")}
               className="nav-link"
-              to="/templates"
+              to="/settings"
             >
-              Templates
+              Role Manager
             </Link>
           </div>
-        ) : null}
+        </>
       </div>
     </div>
   );

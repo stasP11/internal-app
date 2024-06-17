@@ -1,16 +1,13 @@
 import React from "react";
 import {
   DataGridPro,
-  GridToolbar,
   GridToolbarContainer,
   GridToolbarColumnsButton,
   GridToolbarFilterButton,
   GridToolbarDensitySelector,
 } from "@mui/x-data-grid-pro";
-import Button from "@mui/material/Button";
 import "./ReportsListTable.scss";
 import Typography from "@mui/material/Typography";
-import ellipsis from "../../icons/elipce.svg";
 import TableMenuPopup from "../../customized-mui-elements/TableMenuPopup/TableMenuPopup";
 
 function ReportsListTableToolbar() {

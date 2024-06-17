@@ -31,7 +31,7 @@ function ReportsList() {
   const { data: reportsData, error: reportsError } = useReportsData([
     authResult,
     "GET",
-    "http://localhost:5000/api/reportslist",
+    `${process.env.REACT_APP_GIGYA_PATH}/api/reportslist`,
     { selectedCountry },
   ]);
 

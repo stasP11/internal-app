@@ -6,6 +6,12 @@ import { useReportsData } from "../../hooks/swr-hooks/useReports";
 import { useEffect, useState } from "react";
 import DashboardReportsTable from "./DashboardReportsTable";
 import DashboardDistributorsTable from "./DashboardDistributorsTable";
+import {
+  getFromLocalStorage,
+  saveToLocalStorage,
+} from "../../services/storageInterection";
+import { loginRequest, protectedResources } from "../../authConfig";
+import { useFetchWithMsal2 } from "../../../src/hooks/useFetchWithMsal";
 
 const transformData = (data: any) => {
   const transformedData: any = data.reduce((result: any, item: any) => {
@@ -36,6 +42,32 @@ const transformData = (data: any) => {
 function Dashboard() {
   const reportData: any = [];
   const [distributorData, setDistributorData] = useState([]);
+
+
+
+  
+
+  const { error: authError, result: authResult }: any = useFetchWithMsal2({
+    scopes: protectedResources.apiTodoList.scopes.read,
+  });
+
+  const selectedCountry = getFromLocalStorage("selectedCountry");
+
+  const { data: reportsData, error: reportsError, isLoading } = useReportsData([
+    authResult,
+    "GET",
+    `${process.env.REACT_APP_API_URL}/api/reportslist`,
+    { selectedCountry },
+  ]);
+
+
+  const { data: distributorsData, error: distributorsError } = useReportsData([
+    authResult,
+    "GET",
+    `${process.env.REACT_APP_API_URL}/api/getdistributorslist`,
+    { selectedCountry },
+  ]);
+
 
   function handleDistributorssDataForChart(distributorsData: any) {
     return [
@@ -138,13 +170,13 @@ function Dashboard() {
             <div className="panel__chart">
               <PieChart
                 name="Distributors"
-                data={handleDistributorssDataForChart(distributorData)}
+                data={handleDistributorssDataForChart(reportsData)}
                 width={200}
                 height={200}
               />
             </div>
             <div className="panel__table">
-              <DashboardDistributorsTable data={distributorData} />
+              <DashboardDistributorsTable data={distributorsData} />
             </div>
           </div>
           <div className="panel">

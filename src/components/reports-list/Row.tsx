@@ -2,7 +2,7 @@ import "./Reports.scss";
 import ellipsis from "../../icons/elipce.svg";
 import React from "react";
 import { ReportStatus } from "../../customized-mui-elements/Statuses/Statuses";
-import { TableCell, TableRow, Checkbox, Collapse, Box } from "@mui/material";
+import { TableCell, TableRow } from "@mui/material";
 
 
 export default function Row({

@@ -255,7 +255,7 @@ export default function CollapsibleTable() {
   const { data: reportsData, error: reportsError } = useReportsData([
     authResult,
     "GET",
-    "http://localhost:5000/api/reportslist",
+    `${process.env.REACT_APP_API_URL}/api/reportslist`,
     { selectedCountry },
   ]);
 
