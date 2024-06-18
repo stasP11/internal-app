@@ -195,25 +195,23 @@ const CustomPeriod: React.FC<any> = ({
   onUpdate,
 }: any): JSX.Element => {
   function handleDatePikerData(value: any) {
-    const [startPerioud, endPerioud] = value;
-    if (startPerioud) {
-      const formatedStartPerioud = dayjs(startPerioud).format("DD-MM-YYYY");
-      console.log(formatedStartPerioud, 'formatedStartPerioud')
+    const [start, end] = value;
+    if (start) {
+      const startPerioud = dayjs(start).format("DD-MM-YYYY");
       onUpdate({
         id,
-        startPerioud: `${formatedStartPerioud}`,
+        startPerioud,
         endPerioud,
         startDay,
         dueDay,
       });
     }
-    if (endPerioud) {
-      const formatedEndPerioud = dayjs(endPerioud).format("DD-MM-YYYY");
-      console.log(formatedEndPerioud, 'formatedEndPerioud')
+    if (end) {
+      const endPerioud = dayjs(end).format("DD-MM-YYYY");
       onUpdate({
         id,
         startPerioud,
-        endPerioud: `${formatedEndPerioud}`,
+        endPerioud,
         startDay,
         dueDay,
       });
@@ -227,7 +225,7 @@ const CustomPeriod: React.FC<any> = ({
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DemoContainer components={["SingleInputDateRangeField"]}>
           <DateRangePicker
-            defaultValue={[dayjs(`${startPerioud}`), dayjs(`${endPerioud}`)]}
+            defaultValue={[dayjs(`${startPerioud}`, 'DD-MM-YYYY'), dayjs(`${endPerioud}`, 'DD-MM-YYYY')]}
             onChange={(e) => handleDatePikerData(e)}
             format="DD-MM-YYYY"
             slots={{ field: SingleInputDateRangeField }}

@@ -24,8 +24,8 @@ const exempleData2 = [
       dueDay: "Friday",
     },
     notificationRules: {
-      afterReportingDueDate: ["Rule1", "Rule2"],
-      beforeReportingDueDate: ["Rule3"],
+      afterReportingDueDate: [1,3,5],
+      beforeReportingDueDate: [{label: 'on due Date', selected: false, value: 0, id: '02092'}, {label: '1 day before', selected: true, value: 1, id: '02093'}],
     },
   },
   {
@@ -86,6 +86,7 @@ const notificationPeriods:Array<Period> = [
 
 const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
   const [selectedPeriod, selectPeriod] = useState<any>("Daily");
+
   const [dailyPerioud, setDailyPerioud] = useState<any>();
   const [dailyNotifications, setDailyNotifications] = useState<any>();
 
@@ -160,8 +161,28 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
     );
   }, []);
 
-  //tests dailyPerioud={} weeklyPerioud={} monthlyPerioud={} quarterlyPerioud={} customPerioud={}
-  // setDailyPerioud={} setWeeklyPerioud={}  setMonthlyPerioud={} setQuarterlyPerioud={} setCustomPerioud={}
+
+
+function handleDailyNotificationsUpdate(data: any){
+  const updatedData = {...dailyNotifications};
+  updatedData.afterReportingDueDate = data?.afterReportingDueDate;
+  setDailyNotifications(()=> updatedData)
+}
+  
+function handleWeeklyNotifications(data: any){
+  
+  const updatedData = {...weeklyNotifications};
+  if(data.afterReportingDueDate ){
+  updatedData.afterReportingDueDate = data?.afterReportingDueDate;
+  setWeeklyNotifications(()=> updatedData)
+  }
+
+  if(data.beforeReportingDueDate ){
+    updatedData.beforeReportingDueDate = data?.beforeReportingDueDate;
+    setWeeklyNotifications(()=> updatedData)
+  }
+  
+}
 
   console.log(
     dailyPerioud,
@@ -207,8 +228,19 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
         onQuarterlyPerioud={handleQuarterlyPerioudUpdate}
         onCustomPerioud={handleCustomPerioud}
       />
+
+
       <NotificationRules
-        period={selectedPeriod}
+        selectedPeriod={selectedPeriod}
+        dailyNotifications={dailyNotifications}
+        weeklyNotifications={weeklyNotifications}
+
+        onDailyNotificationsUpdate={handleDailyNotificationsUpdate}
+        onWeeklyNotificationsUpdate={handleWeeklyNotifications}
+
+
+
+
         selectedDaysState={selectedDaysDueDate}
         onSelectedDaysState={setSselectedDaysDueDate}
         selectedFrequency={selectedFrequencyDueDate}
@@ -217,7 +249,7 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
         }
       />
 
-      <div onClick={()=>console.log(customPeriouds, 'customPeriouds')}>Test</div>
+      <div onClick={()=>console.log(weeklyNotifications, 'weeklyNotifications')}>Test</div>
     </div>
   );
 };
