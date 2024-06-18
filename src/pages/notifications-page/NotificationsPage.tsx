@@ -15,6 +15,7 @@ const exempleData2 = [
     name: "daily",
     periodsSettings: {},
     notificationRules: {
+      // noties Monday = 0, Th=1
       afterReportingDueDate: [1, 2, 3, 4, 5],
     },
   },
@@ -35,9 +36,9 @@ const exempleData2 = [
       dueDay: 30,
     },
     notificationRules: {
-      afterReportingDueDate: ["Rule1"],
-      beforeReportingDueDate: ["Rule2", "Rule3"],
-      beforeReportingStartDate: ["Rule4"],
+      afterReportingDueDate: [1,3,5],
+      beforeReportingDueDate: [{label: 'on due Date', selected: false, value: 0, id: '323f2'}, {label: '1 day before', selected: true, value: 1, id: '0233293'}],
+      beforeReportingStartDate: [{label: 'on start Day', selected: false, value: 0, id: '323w2'}],
     },
   },
   {
@@ -47,13 +48,17 @@ const exempleData2 = [
       dueDay: 30,
     },
     notificationRules: {
-      afterReportingDueDate: [1, 2, 3, 4, 5],
+      afterReportingDueDate: [1, 2, 4, 5],
+      beforeReportingDueDate: [{label: 'on due Date', selected: false, value: 0, id: '323fee2'}, {label: '1 day before', selected: true, value: 1, id: '0233293'}],
+      beforeReportingStartDate: [{label: 'on start Day', selected: false, value: 0, id: '323wee2'}],
     },
   },
   {
     name: "custom",
     periodsSettings: [
       {
+        // DD-MM-YYYY
+        // YYYY/MM/DD shoud be like this
         id: '2024-01-01_2024-01-31',
         startPerioud: "01-01-2024",
         endPerioud: "22-01-2024",
@@ -69,9 +74,9 @@ const exempleData2 = [
       },
     ],
     notificationRules: {
-      afterReportingDueDate: ["Rule1"],
-      beforeReportingDueDate: ["Rule2"],
-      beforeReportingStartDate: ["Rule3"],
+      afterReportingDueDate: [1, 2, 4, 5],
+      beforeReportingDueDate: [{label: 'on due Date', selected: false, value: 0, id: '323fee2'}, {label: '1 day before', selected: true, value: 1, id: '0233293'}],
+      beforeReportingStartDate: [{label: 'on start Day', selected: false, value: 0, id: '323wee2'}],
     },
   },
 ];
@@ -184,6 +189,61 @@ function handleWeeklyNotifications(data: any){
   
 }
 
+function handleMonthlyNotifications(data: any) {
+  const updatedData = {...monthlyNotifications};
+  if(data.afterReportingDueDate ){
+  updatedData.afterReportingDueDate = data?.afterReportingDueDate;
+  setMonthlyNotifications(()=> updatedData)
+  }
+
+  if(data.beforeReportingDueDate ){
+    updatedData.beforeReportingDueDate = data?.beforeReportingDueDate;
+    setMonthlyNotifications(()=> updatedData)
+  }
+
+  if(data.beforeReportingStartDate ){
+    updatedData.beforeReportingStartDate = data?.beforeReportingStartDate;
+    setMonthlyNotifications(()=> updatedData)
+  }
+}
+
+function handleQuarterlyNotifications(data: any){
+  const updatedData = {...quarterlyNotifications};
+  if(data.afterReportingDueDate ){
+  updatedData.afterReportingDueDate = data?.afterReportingDueDate;
+  setQuarterlyNotifications(()=> updatedData)
+  }
+
+  if(data.beforeReportingDueDate ){
+    updatedData.beforeReportingDueDate = data?.beforeReportingDueDate;
+    setQuarterlyNotifications(()=> updatedData)
+  }
+
+  if(data.beforeReportingStartDate ){
+    updatedData.beforeReportingStartDate = data?.beforeReportingStartDate;
+    setQuarterlyNotifications(()=> updatedData)
+  }
+}
+
+function handleCustomNotifications(data: any){
+  const updatedData = {...customNotifications};
+  if(data.afterReportingDueDate ){
+  updatedData.afterReportingDueDate = data?.afterReportingDueDate;
+  setCustomNotifications(()=> updatedData)
+  }
+
+  if(data.beforeReportingDueDate ){
+    updatedData.beforeReportingDueDate = data?.beforeReportingDueDate;
+    setCustomNotifications(()=> updatedData)
+  }
+
+  if(data.beforeReportingStartDate ){
+    updatedData.beforeReportingStartDate = data?.beforeReportingStartDate;
+    setCustomNotifications(()=> updatedData)
+  }
+}
+
+
   console.log(
     dailyPerioud,
     dailyNotifications,
@@ -234,9 +294,15 @@ function handleWeeklyNotifications(data: any){
         selectedPeriod={selectedPeriod}
         dailyNotifications={dailyNotifications}
         weeklyNotifications={weeklyNotifications}
+        monthlyNotifications={monthlyNotifications}
+        quarterlyNotifications={quarterlyNotifications}
+        customNotifications={customNotifications}
 
         onDailyNotificationsUpdate={handleDailyNotificationsUpdate}
         onWeeklyNotificationsUpdate={handleWeeklyNotifications}
+        onMonthlyNotifications={handleMonthlyNotifications}
+        onQuarterlyNotifications={handleQuarterlyNotifications}
+        onCustomNotifications={handleCustomNotifications}
 
 
 

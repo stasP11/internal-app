@@ -13,9 +13,7 @@ import { SingleInputDateRangeField } from "@mui/x-date-pickers-pro/SingleInputDa
 import { Button } from "@mui/material";
 
 //utils
-function generateRandomId() {
-  return "_" + Math.random().toString(36).substr(2, 9);
-}
+import generateRandomId from "../../utils/genereteRandomId.js"
 
 type Period = "Daily" | "Weekly" | "Monthly" | "Quarterly" | "Custom";
 

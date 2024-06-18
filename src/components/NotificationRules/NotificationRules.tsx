@@ -1,26 +1,25 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import "./NotificationRules.scss";
 
 //components
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import InputLabel from "@mui/material/InputLabel";
 import Checkbox from "@mui/material/Checkbox";
 import Button from "@mui/material/Button";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import { Box, TextField } from '@mui/material';
-
-// {label: 'on due Date', selected: false, value: 0, id: '02092'}
+import { Box, TextField } from "@mui/material";
 
 //utils
-function generateRandomId() {
-  return "_" + Math.random().toString(36).substr(2, 9);
-}
+import generateRandomId from "../../utils/genereteRandomId.js"
 
-const DynamicDaysCheckbox = ({selected, value, id, onNewElementChecked}: any) => {
+const DynamicDaysCheckbox = ({
+  selected,
+  value,
+  id,
+  onNewElementChecked,
+}: any) => {
   const [daysBefore, setDaysBefore] = useState(0);
-
 
   const handleDaysChange = (event: any) => {
     const value = parseInt(event.target.value, 10);
@@ -30,25 +29,27 @@ const DynamicDaysCheckbox = ({selected, value, id, onNewElementChecked}: any) =>
     }
   };
 
-  function handleSelect(isSelected: boolean){
+  function handleSelect(isSelected: boolean) {
     onNewElementChecked(id, value, isSelected);
   }
 
   return (
     <Box display="flex" alignItems="center">
       <FormControlLabel
-        control={<Checkbox  defaultChecked={selected}
-          onChange={(e) => handleSelect(e.target.checked)}
-          
-          />}
-        label={`${daysBefore} day${daysBefore > 1 ? 's' : ''} before`}
+        control={
+          <Checkbox
+            defaultChecked={selected}
+            onChange={(e) => handleSelect(e.target.checked)}
+          />
+        }
+        label={`${daysBefore} day${daysBefore > 1 ? "s" : ""} before`}
       />
-        <TextField
+      <TextField
         type="number"
         value={daysBefore}
         onChange={handleDaysChange}
         inputProps={{ min: 1 }}
-        style={{ marginRight: '8px', width: '60px' }}
+        style={{ marginRight: "8px", width: "60px" }}
       />
     </Box>
   );
@@ -80,7 +81,6 @@ interface DaySelectorSelectorProps {
   selectedDaysState: Array<WeekDayType>;
   onSelectedDaysState: Function;
 }
-
 
 const CustomizedMUISelector: React.FC<any> = ({
   selectedOption,
@@ -197,40 +197,43 @@ const BeforeReportingDueDate: React.FC<any> = ({
 }): JSX.Element => {
   //[{label: 'on start Date', selected: false, value: 0, isEditable: false}, {label: '1 day before', selected: true, value: 1, isEditable: false}]
 
-  function handleSelect(id: any, isSelected: any){
+  function handleSelect(id: any, isSelected: any) {
     const updatedData = data;
-    
-    updatedData.forEach((obj: any)=>{
-         if(obj.id=== id){
-          obj.selected = isSelected
-         }
+
+    updatedData.forEach((obj: any) => {
+      if (obj.id === id) {
+        obj.selected = isSelected;
+      }
     });
 
-    onUpdate({beforeReportingDueDate: updatedData})
-
-
+    onUpdate({ beforeReportingDueDate: updatedData });
   }
 
-  function handleAddNewDaysCheckbox(){
+  function handleAddNewDaysCheckbox() {
     const id = generateRandomId();
-    onUpdate({beforeReportingDueDate:[...data, {
-      id,
-      label: 'bla bla bla',
-      selected: false,
-      value: 0,
-      isEditable: true,
-    } ]})
+    onUpdate({
+      beforeReportingDueDate: [
+        ...data,
+        {
+          id,
+          label: "bla bla bla",
+          selected: false,
+          value: 0,
+          isEditable: true,
+        },
+      ],
+    });
   }
 
-  function handleDaysCheckboxEdit(id: any, value: number, selected: boolean){
-    const updatedData= [...data];
-      updatedData.forEach((obj)=>{
-        if(obj.id === id) {
-          obj.value = value;
-          obj.selected = selected
-        }
-      })
-      onUpdate({beforeReportingDueDate: [...data]})
+  function handleDaysCheckboxEdit(id: any, value: number, selected: boolean) {
+    const updatedData = [...data];
+    updatedData.forEach((obj) => {
+      if (obj.id === id) {
+        obj.value = value;
+        obj.selected = selected;
+      }
+    });
+    onUpdate({ beforeReportingDueDate: [...data] });
   }
 
   return (
@@ -238,21 +241,28 @@ const BeforeReportingDueDate: React.FC<any> = ({
       <h3 className="before-due-date__title">Before reporting Start Date</h3>
       <div className="before-due-date__checkboxes">
         <FormGroup>
-          {data.map(({ label, selected, value, id, isEditable }: any) => (
-            isEditable? 
-              <DynamicDaysCheckbox key={id} id={id} value={value} selected={selected} onNewElementChecked={handleDaysCheckboxEdit}/>: (
+          {data.map(({ label, selected, value, id, isEditable }: any) =>
+            isEditable ? (
+              <DynamicDaysCheckbox
+                key={id}
+                id={id}
+                value={value}
+                selected={selected}
+                onNewElementChecked={handleDaysCheckboxEdit}
+              />
+            ) : (
               <FormControlLabel
-              key={id}
-              control={
-                <Checkbox
-                  defaultChecked={selected}
-                  onChange={(e) => handleSelect(id, e.target.checked)
-                  }
-                />
-              }
-              label={label}
-            />)
-          ))}
+                key={id}
+                control={
+                  <Checkbox
+                    defaultChecked={selected}
+                    onChange={(e) => handleSelect(id, e.target.checked)}
+                  />
+                }
+                label={label}
+              />
+            )
+          )}
         </FormGroup>
       </div>
 
@@ -265,7 +275,6 @@ const BeforeReportingDueDate: React.FC<any> = ({
             backgroundColor: "rgba(0, 0, 0, 0.04)",
           },
         }}
-
         onClick={handleAddNewDaysCheckbox}
       >
         Add rule
@@ -274,21 +283,80 @@ const BeforeReportingDueDate: React.FC<any> = ({
   );
 };
 
-const BeforeReportingStartDate: React.FC<any> = (): JSX.Element => {
+const BeforeReportingStartDate: React.FC<any> = ({
+  data,
+  onUpdate,
+}): JSX.Element => {
+
+  function handleSelect(id: any, isSelected: any) {
+    const updatedData = data;
+
+    updatedData.forEach((obj: any) => {
+      if (obj.id === id) {
+        obj.selected = isSelected;
+      }
+    });
+
+    onUpdate({ beforeReportingStartDate: updatedData });
+  }
+
+  function handleAddNewDaysCheckbox() {
+    const id = generateRandomId();
+    onUpdate({
+      beforeReportingStartDate: [
+        ...data,
+        {
+          id,
+          label: "bla bla bla",
+          selected: false,
+          value: 0,
+          isEditable: true,
+        },
+      ],
+    });
+  }
+
+  function handleDaysCheckboxEdit(id: any, value: number, selected: boolean) {
+    const updatedData = [...data];
+    updatedData.forEach((obj) => {
+      if (obj.id === id) {
+        obj.value = value;
+        obj.selected = selected;
+      }
+    });
+    onUpdate({ beforeReportingDueDate: [...data] });
+  }
+
+
+
+
   return (
     <div className="before-start-date">
       <h3 className="before-start-date__title">After reporting Due Date</h3>
-
-      <div className="before-start-date__checkboxes">
+      <div className="before-due-date__checkboxes">
         <FormGroup>
-          <FormControlLabel
-            control={<Checkbox defaultChecked />}
-            label="On Start Date"
-          />
-          <FormControlLabel
-            control={<Checkbox defaultChecked />}
-            label="1 day before"
-          />
+          {data.map(({ label, selected, value, id, isEditable }: any) =>
+            isEditable ? (
+              <DynamicDaysCheckbox
+                key={id}
+                id={id}
+                value={value}
+                selected={selected}
+                onNewElementChecked={handleDaysCheckboxEdit}
+              />
+            ) : (
+              <FormControlLabel
+                key={id}
+                control={
+                  <Checkbox
+                    defaultChecked={selected}
+                    onChange={(e) => handleSelect(id, e.target.checked)}
+                  />
+                }
+                label={label}
+              />
+            )
+          )}
         </FormGroup>
       </div>
 
@@ -301,6 +369,7 @@ const BeforeReportingStartDate: React.FC<any> = (): JSX.Element => {
             backgroundColor: "rgba(0, 0, 0, 0.04)",
           },
         }}
+        onClick={handleAddNewDaysCheckbox}
       >
         Add rule
       </Button>
@@ -311,20 +380,20 @@ const BeforeReportingStartDate: React.FC<any> = (): JSX.Element => {
 const NotificationRules: React.FC<any> = ({
   selectedPeriod,
   dailyNotifications,
-  selectedFrequency,
   weeklyNotifications,
+  monthlyNotifications,
+  quarterlyNotifications,
+  customNotifications,
 
   onDailyNotificationsUpdate,
   onWeeklyNotificationsUpdate,
-
-  onFrequencyChange,
-  selectedDaysState,
-  onSelectedDaysState,
+  onMonthlyNotifications,
+  onQuarterlyNotifications,
+  onCustomNotifications,
 }): JSX.Element => {
   console.log(
-    dailyNotifications,
-    dailyNotifications?.afterReportingDueDate,
-    "dailyNotifications"
+    monthlyNotifications,
+    "monthlyNotifications"
   );
 
   return (
@@ -354,37 +423,61 @@ const NotificationRules: React.FC<any> = ({
           </>
         )}
 
-        {selectedPeriod === "Monthly" && (
+        {selectedPeriod === "Monthly" && monthlyNotifications && (
           <>
-            <BeforeReportingStartDate />
-            <BeforeReportingDueDate />
+            <BeforeReportingStartDate
+              data={monthlyNotifications?.beforeReportingStartDate}
+              onUpdate={onMonthlyNotifications}
+            />
+            <BeforeReportingDueDate
+              data={monthlyNotifications?.beforeReportingDueDate}
+              onUpdate={onMonthlyNotifications}
+            />
             <AfterReportingDueDate
-              selectedDailyFrequency={selectedFrequency}
-              onFrequencyChange={onFrequencyChange}
+              selectedDailyFrequency={
+                monthlyNotifications?.afterReportingDueDate
+              }
+              onFrequencyChange={onMonthlyNotifications}
             />
           </>
         )}
 
-        {selectedPeriod === "Quarterly" && (
+        {selectedPeriod === "Quarterly" &&  quarterlyNotifications &&  (
           <>
-            <BeforeReportingStartDate />
-            <BeforeReportingDueDate />
+            <BeforeReportingStartDate
+              data={quarterlyNotifications?.beforeReportingStartDate}
+              onUpdate={onQuarterlyNotifications}
+            />
+            <BeforeReportingDueDate
+              data={quarterlyNotifications?.beforeReportingDueDate}
+              onUpdate={onQuarterlyNotifications}
+            />
             <AfterReportingDueDate
-              selectedDailyFrequency={selectedFrequency}
-              onFrequencyChange={onFrequencyChange}
+              selectedDailyFrequency={
+                quarterlyNotifications?.afterReportingDueDate
+              }
+              onFrequencyChange={onQuarterlyNotifications}
             />
           </>
         )}
 
-        {selectedPeriod === "Custom" && (
+        {selectedPeriod === "Custom" && customNotifications && (
           <>
-            <BeforeReportingStartDate />
-            <BeforeReportingDueDate />
-            <AfterReportingDueDate
-              selectedDailyFrequency={selectedFrequency}
-              onFrequencyChange={onFrequencyChange}
-            />
-          </>
+          <BeforeReportingStartDate
+            data={customNotifications?.beforeReportingStartDate}
+            onUpdate={onCustomNotifications}
+          />
+          <BeforeReportingDueDate
+            data={customNotifications?.beforeReportingDueDate}
+            onUpdate={onCustomNotifications}
+          />
+          <AfterReportingDueDate
+            selectedDailyFrequency={
+              customNotifications?.afterReportingDueDate
+            }
+            onFrequencyChange={onCustomNotifications}
+          />
+        </>
         )}
       </div>
     </div>
