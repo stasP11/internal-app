@@ -14,17 +14,40 @@ import { ReportStatus } from "../../customized-mui-elements/Statuses/Statuses";
 interface Row {
   distributor_id: number;
   Distributor_Name: string;
-  filenames: string[];
-  statuses: string[];
+  filename: string[];
+  status: string[];
 }
 
 interface MyTableProps {
   data: Row[];
 }
 
+/*
+Distributor_Name
+: 
+"A ONE CONSULTING T/A NYANGA SERVICE"
+country
+: 
+"South Africa"
+distributor_id
+: 
+4302851
+filename
+: 
+(4) ['SelloutReport_4302851_03_2024', 'InventoryReport_4302851_02_2024', 'InventoryReport_4302851_03_2024', 'SelloutReport_4302851_02_2024']
+status
+: 
+(4) ['REWORK', 'MISSING', 'MISSING', 'MISSING']
+*/
+
 const DashboardDistributorsTable: React.FC<MyTableProps> = ({ data }) => {
+  console.log(data, 'DashboardDistributorsTable');
+
   return (
-    <TableContainer
+    <>
+       {
+      !!data.length &&
+      <TableContainer
       component={Paper}
       style={{ maxHeight: 360, overflowY: "auto" }}
     >
@@ -49,15 +72,15 @@ const DashboardDistributorsTable: React.FC<MyTableProps> = ({ data }) => {
               </TableCell>
               <TableCell>
                 <ul  style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
-                  {report.statuses.map((status, idx) => (
-                    <li key={idx}><ReportStatus label={status} small/></li>
+                  {report?.status.map((result, idx) => (
+                    <li key={idx}><ReportStatus label={result} small/></li>
                   ))}
                 </ul>
               </TableCell>
               <TableCell>
                 <ul  style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
-                  {report.filenames.map((filename, idx) => (
-                    <li key={idx}>{filename}</li>
+                  {report.filename.map((file, idx) => (
+                    <li key={idx}>{file}</li>
                   ))}
                 </ul>
               </TableCell>
@@ -66,6 +89,8 @@ const DashboardDistributorsTable: React.FC<MyTableProps> = ({ data }) => {
         </TableBody>
       </Table>
     </TableContainer>
+    }
+    </>
   );
 };
 

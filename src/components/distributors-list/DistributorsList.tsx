@@ -1,6 +1,6 @@
-import DistributorsTable from "./Table"
+import DistributorsTable from "./Table";
 import { useSWRConfig } from "swr";
-import { useDistributorsData } from "../../hooks/swr-hooks/useReports"
+import { useDistributorsData } from "../../hooks/swr-hooks/useReports";
 import { useState, useEffect } from "react";
 import { fackegetDataQualityReports } from "../../api/requests";
 import { FilterModal } from "../../customized-mui-elements/ModalWindow/ModalWindow";
@@ -18,8 +18,7 @@ function DistributorsList() {
     scopes: protectedResources.apiTodoList.scopes.read,
   });
 
-  const selectedCountry = getFromLocalStorage('selectedCountry');
-
+  const selectedCountry = getFromLocalStorage("selectedCountry");
 
   const { data, error: reportsError } = useReportsData([
     authResult,
@@ -28,25 +27,21 @@ function DistributorsList() {
     { selectedCountry },
   ]);
 
-
   const { cache } = useSWRConfig();
-
-  
 
   const [filterStatus, setFilterStatus] = useState(false);
   const [reportsNames, setReportsNames] = useState([]);
   const [filteredData, setFilteredData] = useState<any>([]);
   const [usedFilter, setUsedFilter] = useState<any>(null);
 
-
   function filterByChoosedName(value: string) {
     if (value) {
-      console.log(value, 'choosed value')
+      console.log(value, "choosed value");
       setUsedFilter("reportName");
-      const result =         data?.data.filter(
+      const result = data?.data.filter(
         (reportObj: any) => reportObj?.distributor_name == value
-      )
-      console.log(result, 'final result')
+      );
+      console.log(result, "final result");
       setFilteredData(
         data?.data.filter(
           (reportObj: any) => reportObj?.distributor_name == value
@@ -79,33 +74,35 @@ function DistributorsList() {
     setFilterStatus(status);
   }
 
-  useEffect(()=>{
-
-    console.log(data, 'ultra important chenmges')
-    if(!!data?.length){
-      console.log(data)
-    setReportsNames(
-      data.map((reportObj: any) => ({ label: reportObj?.distributor_name }))
-    );
+  useEffect(() => {
+    if (!!data?.length) {
+      console.log(data);
+      setReportsNames(
+        data.map((reportObj: any) => ({ label: reportObj?.distributor_name }))
+      );
     }
-  }, [data])
-  
+  }, [data]);
 
-console.log(data, 'data-11')
+  console.log(data, "data-11");
   return (
-    <div>{
-      data && <DistributorsTable 
-      onFilterByReportName={handleModalWindowStatus}
-      onClearFilter={handleClearFilter}
-      usedFilter={usedFilter}
-      sortAZ={handleSortAZ}
-      sortZA={handleSortZA}
-      distributorsList={data}/>
-      }
-
+    <div>
+      {data && (
+        <DistributorsTable
+          onFilterByReportName={handleModalWindowStatus}
+          onClearFilter={handleClearFilter}
+          usedFilter={usedFilter}
+          sortAZ={handleSortAZ}
+          sortZA={handleSortZA}
+          distributorsList={data}
+        />
+      )}
 
       <FilterModal open={filterStatus} onAction={handleModalWindowStatus}>
-        <Autocomplite data={reportsNames} onChoose={filterByChoosedName} label="Distributor name" />
+        <Autocomplite
+          data={reportsNames}
+          onChoose={filterByChoosedName}
+          label="Distributor name"
+        />
       </FilterModal>
     </div>
   );

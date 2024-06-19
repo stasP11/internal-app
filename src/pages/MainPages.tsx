@@ -1,7 +1,7 @@
 import Dashboard from "components/dashboard/Dashboard";
 import DistributorsList from "components/distributors-list/DistributorsList"
 import ReportsList from "components/reports-list/ReportsList"
-import Notifications from "components/notifications/Notifications"
+
 import ReportsListTable from "components/ReportsListTable/ReportsListTable"
 
 
@@ -25,5 +25,5 @@ export function DistributorsPage(){
 }
 
 export function NotificationPage(){
-    return <Notifications/>
+    return <div></div>
 }

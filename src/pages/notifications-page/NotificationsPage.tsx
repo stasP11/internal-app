@@ -1,321 +1,49 @@
 import React, { useState, useEffect } from "react";
-import NotificationPeriods from "components/NotificationPeriods/NotificationPeriods";
-import NotificationRules from "components/NotificationRules/NotificationRules";
+import NotificationPeriods from "components/NotificationSettings/NotificationPeriods";
+import NotificationRules from "components/NotificationSettings/NotificationRules";
 import Button from "@mui/material/Button";
-import "./NotificationsPage.scss";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
+import "./NotificationPage.scss";
 
+import NotificationComponent from "components/NotificationSettings/Notification";
 
-// utils
-function isExistinArray(array: Array<any>, key: any, value: any) {
-  return array.some(obj => obj[key] === value);
-}
-
-const exempleData2 = [
-  {
-    name: "daily",
-    periodsSettings: {},
-    notificationRules: {
-      // noties Monday = 0, Th=1
-      afterReportingDueDate: [1, 2, 3, 4, 5],
-    },
-  },
-  {
-    name: "weekly",
-    periodsSettings: {
-      dueDay: "Friday",
-    },
-    notificationRules: {
-      afterReportingDueDate: [1,3,5],
-      beforeReportingDueDate: [{label: 'on due Date', selected: false, value: 0, id: '02092'}, {label: '1 day before', selected: true, value: 1, id: '02093'}],
-    },
-  },
-  {
-    name: "monthly",
-    periodsSettings: {
-      startDay: 1,
-      dueDay: 30,
-    },
-    notificationRules: {
-      afterReportingDueDate: [1,3,5],
-      beforeReportingDueDate: [{label: 'on due Date', selected: false, value: 0, id: '323f2'}, {label: '1 day before', selected: true, value: 1, id: '0233293'}],
-      beforeReportingStartDate: [{label: 'on start Day', selected: false, value: 0, id: '323w2'}],
-    },
-  },
-  {
-    name: "quarterly",
-    periodsSettings: {
-      startDay: 1,
-      dueDay: 30,
-    },
-    notificationRules: {
-      afterReportingDueDate: [1, 2, 4, 5],
-      beforeReportingDueDate: [{label: 'on due Date', selected: false, value: 0, id: '323fee2'}, {label: '1 day before', selected: true, value: 1, id: '0233293'}],
-      beforeReportingStartDate: [{label: 'on start Day', selected: false, value: 0, id: '323wee2'}],
-    },
-  },
-  {
-    name: "custom",
-    periodsSettings: [
-      {
-        // DD-MM-YYYY
-        // YYYY/MM/DD shoud be like this
-        id: '2024-01-01_2024-01-31',
-        startPerioud: "01-01-2024",
-        endPerioud: "22-01-2024",
-        startDay: 1,
-        dueDay: 31,
-      },
-      {
-        id: '2024-02-01_2024-02-28',
-        startPerioud: "02-04-2024",
-        endPerioud: "22-06-2024",
-        startDay: 1,
-        dueDay: 28,
-      },
-    ],
-    notificationRules: {
-      afterReportingDueDate: [1, 2, 4, 5],
-      beforeReportingDueDate: [{label: 'on due Date', selected: false, value: 0, id: '323fee2'}, {label: '1 day before', selected: true, value: 1, id: '0233293'}],
-      beforeReportingStartDate: [{label: 'on start Day', selected: false, value: 0, id: '323wee2'}],
-    },
-  },
-];
-type Period = "Daily" | "Weekly" | "Monthly" | "Quarterly" | "Custom";
-const notificationPeriods:Array<Period> = [
-  "Daily",
-  "Weekly",
-  "Monthly",
-  "Quarterly",
-  "Custom",
-];
+//  inventory and sellout
 
 const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
-  const [selectedPeriod, selectPeriod] = useState<any>("Daily");
-
-  const [dailyPerioud, setDailyPerioud] = useState<any>();
-  const [dailyNotifications, setDailyNotifications] = useState<any>();
-
-  const [weeklyPerioud, setWeeklyPerioud] = useState<any>();
-  const [weeklyNotifications, setWeeklyNotifications] = useState<any>();
-
-  const [monthlyPerioud, setMonthlyPerioud] = useState<any>();
-  const [monthlyNotifications, setMonthlyNotifications] = useState<any>();
-
-  const [quarterlyPerioud, setQuarterlyPerioud] = useState<any>();
-  const [quarterlyNotifications, setQuarterlyNotifications] = useState<any>();
-
-  const [customPeriouds, setCustomPeriouds] = useState<any>();
-  const [customNotifications, setCustomNotifications] = useState<any>();
-
-
-  function handleWeeklyPerioudUpdate(selectedDay: any){
-    setWeeklyPerioud({dueDay: selectedDay});
-  }
-
-  function handleMonthlyPerioudUpdate(selectedData: any){
-    selectedData.startDay ? setMonthlyPerioud({ startDay: selectedData?.startDay, dueDay: monthlyPerioud?.dueDay}):
-    setMonthlyPerioud({ startDay: monthlyPerioud?.startDay, dueDay: selectedData?.dueDay})
-  }
-
-  function handleQuarterlyPerioudUpdate(selectedData: any){
-    selectedData.startDay ? setQuarterlyPerioud({ startDay: selectedData?.startDay, dueDay: quarterlyPerioud?.dueDay}):
-    setQuarterlyPerioud({ startDay: quarterlyPerioud?.startDay, dueDay: selectedData?.dueDay})
-  }
-
-  function handleCustomPerioud(updatedPeriod: any){
-    console.log(updatedPeriod, 'updatedPeriod')
-   if(isExistinArray(customPeriouds, 'id', updatedPeriod.id)){
-      const updatedPeriods = customPeriouds.map((period: any)=>
-        period.id === updatedPeriod.id ? {...updatedPeriod} : period
-      )
-      setCustomPeriouds(()=> [...updatedPeriods]);
-   } else {
-    setCustomPeriouds((prev:any)=> [...prev, updatedPeriod]);
-   }
-    
-
-  }
-
-  useEffect(() => {
-    exempleData2.forEach(
-      ({ name, periodsSettings, notificationRules }: any) => {
-        if (name === "daily") {
-          setDailyPerioud(periodsSettings);
-          setDailyNotifications(notificationRules);
-        }
-        if (name === "weekly") {
-          setWeeklyPerioud(periodsSettings);
-          setWeeklyNotifications(notificationRules);
-        }
-
-        if (name === "monthly") {
-          setMonthlyPerioud(periodsSettings);
-          setMonthlyNotifications(notificationRules);
-        }
-
-        if (name === "quarterly") {
-          setQuarterlyPerioud(periodsSettings);
-          setQuarterlyNotifications(notificationRules);
-        }
-
-        if (name === "custom") {
-          setCustomPeriouds(periodsSettings);
-          setCustomNotifications(notificationRules);
-        }
-      }
-    );
-  }, []);
-
-
-
-function handleDailyNotificationsUpdate(data: any){
-  const updatedData = {...dailyNotifications};
-  updatedData.afterReportingDueDate = data?.afterReportingDueDate;
-  setDailyNotifications(()=> updatedData)
-}
-  
-function handleWeeklyNotifications(data: any){
-  
-  const updatedData = {...weeklyNotifications};
-  if(data.afterReportingDueDate ){
-  updatedData.afterReportingDueDate = data?.afterReportingDueDate;
-  setWeeklyNotifications(()=> updatedData)
-  }
-
-  if(data.beforeReportingDueDate ){
-    updatedData.beforeReportingDueDate = data?.beforeReportingDueDate;
-    setWeeklyNotifications(()=> updatedData)
-  }
-  
-}
-
-function handleMonthlyNotifications(data: any) {
-  const updatedData = {...monthlyNotifications};
-  if(data.afterReportingDueDate ){
-  updatedData.afterReportingDueDate = data?.afterReportingDueDate;
-  setMonthlyNotifications(()=> updatedData)
-  }
-
-  if(data.beforeReportingDueDate ){
-    updatedData.beforeReportingDueDate = data?.beforeReportingDueDate;
-    setMonthlyNotifications(()=> updatedData)
-  }
-
-  if(data.beforeReportingStartDate ){
-    updatedData.beforeReportingStartDate = data?.beforeReportingStartDate;
-    setMonthlyNotifications(()=> updatedData)
-  }
-}
-
-function handleQuarterlyNotifications(data: any){
-  const updatedData = {...quarterlyNotifications};
-  if(data.afterReportingDueDate ){
-  updatedData.afterReportingDueDate = data?.afterReportingDueDate;
-  setQuarterlyNotifications(()=> updatedData)
-  }
-
-  if(data.beforeReportingDueDate ){
-    updatedData.beforeReportingDueDate = data?.beforeReportingDueDate;
-    setQuarterlyNotifications(()=> updatedData)
-  }
-
-  if(data.beforeReportingStartDate ){
-    updatedData.beforeReportingStartDate = data?.beforeReportingStartDate;
-    setQuarterlyNotifications(()=> updatedData)
-  }
-}
-
-function handleCustomNotifications(data: any){
-  const updatedData = {...customNotifications};
-  if(data.afterReportingDueDate ){
-  updatedData.afterReportingDueDate = data?.afterReportingDueDate;
-  setCustomNotifications(()=> updatedData)
-  }
-
-  if(data.beforeReportingDueDate ){
-    updatedData.beforeReportingDueDate = data?.beforeReportingDueDate;
-    setCustomNotifications(()=> updatedData)
-  }
-
-  if(data.beforeReportingStartDate ){
-    updatedData.beforeReportingStartDate = data?.beforeReportingStartDate;
-    setCustomNotifications(()=> updatedData)
-  }
-}
-
-
-  console.log(
-    dailyPerioud,
-    dailyNotifications,
-    weeklyPerioud,
-    weeklyNotifications,
-    monthlyPerioud,
-    monthlyNotifications,
-    quarterlyPerioud,
-    quarterlyNotifications,
-    customPeriouds,
-    customNotifications,
-  );
-
-  const [selectedDaysDueDate, setSselectedDaysDueDate] = React.useState<any>(
-    []
-  );
-  const [selectedFrequencyDueDate, setSelectedFrequencyDueDate] =
-    React.useState<any>("Weekly");
-
-  function handlePeriodChange(e: any) {
-    selectPeriod(e.target.value);
-  }
+  const [reportType, setReportType] = useState("inventory");
 
   return (
     <div className="notification-page">
-      <div className="button-panel">
-        <div className="button-panel__buttons">
+      <div className="notification-switcher">
+        <div
+          className={reportType === "inventory" ? "selected" : ""}
+          onClick={() => setReportType("inventory")}
+        >
+          Inventory report
+        </div>
+        <div
+          className={reportType === "sellout" ? "selected" : ""}
+          onClick={() => setReportType("sellout")}
+        >
+          Sell-out report
+        </div>
+      </div>
+      <div className="notification-control">
+        <FormGroup>
+          <FormControlLabel
+            control={<Switch defaultChecked />}
+            label="Default settings"
+          />
+        </FormGroup>
+
+        <div className="notification-control__buttons">
           <Button variant="outlined">Cancel</Button>
           <Button variant="contained">Save</Button>
         </div>
       </div>
-      <NotificationPeriods
-        selectedPeriod={selectedPeriod}
-        notificationPeriods={notificationPeriods}
-        weeklyPerioud={weeklyPerioud}
-        monthlyPerioud={monthlyPerioud}
-        quarterlyPerioud={quarterlyPerioud}
-        customPerioud={customPeriouds}
-        onPeriodChange={handlePeriodChange}
-        onWeeklyPerioud={handleWeeklyPerioudUpdate}
-        onMonthlyPerioud={handleMonthlyPerioudUpdate}
-        onQuarterlyPerioud={handleQuarterlyPerioudUpdate}
-        onCustomPerioud={handleCustomPerioud}
-      />
-
-
-      <NotificationRules
-        selectedPeriod={selectedPeriod}
-        dailyNotifications={dailyNotifications}
-        weeklyNotifications={weeklyNotifications}
-        monthlyNotifications={monthlyNotifications}
-        quarterlyNotifications={quarterlyNotifications}
-        customNotifications={customNotifications}
-
-        onDailyNotificationsUpdate={handleDailyNotificationsUpdate}
-        onWeeklyNotificationsUpdate={handleWeeklyNotifications}
-        onMonthlyNotifications={handleMonthlyNotifications}
-        onQuarterlyNotifications={handleQuarterlyNotifications}
-        onCustomNotifications={handleCustomNotifications}
-
-
-
-
-        selectedDaysState={selectedDaysDueDate}
-        onSelectedDaysState={setSselectedDaysDueDate}
-        selectedFrequency={selectedFrequencyDueDate}
-        onFrequencyChange={(e: any) =>
-          setSelectedFrequencyDueDate(e.target.value)
-        }
-      />
-
-      <div onClick={()=>console.log(weeklyNotifications, 'weeklyNotifications')}>Test</div>
+      <NotificationComponent />
     </div>
   );
 };

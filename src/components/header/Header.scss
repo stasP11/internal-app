@@ -2,7 +2,6 @@
   display: flex;
   justify-content: space-between;
   background-color: white;
-  padding: 20px;
   padding-left: 28px;
   font-weight: 400;
   border-width: 0px 0px 1px 0px;
@@ -10,7 +9,9 @@
   border-color: rgba(11, 11, 11, 0.1);
 
   > h1 {
+    font-size: 24px;
     font-weight: 400;
+    color: rgba(16, 56, 79, 1);
   }
 }
 

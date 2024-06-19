@@ -238,7 +238,7 @@ const BeforeReportingDueDate: React.FC<any> = ({
 
   return (
     <div className="before-due-date">
-      <h3 className="before-due-date__title">Before reporting Start Date</h3>
+      <h3 className="before-due-date__title">Before reporting Due Day</h3>
       <div className="before-due-date__checkboxes">
         <FormGroup>
           {data.map(({ label, selected, value, id, isEditable }: any) =>
@@ -332,7 +332,7 @@ const BeforeReportingStartDate: React.FC<any> = ({
 
   return (
     <div className="before-start-date">
-      <h3 className="before-start-date__title">After reporting Due Date</h3>
+      <h3 className="before-start-date__title">Before reporting Start Day</h3>
       <div className="before-due-date__checkboxes">
         <FormGroup>
           {data.map(({ label, selected, value, id, isEditable }: any) =>

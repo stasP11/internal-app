@@ -39,34 +39,58 @@ const transformData = (data: any) => {
   return transformedData;
 };
 
-function Dashboard() {
-  const reportData: any = [];
-  const [distributorData, setDistributorData] = useState([]);
-
-
-
-  
-
+function useAuthRequestReports() {
   const { error: authError, result: authResult }: any = useFetchWithMsal2({
     scopes: protectedResources.apiTodoList.scopes.read,
   });
 
   const selectedCountry = getFromLocalStorage("selectedCountry");
 
-  const { data: reportsData, error: reportsError, isLoading } = useReportsData([
+  const {
+    data: reportsData,
+    error: reportsError,
+    isLoading,
+  } = useReportsData([
     authResult,
     "GET",
     `${process.env.REACT_APP_API_URL}/api/reportslist`,
     { selectedCountry },
   ]);
 
+  return { reportsError, authError, reportsData, isLoading };
+}
 
-  const { data: distributorsData, error: distributorsError } = useReportsData([
+function useAuthRequestDistributors() {
+  const { error: authError, result: authResult }: any = useFetchWithMsal2({
+    scopes: protectedResources.apiTodoList.scopes.read,
+  });
+
+  const selectedCountry = getFromLocalStorage("selectedCountry");
+
+  const {
+    data: realDistributorData,
+    error: reportsError,
+    isLoading,
+  } = useReportsData([
     authResult,
     "GET",
     `${process.env.REACT_APP_API_URL}/api/getdistributorslist`,
     { selectedCountry },
   ]);
+
+  return { reportsError, authError, realDistributorData, isLoading };
+}
+
+function Dashboard() {
+
+  const { reportsData: realReportsData } = useAuthRequestReports();
+  const { realDistributorData } = useAuthRequestDistributors();
+
+
+
+
+
+
 
 
   function handleDistributorssDataForChart(distributorsData: any) {
@@ -80,46 +104,39 @@ function Dashboard() {
       },
     ];
   }
+
   function handleReportsDataForChart(reportData: any) {
     return [
       {
         type: "Received",
-        typeNumber: reportData.data.filter(
-          (obj: any) => obj.status === "PROCESSING"
-        ).length,
-        total: reportData.data?.length,
+        typeNumber: reportData.filter((obj: any) => obj.status === "PROCESSING")
+          .length,
+        total: reportData?.length,
       },
       {
         type: "Missing",
-        typeNumber: reportData.data.filter(
-          (obj: any) => obj.status === "MISSING"
-        ).length,
-        total: reportData.data?.length,
+        typeNumber: reportData.filter((obj: any) => obj.status === "MISSING")
+          .length,
+        total: reportData?.length,
       },
     ];
   }
 
-  useEffect(() => {
-    if (!!reportData?.data) {
-      const distrData = transformData(reportData.data);
-      console.log(distrData, "distrData");
-      setDistributorData(distrData);
-    }
-  }, reportData?.data);
+  console.log(realReportsData, realDistributorData, "dashboard");
 
   return (
     <>
-      {(!!reportData?.data?.length && !!distributorData?.length) && (
+      {!!realReportsData?.length && !!realDistributorData?.length && (
         <div>
           <div className="inform-cards">
             <div className="inform-cards__inform-card">
               <Card
                 name="Reports"
                 bodyInfo={`${
-                  reportData.data.filter(
+                  realReportsData.filter(
                     (obj: any) => obj.status === "PROCESSING"
                   ).length
-                }/${reportData.data?.length}`}
+                }/${realReportsData?.length}`}
                 bodyExplaining={"received/total"}
                 status={"3 days before due date"}
                 update={"+1 today"}
@@ -134,7 +151,7 @@ function Dashboard() {
               <Card
                 name="Exceptions Found"
                 bodyInfo={`${
-                  reportData.data.filter((obj: any) => obj.status === "REWORK")
+                  realReportsData.filter((obj: any) => obj.status === "REWORK")
                     .length
                 }`}
                 bodyExplaining={"reports to review"}
@@ -151,7 +168,7 @@ function Dashboard() {
               <Card
                 name="Mapped Successfully"
                 bodyInfo={`${
-                  reportData.data.filter((obj: any) => obj.status === "SUCCESS")
+                  realReportsData.filter((obj: any) => obj.status === "SUCCESS")
                     .length
                 }`}
                 bodyExplaining={"reports to approve"}
@@ -165,32 +182,31 @@ function Dashboard() {
             </div>
           </div>
 
-
           <div className="panel">
             <div className="panel__chart">
               <PieChart
                 name="Distributors"
-                data={handleDistributorssDataForChart(reportsData)}
+                data={handleDistributorssDataForChart(realReportsData)}
                 width={200}
                 height={200}
               />
             </div>
             <div className="panel__table">
-              <DashboardDistributorsTable data={distributorsData} />
+              <DashboardDistributorsTable data={realDistributorData} />
             </div>
           </div>
           <div className="panel">
             <div className="panel__chart">
               <PieChart
                 name="Reports"
-                data={handleReportsDataForChart(reportData)}
+                data={handleReportsDataForChart(realReportsData)}
                 width={200}
                 height={200}
               />
             </div>
 
             <div className="panel__table">
-              <DashboardReportsTable data={reportData?.data} />
+              <DashboardReportsTable data={realReportsData} />
             </div>
           </div>
         </div>
