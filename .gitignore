@@ -6,15 +6,12 @@
 .pnp.js
 
 # testing
-.env
-env
 /coverage
 
 # production
 /build
 s
 # misc
-.env
 .DS_Store
 .env.local
 .env.development.local
