@@ -30,20 +30,19 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
           Sell-out report
         </div>
       </div>
+      <NotificationComponent />
       <div className="notification-control">
+      <div className="notification-control__buttons">
+          <Button variant="contained">Save</Button>
+        </div>
+        
         <FormGroup>
           <FormControlLabel
             control={<Switch defaultChecked />}
             label="Default settings"
           />
         </FormGroup>
-
-        <div className="notification-control__buttons">
-          <Button variant="outlined">Cancel</Button>
-          <Button variant="contained">Save</Button>
-        </div>
       </div>
-      <NotificationComponent />
     </div>
   );
 };

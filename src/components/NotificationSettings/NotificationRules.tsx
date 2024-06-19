@@ -327,9 +327,7 @@ const BeforeReportingStartDate: React.FC<any> = ({
     onUpdate({ beforeReportingDueDate: [...data] });
   }
 
-
-
-
+  
   return (
     <div className="before-start-date">
       <h3 className="before-start-date__title">Before reporting Start Day</h3>

@@ -281,7 +281,6 @@ function handleCustomNotifications(data: any){
         onCustomPerioud={handleCustomPerioud}
       />
 
-
       <NotificationRules
         selectedPeriod={selectedPeriod}
         dailyNotifications={dailyNotifications}
@@ -289,16 +288,11 @@ function handleCustomNotifications(data: any){
         monthlyNotifications={monthlyNotifications}
         quarterlyNotifications={quarterlyNotifications}
         customNotifications={customNotifications}
-
         onDailyNotificationsUpdate={handleDailyNotificationsUpdate}
         onWeeklyNotificationsUpdate={handleWeeklyNotifications}
         onMonthlyNotifications={handleMonthlyNotifications}
         onQuarterlyNotifications={handleQuarterlyNotifications}
         onCustomNotifications={handleCustomNotifications}
-
-
-
-
         selectedDaysState={selectedDaysDueDate}
         onSelectedDaysState={setSselectedDaysDueDate}
         selectedFrequency={selectedFrequencyDueDate}
@@ -306,8 +300,6 @@ function handleCustomNotifications(data: any){
           setSelectedFrequencyDueDate(e.target.value)
         }
       />
-
-      <div onClick={()=>console.log(weeklyNotifications, 'weeklyNotifications')}>Test</div>
     </div>
   );
 };

@@ -234,7 +234,7 @@ function Row({ data, onRemoveItem }: any) {
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
               <Typography variant="h6" gutterBottom component="div">
-                Founded {alternatives.length} alternatives
+              Found {alternatives.length} alternatives
               </Typography>
               <AltTable alternatives={alternatives} data={data} />
             </Box>

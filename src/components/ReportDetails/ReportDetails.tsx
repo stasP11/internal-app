@@ -1,13 +1,11 @@
 //base
 import React, { useContext } from "react";
-import {
-  DataGridPro,
-} from "@mui/x-data-grid-pro";
+import { DataGridPro } from "@mui/x-data-grid-pro";
 import CircularProgress from "@mui/material/CircularProgress";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import approveAlternative from "./request";
-import { UserDataContext } from "../../App"
+import { UserDataContext } from "../../App";
 
 type Alternativites = {
   material_number: number;
@@ -41,7 +39,7 @@ const MappingAlternativites: React.FC<any> = ({
   const [selectedValue, selectValue] = React.useState<any>();
   const userData = useContext(UserDataContext);
 
-  console.log(userData, 'test-context')
+  console.log(userData, "test-context");
 
   function handleChange(e: any) {
     onAlternativeChoose({ ...e.target, params });
@@ -50,12 +48,12 @@ const MappingAlternativites: React.FC<any> = ({
   if (alternatives.length === 0 && material_number === matched) {
     return (
       <Select
-        value={`Founded ${alternatives.length} alternatives`}
+        value={`Found ${alternatives.length} alternatives`}
         variant="outlined"
         fullWidth
         disabled
       >
-        <MenuItem value={`Founded ${alternatives.length} alternatives`}>
+        <MenuItem value={`Found ${alternatives.length} alternatives`}>
           {product_name}
         </MenuItem>
         {alternatives.map(({ material_number, material_name }: any) => (

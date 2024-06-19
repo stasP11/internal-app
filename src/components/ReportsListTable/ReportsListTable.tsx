@@ -9,6 +9,7 @@ import {
 import "./ReportsListTable.scss";
 import Typography from "@mui/material/Typography";
 import TableMenuPopup from "../../customized-mui-elements/TableMenuPopup/TableMenuPopup";
+import getBaseUrl from "../../utils/getBaseUrl.js";
 
 function ReportsListTableToolbar() {
   return (
@@ -83,6 +84,10 @@ const ActionsCell: React.FC<any> = ({ params, onSelect }) => {
 const ReportsListTable: React.FC<ReportsListTableProps> = ({
   reportsListData,
 }): JSX.Element => {
+  const fullUrl = window.location.href; // Get the full URL of the current page
+  const baseUrl = getBaseUrl(fullUrl);
+
+  console.log(baseUrl, 'baseUrl')
 
 
   function handleClick(SelectedActionParams: SelectedActionParams) {
@@ -91,7 +96,7 @@ const ReportsListTable: React.FC<ReportsListTableProps> = ({
     
     if(selectedAction === 'view'){
         console.log(params);
-        window.open(`http://localhost:3000/reports-list/${filename}&distributor=${distributor?.id}&country=${country}`, '_blank');
+        window.open(`${baseUrl}/reports-list/${filename}&distributor=${distributor?.id}&country=${country}`, '_blank');
     }
     if(selectedAction === 'approve'){
         console.log(params);

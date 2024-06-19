@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { DashboardPage, DistributorsPage } from "../pages/MainPages";
+import DistributorsPage from "../pages/distributors-page/DistributorsPage"
+import DashboardPage from "../pages/dashboard-page/DashboardPage"
 import DefaultLayout from "../layouts/default/DefaultLayout";
 import ReportsListPage from "../pages/reports-list-page/ReportsListPage";
 import ReportDetailsPage from "../pages/report-details-page/ReportDetailsPage";
@@ -96,7 +97,7 @@ function MainPageRouts({ userProfile }: any) {
         <Route
           path="/settings"
           element={
-            true ? (
+            process.env.REACT_APP_API_PYTHON_API === 'loc' ? (
               <SettingsPage />
             ) : (
               <span>

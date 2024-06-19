@@ -12,6 +12,7 @@ import {
 } from "../../services/storageInterection";
 import { loginRequest, protectedResources } from "../../authConfig";
 import { useFetchWithMsal2 } from "../../../src/hooks/useFetchWithMsal";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const transformData = (data: any) => {
   const transformedData: any = data.reduce((result: any, item: any) => {
@@ -83,8 +84,8 @@ function useAuthRequestDistributors() {
 
 function Dashboard() {
 
-  const { reportsData: realReportsData } = useAuthRequestReports();
-  const { realDistributorData } = useAuthRequestDistributors();
+  const { reportsData: realReportsData, isLoading: isReportsDataLoading } = useAuthRequestReports();
+  const { realDistributorData, isLoading: isDistributorDataLoading } = useAuthRequestDistributors();
 
 
   function handleDistributorssDataForChart(distributorsData: any) {
@@ -120,6 +121,17 @@ function Dashboard() {
 
   return (
     <>
+    {
+      (isReportsDataLoading || isDistributorDataLoading) &&
+              <CircularProgress
+              sx={{
+                position: "absolute",
+                top: "45%",
+                left: "45%",
+                transform: "translate(-50%, -50%)",
+              }}
+            />
+    }
       {!!realReportsData?.length && !!realDistributorData?.length && (
         <div>
           <div className="inform-cards">
