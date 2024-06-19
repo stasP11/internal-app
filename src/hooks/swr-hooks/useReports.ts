@@ -57,9 +57,13 @@ export function useReportsData(data: Array<any>) {
   );
 }
 
+
+// temp-01
+// https://csci-api-7psl2cwk2q-ew.a.run.app --dev
+//https://csci-api-skthk6k3ja-ew.a.run.app --qa
 export function useExceptionsData(filename: string) {
   return useSWR(
-    `https://csci-api-skthk6k3ja-ew.a.run.app/get_exceptions_file?filename=${filename}`,
+    `${process.env.REACT_APP_API_PYTHON_API}/get_exceptions_file?filename=${filename}`,
     fetcher,
     {
       onErrorRetry: (error, key, config, revalidate, { retryCount }) => {

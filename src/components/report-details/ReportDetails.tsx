@@ -144,7 +144,8 @@ function AltTable({ data }: any) {
       .then((data) => {
         //setResponse(data); // Store the response in state
         console.log("Success:", data);
-        mutate(`https://csci-api-skthk6k3ja-ew.a.run.app/get_exceptions_file?filename=${fileName}.csv`);
+        // temporary 
+        mutate(`${process.env.REACT_APP_API_PYTHON_API}/get_exceptions_file?filename=${fileName}.csv`);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -255,7 +256,7 @@ export default function CollapsibleTable() {
   const { data: reportsData, error: reportsError } = useReportsData([
     authResult,
     "GET",
-    `${process.env.REACT_APP_API_URL}/api/reportslist`,
+    `${process.env.REACT_APP_API_URL_PROXY}/api/reportslist`,
     { selectedCountry },
   ]);
 
@@ -299,7 +300,8 @@ export default function CollapsibleTable() {
     const { row_number, filename } = removedItem;
     const deleteRowResult = await deleteReportRow(filename, row_number);
     if(deleteRowResult.status=== 200){
-      mutate(`https://csci-api-skthk6k3ja-ew.a.run.app/get_exceptions_file?filename=${filename}.csv`);
+      // temp-1
+      mutate(`${process.env.REACT_APP_API_PYTHON_API}/get_exceptions_file?filename=${filename}.csv`);
     }
   }
 

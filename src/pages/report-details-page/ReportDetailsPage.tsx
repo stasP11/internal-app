@@ -33,7 +33,10 @@ function extractDataFromUrl(url: string): any {
 }
 
 async function aproveReportRequest(reportName: any, handleResult: any) {
-  const url = `https://csci-api-skthk6k3ja-ew.a.run.app/move_file_back_to_flow?filename=${reportName}.csv`;
+  // temp-01
+  // https://csci-api-7psl2cwk2q-ew.a.run.app --dev
+  // https://csci-api-skthk6k3ja-ew.a.run.app -qa
+  const url = `${process.env.REACT_APP_API_PYTHON_API}/move_file_back_to_flow?filename=${reportName}.csv`;
   const options = {
     method: "POST",
     headers: {
@@ -58,7 +61,7 @@ async function aproveReportRequest(reportName: any, handleResult: any) {
 }
 
 async function rejectReportRequest(reportName: any, handleResult: any) {
-    const url = `https://csci-api-skthk6k3ja-ew.a.run.app/reject_file?filename=${reportName}.csv`;
+    const url = `${process.env.REACT_APP_API_PYTHON_API}/reject_file?filename=${reportName}.csv`;
     const options = {
       method: "POST",
       headers: {

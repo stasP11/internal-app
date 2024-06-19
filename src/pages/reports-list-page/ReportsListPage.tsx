@@ -14,6 +14,61 @@ import {
 import ReportsListTable from "components/ReportsListTable/ReportsListTable";
 import CircularProgress from "@mui/material/CircularProgress";
 
+
+
+const test1 = [
+  {
+    "distributor_id": 4887032,
+    "Distributor_Name": "SANKI KHULU CONCEPTS SOLUTIONS",
+    "status": "REVIEW",
+    "widget_status": "RECEIVED",
+    "filename": "InventoryReport_4887032_02_2024",
+    "country": "South Africa"
+},
+
+{
+  "distributor_id": 4887032,
+  "Distributor_Name": "SANKI KHULU CONCEPTS SOLUTIONS",
+  "status": "REVIEW",
+  "widget_status": "RECEIVED",
+  "filename": "SelloutReport_4887032_02_2024",
+  "country": "South Africa"
+},
+{
+  "distributor_id": 899043,
+  "Distributor_Name": "NULANDIS DIV OF AECI LTD",
+  "status": "REVIEW",
+  "widget_status": "RECEIVED",
+  "filename": "SelloutReport_899043_02_2024",
+  "country": "South Africa"
+},
+{
+  "distributor_id": 899043,
+  "Distributor_Name": "NULANDIS DIV OF AECI LTD",
+  "status": "REVIEW",
+  "widget_status": "RECEIVED",
+  "filename": "SelloutReport_899043_03_2024",
+  "country": "South Africa"
+},
+{
+  "distributor_id": 900286,
+  "Distributor_Name": "Novon Protecta (Pty) Ltd",
+  "status": "REVIEW",
+  "widget_status": "RECEIVED",
+  "filename": "SelloutReport_900286_03_2024",
+  "country": "South Africa"
+},
+{
+  "distributor_id": 100012,
+  "Distributor_Name": "Test distributor from South Africa 12",
+  "status": "REVIEW",
+  "widget_status": "RECEIVED",
+  "filename": "SelloutReport_100012_03_2024",
+  "country": "South Africa"
+},
+
+]
+
 function temporaryHandleData(data: any) {
   console.log(data, 'data')
   if(typeof data!== undefined && data?.length >0){
@@ -44,7 +99,7 @@ function useAuthRequest() {
   const { data: reportsData, error: reportsError, isLoading } = useReportsData([
     authResult,
     "GET",
-    `${process.env.REACT_APP_API_URL}/api/reportslist`,
+    `${process.env.REACT_APP_API_URL_PROXY}/api/reportslist`,
     { selectedCountry },
   ]);
 

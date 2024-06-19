@@ -163,14 +163,14 @@ const SettingsPage = () => {
   });
 
   async function handleSaveUpdatedRoles(updatedRoles: any){
-    await execute("PUT", `${process.env.REACT_APP_API_URL}/api/roles`, {roles: updatedRoles});
-    await execute("GET", `${process.env.REACT_APP_API_URL}/api/roles`, null);
+    await execute("PUT", `${process.env.REACT_APP_API_URL_PROXY}/api/roles`, {roles: updatedRoles});
+    await execute("GET", `${process.env.REACT_APP_API_URL_PROXY}/api/roles`, null);
   }
 
   useEffect(() => {
     const fetchData = async (): Promise<any> => {
       try {
-        await execute("GET", `${process.env.REACT_APP_API_URL}/api/roles`, null);
+        await execute("GET", `${process.env.REACT_APP_API_URL_PROXY}/api/roles`, null);
       } catch (e) {
         console.error("Fetch error:", e);
       }

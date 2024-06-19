@@ -18,9 +18,10 @@ export function useExceptionsReportsDetailsData(
   shoudFetch: boolean,
   fileName: string
 ) {
+  //temp-1
   return useSWR(
     shoudFetch
-      ? `https://csci-api-skthk6k3ja-ew.a.run.app/get_exceptions_file?filename=${fileName}.csv`
+      ? `${process.env.REACT_APP_API_PYTHON_API}/get_exceptions_file?filename=${fileName}.csv`
       : null,
     fetcher,
     {

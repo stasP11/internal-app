@@ -23,7 +23,7 @@ function DistributorsList() {
   const { data, error: reportsError } = useReportsData([
     authResult,
     "GET",
-    `${process.env.REACT_APP_API_URL}/api/getdistributorslist`,
+    `${process.env.REACT_APP_API_URL_PROXY}/api/getdistributorslist`,
     { selectedCountry },
   ]);
 

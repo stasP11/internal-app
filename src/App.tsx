@@ -39,7 +39,7 @@ const MainContent = () => {
   useEffect(() => {
     const fetchData = async (): Promise<any> => {
       try {
-        await execute("GET", `${process.env.REACT_APP_API_URL}/api/authorize`, null);
+        await execute("GET", `${process.env.REACT_APP_API_URL_PROXY}/api/authorize`, null);
       } catch (e) {
         console.error("Fetch error:", e);
       }

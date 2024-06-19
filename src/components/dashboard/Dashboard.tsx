@@ -53,7 +53,7 @@ function useAuthRequestReports() {
   } = useReportsData([
     authResult,
     "GET",
-    `${process.env.REACT_APP_API_URL}/api/reportslist`,
+    `${process.env.REACT_APP_API_URL_PROXY}/api/reportslist`,
     { selectedCountry },
   ]);
 
@@ -74,7 +74,7 @@ function useAuthRequestDistributors() {
   } = useReportsData([
     authResult,
     "GET",
-    `${process.env.REACT_APP_API_URL}/api/getdistributorslist`,
+    `${process.env.REACT_APP_API_URL_PROXY}/api/getdistributorslist`,
     { selectedCountry },
   ]);
 
@@ -85,12 +85,6 @@ function Dashboard() {
 
   const { reportsData: realReportsData } = useAuthRequestReports();
   const { realDistributorData } = useAuthRequestDistributors();
-
-
-
-
-
-
 
 
   function handleDistributorssDataForChart(distributorsData: any) {

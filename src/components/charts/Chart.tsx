@@ -82,7 +82,7 @@ function PieChart({
                           y={centroidY}
                           dy=".33em"
                           fill="#ffffff"
-                          fontSize={12}
+                          fontSize={11}
                           textAnchor="middle"
                           pointerEvents="none"
                         >
