@@ -14,14 +14,9 @@ import getUserInfo from "./utils/getUserInfo";
 import { loginRequest, protectedResources } from "./authConfig";
 import { LicenseInfo } from "@mui/x-data-grid-pro";
 import {
-  useUserAutorization,
   useFetchWithMsal,
 } from "../src/hooks/useFetchWithMsal";
 import { useReportsData } from "../src/hooks/swr-hooks/useReports";
-import {
-  getFromLocalStorage,
-  saveToLocalStorage,
-} from "./services/storageInterection";
 
 type UserDataContextType = {
   pagesAccess?: Array<string>;

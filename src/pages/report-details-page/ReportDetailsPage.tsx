@@ -86,7 +86,6 @@ async function rejectReportRequest(reportName: any, handleResult: any) {
 }
 
 const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
-  //  const {data: ReportDetailsData, error, isLoading} = useExceptionsData('blabla');
   const { pathname } = useLocation();
   const { filename, distributor, country } = extractDataFromUrl(pathname);
   console.log(filename, distributor, country, "params");

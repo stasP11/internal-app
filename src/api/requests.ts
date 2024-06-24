@@ -116,3 +116,26 @@ export async function fackegetDataQualityReports() {
 export function fakeGetReportData() {
   return mockReportDetails;
 }
+
+export async function updateReportingPeriods(updatedData: any) {
+  const url = `${process.env.REACT_APP_API_PYTHON_API}/update_reporting_periods`;
+  const options = {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(updatedData)
+  };
+
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data = await response.json(); // Assuming the response is JSON
+    console.log('Response:', data);
+  } catch (error) {
+    console.error('There was a problem with your fetch operation:', error);
+  }
+}

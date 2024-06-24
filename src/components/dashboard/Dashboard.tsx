@@ -6,10 +6,7 @@ import { useReportsData } from "../../hooks/swr-hooks/useReports";
 import { useEffect, useState } from "react";
 import DashboardReportsTable from "./DashboardReportsTable";
 import DashboardDistributorsTable from "./DashboardDistributorsTable";
-import {
-  getFromLocalStorage,
-  saveToLocalStorage,
-} from "../../services/storageInterection";
+import { getFromLocalStorage } from "../../services/storageInterection";
 import { loginRequest, protectedResources } from "../../authConfig";
 import { useFetchWithMsal2 } from "../../../src/hooks/useFetchWithMsal";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -83,10 +80,10 @@ function useAuthRequestDistributors() {
 }
 
 function Dashboard() {
-
-  const { reportsData: realReportsData, isLoading: isReportsDataLoading } = useAuthRequestReports();
-  const { realDistributorData, isLoading: isDistributorDataLoading } = useAuthRequestDistributors();
-
+  const { reportsData: realReportsData, isLoading: isReportsDataLoading } =
+    useAuthRequestReports();
+  const { realDistributorData, isLoading: isDistributorDataLoading } =
+    useAuthRequestDistributors();
 
   function handleDistributorssDataForChart(distributorsData: any) {
     return [
@@ -121,17 +118,16 @@ function Dashboard() {
 
   return (
     <>
-    {
-      (isReportsDataLoading || isDistributorDataLoading) &&
-              <CircularProgress
-              sx={{
-                position: "absolute",
-                top: "45%",
-                left: "45%",
-                transform: "translate(-50%, -50%)",
-              }}
-            />
-    }
+      {(isReportsDataLoading || isDistributorDataLoading) && (
+        <CircularProgress
+          sx={{
+            position: "absolute",
+            top: "45%",
+            left: "45%",
+            transform: "translate(-50%, -50%)",
+          }}
+        />
+      )}
       {!!realReportsData?.length && !!realDistributorData?.length && (
         <div>
           <div className="inform-cards">

@@ -112,13 +112,13 @@ const DaySelector: React.FC<any> = ({
   onUpdate,
 }): JSX.Element => {
   const structure = [
-    { value: "monday", id: 1, name: "M", editable: true },
-    { value: "tuesday", id: 2, name: "T", editable: true },
-    { value: "wednesday", id: 3, name: "W", editable: true },
-    { value: "thursday", id: 4, name: "T", editable: true },
-    { value: "friday", id: 5, name: "F", editable: true },
-    { value: "saturday", id: 6, name: "S", editable: false },
-    { value: "sunday", id: 7, name: "S", editable: false },
+    { value: "monday", id: 0, name: "M", editable: true },
+    { value: "tuesday", id: 1, name: "T", editable: true },
+    { value: "wednesday", id: 2, name: "W", editable: true },
+    { value: "thursday", id: 3, name: "T", editable: true },
+    { value: "friday", id: 4, name: "F", editable: true },
+    { value: "saturday", id: 5, name: "S", editable: false },
+    { value: "sunday", id: 6, name: "S", editable: false },
   ];
 
   function isSelected(id: number) {
@@ -131,7 +131,7 @@ const DaySelector: React.FC<any> = ({
         (dayNumber: number) => dayNumber !== id
       );
       onUpdate({ afterReportingDueDate: newState });
-    } else if (id !== 6 && id !== 7) {
+    } else if (id !== 5 && id !== 6) {
       onUpdate({ afterReportingDueDate: [...selectedDays, id] });
     }
   }
@@ -162,7 +162,7 @@ const AfterReportingDueDate: React.FC<any> = ({
   function handleFrequency(option: string) {
     if (option === "Weekly") {
       setFrequency("Weekly");
-      onFrequencyChange({ afterReportingDueDate: [1, 2, 3, 4, 5] });
+      onFrequencyChange({ afterReportingDueDate: [0, 1, 2, 3, 4] });
     } else {
       setFrequency("Daily");
     }
