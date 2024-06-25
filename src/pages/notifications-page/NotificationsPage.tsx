@@ -26,10 +26,7 @@ interface ReportingData {
   reporting_start_date: number;
   rewarded_period_days: number;
   rule_starting_from: string;  // Assuming this is a date string, you could use a Date type if you convert it
-}
-
-const dayOfWeeksDictionary = {
-  Monday: 0,
+  [key: string]: string | number | number[] | any;
 }
 
 const analogyDictionary = {
@@ -39,7 +36,99 @@ const analogyDictionary = {
   afterReportingDueDate: "after_due_date",
   beforeReportingDueDate: "before_due_date",
   beforeReportingStartDate: "before_start_date",
+  periodsSettings: "custom_periods"
 };
+
+const notificationsDataStructure = [
+  {
+    name: "daily",
+    periodsSettings: {},
+    notificationRules: {
+      afterReportingDueDate: [0, 1, 2, 3, 4],
+    },
+  },
+  {
+    name: "weekly",
+    periodsSettings: {
+      dueDay: "Friday",
+    },
+    notificationRules: {
+      afterReportingDueDate: [1, 3],
+      beforeReportingDueDate: [
+        { label: "on due Date", selected: false, value: 0, id: "02092" },
+        { label: "1 day before", selected: true, value: 1, id: "02093" },
+      ],
+    },
+  },
+  {
+    name: "monthly",
+    periodsSettings: {
+      startDay: 1,
+      dueDay: 30,
+    },
+    notificationRules: {
+      afterReportingDueDate: [1, 3],
+      beforeReportingDueDate: [
+        { label: "on due Date", selected: false, value: 0, id: "323f2" },
+        { label: "1 day before", selected: true, value: 1, id: "0233293" },
+      ],
+      beforeReportingStartDate: [
+        { label: "on start Day", selected: false, value: 0, id: "323w2" },
+      ],
+    },
+  },
+  {
+    name: "quarterly",
+    periodsSettings: {
+      startDay: 1,
+      dueDay: 30,
+    },
+    notificationRules: {
+      afterReportingDueDate: [1, 2, 4],
+      beforeReportingDueDate: [
+        { label: "on due Date", selected: false, value: 0, id: "323fee2" },
+        { label: "1 day before", selected: true, value: 1, id: "0233293" },
+      ],
+      beforeReportingStartDate: [
+        { label: "on start Day", selected: false, value: 0, id: "323wee2" },
+      ],
+    },
+  },
+  {
+    name: "custom",
+    periodsSettings: [
+      {
+        // DD-MM-YYYY
+        id: "2024-01-01_2024-01-31",
+        startPerioud: "01-01-2024",
+        endPerioud: "22-02-2024",
+        startDay: 1,
+        dueDay: 31,
+      },
+      {
+        id: "2024-02-01_2024-02-28",
+        startPerioud: "02-04-2024",
+        endPerioud: "22-06-2024",
+        startDay: 1,
+        dueDay: 28,
+      },
+    ],
+    notificationRules: {
+      afterReportingDueDate: [1, 2, 4],
+      beforeReportingDueDate: [
+        { label: "on due Date", selected: false, value: 0, id: "323fee2" },
+        { label: "1 day before", selected: true, value: 1, id: "0233293" },
+      ],
+      beforeReportingStartDate: [
+        { label: "on start Day", selected: false, value: 0, id: "323wee2" },
+      ],
+    },
+  },
+];
+
+console.log(notificationsDataStructure);
+
+type NotificationsDataStructureType = typeof notificationsDataStructure;
 
 function formatDataforUpdate(
   formattableData: any,
@@ -47,6 +136,7 @@ function formatDataforUpdate(
   analogyDictionary: any
 ) {
   const result = { ...formattableData };
+  console.log(updateData, 'updateData')
   Object.keys(updateData).forEach((key: any) => {
     const updateDataKey = analogyDictionary[key];
     if (updateDataKey) {
@@ -59,15 +149,17 @@ function formatDataforUpdate(
 }
 
 // utils
-function addOldToKeys(data: any) {
-  const newObj: any = {};
-  data.forEach((item: any) => {
-    Object.keys(item).forEach((key) => {
-      newObj[`${key}_old`] = item[key];
+function formatOldData(data: any) {
+  if(data){
+    const newObj: any = {};
+    data.forEach((item: any) => {
+      Object.keys(item).forEach((key) => {
+        newObj[`${key}_old`] = item[key];
+      });
     });
-  });
-
-  return [data[0], newObj];
+  
+    return [data[0], newObj];
+  }
 }
 
 function addOldToKeys2(item: any) {
@@ -105,49 +197,51 @@ function handleObj(obj: any) {
   return newObj;
 }
 
+function transformReportingData(data: ReportingData, dataStructure: any) {
+  if(data && dataStructure){
+    const reportingFrequency = data[`${analogyDictionary.reportingFrequency}`];
+    const reportingObj = dataStructure.find((obj: any)=> obj[reportingFrequency] === obj.reportingFrequency);
+  
+    console.log(reportingObj, 'test-001')
+  }  
+  
+  return {};
+}
+
 const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
   const [reportType, setReportType] = useState("inventory");
-  const [notificationData, setNotificationData] = useState({});
+  const [notificationData, setNotificationData] = useState<any>({});
   const selectedCountry = getFromLocalStorage("selectedCountry");
   const { data, isLoading, error } = useReportingPeriodsData(selectedCountry, reportType);
-
   const notificationPeriodsData: ReportingData = data?.data[0]
 
-  console.log(data?.data[0], "data!!!");
 
-  const testData: any = [
-    {
-      country: "Ukraine",
-      rewarded_period_days: 15,
-      reporting_period_days: 90,
-      rule_starting_from: "2020-01-01",
-      reporting_frequency: "Monthly",
-      before_start_date: "1,2,3",
-      before_due_date: "2,3",
-      after_due_date: "2,3",
-      reporting_start_date: 0,
-      email_settings: "",
-      reporting_due_date: 2,
-      report_type: "inventory",
-      custom_periods:
-        "01.07.2024-01.08.2024,01.08.2024-01.10.2024,01.10.2024-01.12.2024",
-    },
-  ];
+ function handleSetTest(data: any){
+    setNotificationData(()=> data);
+  }
 
-  const dataForUpdate = addOldToKeys(testData);
+  transformReportingData(notificationPeriodsData, notificationsDataStructure);
+  const testData: any = data?.data;
+  const dataForUpdate = formatOldData(testData);
 
-  console.log(dataForUpdate, "dataForUpdate");
+
 
   function handleSave() {
-    console.log(notificationData, "notificationData");
-    console.log(handleObj(notificationData), "notificationData");
     const formatedData1 = formatDataforUpdate(
       testData[0],
       handleObj(notificationData),
       analogyDictionary
     );
 
-    updateReportingPeriods([formatedData1, addOldToKeys2(testData[0])]);
+    console.log({...formatedData1, ...addOldToKeys2(testData[0])}, 'test-002')
+    updateReportingPeriods({
+      data: [
+          {
+              ...formatedData1,
+              ...addOldToKeys2(testData[0])
+          }
+      ]
+  });
   }
 
   return (

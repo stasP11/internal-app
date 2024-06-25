@@ -140,8 +140,8 @@ function Dashboard() {
                   ).length
                 }/${realReportsData?.length}`}
                 bodyExplaining={"received/total"}
-                status={"3 days before due date"}
-                update={"+1 today"}
+                status={""}
+                update={""}
               >
                 {" "}
                 <Link to={"/reports"} relative="path">
@@ -157,7 +157,7 @@ function Dashboard() {
                     .length
                 }`}
                 bodyExplaining={"reports to review"}
-                status={"23 issues to map"}
+                status={""}
                 isDangerStatus
               >
                 {" "}

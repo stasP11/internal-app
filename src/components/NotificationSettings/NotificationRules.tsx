@@ -324,9 +324,8 @@ const BeforeReportingStartDate: React.FC<any> = ({
         obj.selected = selected;
       }
     });
-    onUpdate({ beforeReportingDueDate: [...data] });
+    onUpdate({ beforeReportingStartDate: [...data] });
   }
-
   
   return (
     <div className="before-start-date">

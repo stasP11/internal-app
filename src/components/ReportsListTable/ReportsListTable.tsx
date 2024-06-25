@@ -129,6 +129,7 @@ const ReportsListTable: React.FC<ReportsListTableProps> = ({
         "RECEIVED",
         "REVIEW",
         "PROCESSING",
+        "SUCCESS"
       ],
       flex: 0.5,
     },

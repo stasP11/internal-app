@@ -22,7 +22,7 @@ const exempleData2 = [
   {
     name: "weekly",
     periodsSettings: {
-      dueDay: "Friday",
+      dueDay: "1",
     },
     notificationRules: {
       afterReportingDueDate: [1, 3],
@@ -70,15 +70,14 @@ const exempleData2 = [
     name: "custom",
     periodsSettings: [
       {
-        // DD-MM-YYYY
-        id: "2024-01-01_2024-01-31",
-        startPerioud: "01-01-2024",
+        id: "21211221",
+        startPerioud: "01-02-2024",
         endPerioud: "22-02-2024",
         startDay: 1,
         dueDay: 31,
       },
       {
-        id: "2024-02-01_2024-02-28",
+        id: "21y21812",
         startPerioud: "02-04-2024",
         endPerioud: "22-06-2024",
         startDay: 1,
@@ -243,7 +242,8 @@ const NotificationComponent: React.FC<any> = ({
   ]);
   useEffect(() => {
     if(selectedPeriod === 'Custom'){
-      onSaveNotificationData({ ...customPeriouds, ...customNotifications, reportingFrequency: selectedPeriod, country: selectedCountry });
+      console.log({ periodsSettings: customPeriouds, ...customNotifications, reportingFrequency: selectedPeriod, country: selectedCountry }, 'yyy')
+      onSaveNotificationData({ periodsSettings: customPeriouds, ...customNotifications, reportingFrequency: selectedPeriod, country: selectedCountry });
     }
   }, [
     selectedPeriod,

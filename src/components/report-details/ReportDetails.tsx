@@ -126,7 +126,7 @@ function AltTable({ data }: any) {
 
     console.log(postData);
 
-    fetch("https://csci-api-skthk6k3ja-ew.a.run.app/approve_alternative", {
+    fetch(`${process.env.REACT_APP_API_PYTHON_API}/approve_alternative`, {
       method: "POST",
       headers: {
         Accept: "application/json",

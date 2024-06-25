@@ -17,6 +17,8 @@ import generateRandomId from "../../utils/genereteRandomId.js"
 
 type Period = "Daily" | "Weekly" | "Monthly" | "Quarterly" | "Custom";
 
+const dateFormat ='DD-MM-YYYY';
+
 const dayNumbers = [
   1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
   23, 24, 25, 26, 27, 28, 29, 30, 31,
@@ -61,13 +63,14 @@ const CustomizedMUISelector: React.FC<any> = ({
 };
 
 const WeeklyPeriods: React.FC<any> = ({ data, onUpdate }: any): JSX.Element => {
+  const daysOfweek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
   return (
     <div className="selector-container">
       <Select
-        value={data?.dueDay}
+        value={daysOfweek[data?.dueDay]}
         label={"Due date"}
         fullWidth
-        onChange={(e: any) => onUpdate(e.target.value)}
+        onChange={(e: any) => onUpdate(daysOfweek.indexOf(e.target.value))}
       >
         {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map(
           (period: any) => (
@@ -192,10 +195,11 @@ const CustomPeriod: React.FC<any> = ({
   dueDay,
   onUpdate,
 }: any): JSX.Element => {
+  console.log(startPerioud, endPerioud, 'endPerioud');
   function handleDatePikerData(value: any) {
     const [start, end] = value;
     if (start) {
-      const startPerioud = dayjs(start).format("DD-MM-YYYY");
+      const startPerioud = dayjs(start).format(dateFormat);
       onUpdate({
         id,
         startPerioud,
@@ -205,7 +209,7 @@ const CustomPeriod: React.FC<any> = ({
       });
     }
     if (end) {
-      const endPerioud = dayjs(end).format("DD-MM-YYYY");
+      const endPerioud = dayjs(end).format(dateFormat);
       onUpdate({
         id,
         startPerioud,
@@ -216,16 +220,17 @@ const CustomPeriod: React.FC<any> = ({
     }
   }
 
-  console.log(startPerioud, endPerioud, 'test-02')
+  const result  = dayjs(`${startPerioud}`, dateFormat);
+  const result2  = dayjs(`${startPerioud}`, dateFormat);
 
   return (
     <div className="custom-period">
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DemoContainer components={["SingleInputDateRangeField"]}>
           <DateRangePicker
-            defaultValue={[dayjs(`${startPerioud}`, 'DD-MM-YYYY'), dayjs(`${endPerioud}`, 'DD-MM-YYYY')]}
+            defaultValue={[result, result2]}
             onChange={(e) => handleDatePikerData(e)}
-            format="DD-MM-YYYY"
+            format={dateFormat}
             slots={{ field: SingleInputDateRangeField }}
           />
         </DemoContainer>

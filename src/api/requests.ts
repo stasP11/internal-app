@@ -29,7 +29,7 @@ export async function aproveReport(reportName: any){
 
 export async function deleteReportRow(filename:any, row_number:any) {
   try {
-    const url = `https://csci-api-skthk6k3ja-ew.a.run.app/delete_row_from_exception_file?filename=${filename}.csv&row_number=${row_number}`;
+    const url = `${process.env.REACT_APP_API_PYTHON_API}/delete_row_from_exception_file?filename=${filename}.csv&row_number=${row_number}`;
     
     const response = await fetch(url, {
       method: 'POST',
@@ -54,7 +54,7 @@ export async function deleteReportRow(filename:any, row_number:any) {
 export async function getDistributorsList() {
   try {
     const response = await fetch(
-      "https://csci-api-skthk6k3ja-ew.a.run.app/get_distributors_list",
+      `${process.env.REACT_APP_API_PYTHON_API}/get_distributors_list`,
       {
         method: "GET",
         headers: {
@@ -81,7 +81,7 @@ export async function getDistributorsList() {
 export async function getDataQualityReports() {
   try {
     const response = await fetch(
-      "https://csci-api-skthk6k3ja-ew.a.run.app/get_file_details_with_status",
+      `${process.env.REACT_APP_API_PYTHON_API}/get_file_details_with_status`,
       {
         method: "GET",
         headers: {

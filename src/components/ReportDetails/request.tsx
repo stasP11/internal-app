@@ -12,7 +12,7 @@ interface RequestBody {
 
 async function approveAlternative(requestBody: RequestBody, onApproveResult: any): Promise<void> {
     try {
-        const response = await fetch('https://csci-api-skthk6k3ja-ew.a.run.app/approve_alternative', {
+        const response = await fetch(`${process.env.REACT_APP_API_PYTHON_API}/approve_alternative`, {
             method: 'POST',
             headers: {
                 'accept': 'application/json',
