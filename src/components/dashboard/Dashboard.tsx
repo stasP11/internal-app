@@ -3,13 +3,16 @@ import { Card } from "components/card/Card";
 import { Link } from "react-router-dom";
 import PieChart from "components/charts/Chart";
 import { useReportsData } from "../../hooks/swr-hooks/useReports";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import DashboardReportsTable from "./DashboardReportsTable";
 import DashboardDistributorsTable from "./DashboardDistributorsTable";
 import { getFromLocalStorage } from "../../services/storageInterection";
-import { loginRequest, protectedResources } from "../../authConfig";
+import { protectedResources } from "../../authConfig";
 import { useFetchWithMsal2 } from "../../../src/hooks/useFetchWithMsal";
 import CircularProgress from "@mui/material/CircularProgress";
+import { UserDataContext } from "../../App";
+
+import DashBoardProroImage from "./Frame 1707478304.png"
 
 const transformData = (data: any) => {
   const transformedData: any = data.reduce((result: any, item: any) => {
@@ -97,6 +100,8 @@ function Dashboard() {
     ];
   }
 
+  const { isEMEA } = useContext(UserDataContext);
+
   function handleReportsDataForChart(reportData: any) {
     return [
       {
@@ -118,7 +123,15 @@ function Dashboard() {
 
   return (
     <>
-      {(isReportsDataLoading || isDistributorDataLoading) && (
+    <>
+    {
+      isEMEA && (<div>
+        <img src={DashBoardProroImage} alt="test"></img>
+      </div>)
+    }
+    </>
+    <>
+      {(!isEMEA) && (isReportsDataLoading || isDistributorDataLoading) && (
         <CircularProgress
           sx={{
             position: "absolute",
@@ -213,6 +226,7 @@ function Dashboard() {
           </div>
         </div>
       )}
+    </>
     </>
   );
 }

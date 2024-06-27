@@ -35,7 +35,7 @@ const RoleManager = ({ data, onSaveUpdate }: any) => {
 
   const handleRemovePage = (pageIndex: any) => {
     const updatedRoles = [...roles];
-    updatedRoles[selectedRoleIndex].pagesAccess.splice(pageIndex, 1);
+    updatedRoles[selectedRoleIndex].pages.splice(pageIndex, 1);
     setRoles(updatedRoles);
   };
 
@@ -48,7 +48,7 @@ const RoleManager = ({ data, onSaveUpdate }: any) => {
   const handleAddPage = () => {
     if (newPage.trim() === "") return;
     const updatedRoles = [...roles];
-    updatedRoles[selectedRoleIndex].pagesAccess.push(newPage);
+    updatedRoles[selectedRoleIndex].pages.push(newPage);
     setRoles(updatedRoles);
     setNewPage("");
   };
@@ -87,7 +87,7 @@ const RoleManager = ({ data, onSaveUpdate }: any) => {
           Pages Access
         </Typography>
         <List>
-          {roles[selectedRoleIndex].pagesAccess.map((page: any, index: any) => (
+          {roles[selectedRoleIndex].pages.map((page: any, index: any) => (
             <ListItem key={page}>
               <ListItemText primary={page} />{" "}
               <img

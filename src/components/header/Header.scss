@@ -1,8 +1,10 @@
 .header {
   display: flex;
   justify-content: space-between;
+  position: relative;
   background-color: white;
   padding-left: 28px;
+  height: 80px;
   font-weight: 400;
   border-width: 0px 0px 1px 0px;
   border-style: solid;
@@ -48,7 +50,7 @@
 .header-popup {
   position: relative;
   position: absolute;
-  top: 65px;
+  top: 45px;
   width: 170px;
   height: 60px;
 }

@@ -19,6 +19,7 @@ function Header({ headerValue, userProfile }: any) {
 
   const { accounts, inProgress, instance } = useMsal();
   const handleLogoutRedirect = () => {
+    console.log('logout')
     instance.logoutRedirect().catch((error) => console.log(error));
   };
   const user = accounts? accounts[0] : {name: 'default'};
