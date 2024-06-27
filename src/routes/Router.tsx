@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import LoginPage from "../pages/Login";
 import ProtectedPages from "./ProtectedPages";
 import MainPageRouts from "./MainPageRouts";
 
