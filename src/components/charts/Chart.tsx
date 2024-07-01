@@ -31,7 +31,6 @@ function PieChart({
   data,
   width = 200,
   height = 200,
-  colors,
 }: any) {
   const margin = { top: 20, right: 20, bottom: 20, left: 20 };
   const innerWidth = width - margin.left - margin.right;
@@ -68,7 +67,7 @@ function PieChart({
               {(pie) => {
                 return pie.arcs.map((arc, index) => {
                   const { typeNumber, total, type } = arc.data;
-                  const result = `${typeNumber}/${total}`;
+                  const result = `${typeNumber}`;
                   const [centroidX, centroidY] = pie.path.centroid(arc);
                   const hasSpaceForLabel = arc.endAngle - arc.startAngle >= 0.1;
                   const arcPath: any = pie.path(arc);

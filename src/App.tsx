@@ -11,11 +11,9 @@ import {
 } from "@azure/msal-react";
 import { loginRequest, protectedResources } from "./authConfig";
 import { LicenseInfo } from "@mui/x-data-grid-pro";
-import {
-  useFetchWithMsal,
-} from "../src/hooks/useFetchWithMsal";
+import { useFetchWithMsal } from "../src/hooks/useFetchWithMsal";
 import { useReportsData } from "../src/hooks/swr-hooks/useReports";
-import ErrorPage from "./pages/error/ErrorPage"
+import ErrorPage from "./pages/error/ErrorPage";
 import {
   getFromLocalStorage,
   saveToLocalStorage,
@@ -34,11 +32,14 @@ const MainContent = () => {
     scopes: protectedResources.apiTodoList.scopes.read,
   });
 
-
   useEffect(() => {
     const fetchData = async (): Promise<any> => {
       try {
-        await execute("GET", `${process.env.REACT_APP_API_URL_PROXY}/api/authorize`, null);
+        await execute(
+          "GET",
+          `${process.env.REACT_APP_API_URL_PROXY}/api/authorize`,
+          null
+        );
       } catch (e) {
         console.error("Fetch error:", e);
       }
@@ -47,20 +48,24 @@ const MainContent = () => {
     fetchData();
   }, [execute]);
 
-
-  useEffect(()=>{
-    if(data?.userData && !data?.userData?.isEMEA){
-      console.log(data?.userData?.isEMEA, 'test-01')
-      let selectedCountry: any;
-      selectedCountry = data?.userData?.countries[0];
-      saveToLocalStorage("selectedCountry", selectedCountry);
+  useEffect(() => {
+    const preDefinedCountry = getFromLocalStorage("selectedCountry");
+    if (data?.userData?.countries && preDefinedCountry) {
+      const arrayOfCountries = data?.userData?.countries;
+      const isContainPreDefinedRole =
+        arrayOfCountries.includes(preDefinedCountry);
+      if (isContainPreDefinedRole) {
+        saveToLocalStorage("selectedCountry", preDefinedCountry);
+      } else {
+        saveToLocalStorage("selectedCountry", arrayOfCountries[0]);
+      }
+    } else if (data?.userData?.countries && !preDefinedCountry) {
+      saveToLocalStorage("selectedCountry", data?.userData?.countries[0]);
     }
-    
-  },
-  [data])
+  }, [data]);
 
-  if(data?.status === 404) {
-    return <ErrorPage errorText={data?.description}/>;
+  if (data?.status === 404) {
+    return <ErrorPage errorText={data?.description} />;
   }
 
   if (isLoading) {
@@ -68,7 +73,7 @@ const MainContent = () => {
   }
 
   if (error) {
-    return <ErrorPage errorText={error.message}/>;
+    return <ErrorPage errorText={error.message} />;
   }
 
   console.log(data, "data-01");
