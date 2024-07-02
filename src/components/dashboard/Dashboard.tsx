@@ -88,7 +88,6 @@ function useAuthRequestDistributors() {
     scopes: protectedResources.apiTodoList.scopes.read,
   });
 
-  const selectedCountry = getFromLocalStorage("selectedCountry");
 
   const {
     data: realDistributorData,

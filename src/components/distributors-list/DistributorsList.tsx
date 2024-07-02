@@ -13,12 +13,6 @@ import {
   saveToLocalStorage,
 } from "../../services/storageInterection";
 
-
-// utils
-const filterData = (array: any, selectedCountry: string) => {
-  return array.filter((obj: any)=> obj?.country === selectedCountry);
-}
-
 function DistributorsList() {
   const { error: authError, result: authResult }: any = useFetchWithMsal2({
     scopes: protectedResources.apiTodoList.scopes.read,
@@ -29,7 +23,8 @@ function DistributorsList() {
   const { data, error: reportsError } = useReportsData([
     authResult,
     "GET",
-    `${process.env.REACT_APP_API_PYTHON_API}/get_file_details_with_status_array`,
+    `${process.env.REACT_APP_API_URL_PROXY}/api/getdistributorslist`,
+    { selectedCountry },
   ]);
 
   const { cache } = useSWRConfig();
@@ -80,25 +75,25 @@ function DistributorsList() {
   }
 
   useEffect(() => {
-    if (!!data?.data?.length) {
+    if (!!data?.length) {
       console.log(data);
       setReportsNames(
-        data?.data.map((reportObj: any) => ({ label: reportObj?.distributor_name }))
+        data.map((reportObj: any) => ({ label: reportObj?.distributor_name }))
       );
     }
-  }, [data?.data]);
+  }, [data]);
 
   console.log(data, "data-11");
   return (
     <div>
-      {data?.data && (
+      {data && (
         <DistributorsTable
           onFilterByReportName={handleModalWindowStatus}
           onClearFilter={handleClearFilter}
           usedFilter={usedFilter}
           sortAZ={handleSortAZ}
           sortZA={handleSortZA}
-          distributorsList={filterData(data?.data, selectedCountry)}
+          distributorsList={data}
         />
       )}
 

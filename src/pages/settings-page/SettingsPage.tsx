@@ -1,7 +1,6 @@
 import { useEffect, createContext, useState, useLayoutEffect } from "react";
 import { protectedResources } from "../../authConfig";
 import {
-  useUserAutorization,
   useFetchWithMsal,
 } from "../../hooks/useFetchWithMsal";
 import RemoveIcon from "../../icons/remove-icon/Remove.svg";

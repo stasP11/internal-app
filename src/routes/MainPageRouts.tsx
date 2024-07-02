@@ -11,7 +11,7 @@ import { UserDataContext } from "../App";
 import isIncludePermission from "../utils/isIncludePermission";
 
 function MainPageRouts({ userProfile }: any) {
-  const { pages, countries } = useContext(UserDataContext);
+  const { pages } = useContext(UserDataContext);
 
   return (
     <DefaultLayout userProfile={userProfile}>

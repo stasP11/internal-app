@@ -87,7 +87,6 @@ const MainContent = () => {
         </UserDataContext.Provider>
       </AuthenticatedTemplate>
       <UnauthenticatedTemplate>
-        <div>TEST</div>
       </UnauthenticatedTemplate>
     </div>
   );
