@@ -12,6 +12,7 @@ function ProxyPage() {
 }
 
 function Router({ status, userProfile }: any) {
+  console.log(userProfile, 'userProfile')
   return (
     <div>
       {status ? (
@@ -28,7 +29,7 @@ function Router({ status, userProfile }: any) {
           </Routes>
         </BrowserRouter>
       ) : (
-        <div></div>
+        <div>Status failed</div>
       )}
     </div>
   );

@@ -96,10 +96,12 @@ function useAuthRequest() {
 
   const selectedCountry = getFromLocalStorage("selectedCountry");
 
+  // reportslist === get_file_details_with_status
+
   const { data: reportsData, error: reportsError, isLoading } = useReportsData([
     authResult,
-    "GET",
-    `${process.env.REACT_APP_API_URL_PROXY}/api/reportslist`,
+    "POST",
+    `${process.env.REACT_APP_API_PYTHON_API}/get_file_details_with_status`,
     { selectedCountry },
   ]);
 
@@ -122,8 +124,8 @@ export const ReportsListPage: React.FC<any> = (): JSX.Element => {
         }}
         />):(null)
     }
-      {reportsData?.length>0 ? (
-        <ReportsListTable reportsListData={temporaryHandleData(reportsData)} />
+      {reportsData?.data?.length>0 ? (
+        <ReportsListTable reportsListData={temporaryHandleData(reportsData?.data)} />
       ) : <ReportsListTable reportsListData={[]} />}
     </>
   );

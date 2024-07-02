@@ -22,7 +22,7 @@ import {
 type UserDataContextType = {
   pages?: Array<any>;
   countries?: Array<string>;
-  roleName?: string;
+  roleName?: string | [];
   isEMEA?: boolean;
 };
 export const UserDataContext = createContext<UserDataContextType>({});
@@ -37,7 +37,7 @@ const MainContent = () => {
       try {
         await execute(
           "GET",
-          `${process.env.REACT_APP_API_URL_PROXY}/api/authorize`,
+          `https://csci-api-7psl2cwk2q-ew.a.run.app/authorize`,
           null
         );
       } catch (e) {
@@ -64,7 +64,8 @@ const MainContent = () => {
     }
   }, [data]);
 
-  if (data?.status === 404) {
+
+  if (data?.status === '404') {
     return <ErrorPage errorText={data?.description} />;
   }
 
@@ -85,7 +86,9 @@ const MainContent = () => {
           <Router status={data?.status} userProfile={data?.userData} />
         </UserDataContext.Provider>
       </AuthenticatedTemplate>
-      <UnauthenticatedTemplate></UnauthenticatedTemplate>
+      <UnauthenticatedTemplate>
+        <div>TEST</div>
+      </UnauthenticatedTemplate>
     </div>
   );
 };

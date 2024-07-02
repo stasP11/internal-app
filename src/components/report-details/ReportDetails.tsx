@@ -253,10 +253,11 @@ export default function CollapsibleTable() {
 
   const selectedCountry = getFromLocalStorage('selectedCountry');
 
+  // reports list get_file_details_with_status
   const { data: reportsData, error: reportsError } = useReportsData([
     authResult,
-    "GET",
-    `${process.env.REACT_APP_API_URL_PROXY}/api/reportslist`,
+    "POST",
+    `${process.env.REACT_APP_API_PYTHON_API}/get_file_details_with_status`,
     { selectedCountry },
   ]);
 

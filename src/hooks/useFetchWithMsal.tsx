@@ -36,7 +36,7 @@ export const useFetchWithMsal = (msalRequest: any) => {
         let response = null;
 
         const headers = new Headers();
-        const bearer = `Bearer ${result.accessToken}`;
+        const bearer = `${result.accessToken}`;
         headers.append("Authorization", bearer);
 
         if (data) headers.append("Content-Type", "application/json");

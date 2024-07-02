@@ -75,8 +75,8 @@ function useAuthRequestReports() {
     isLoading,
   } = useReportsData([
     authResult,
-    "GET",
-    `${process.env.REACT_APP_API_URL_PROXY}/api/reportslist`,
+    "POST",
+    `${process.env.REACT_APP_API_PYTHON_API}/get_file_details_with_status`,
     { selectedCountry },
   ]);
 
@@ -97,14 +97,14 @@ function useAuthRequestDistributors() {
   } = useReportsData([
     authResult,
     "GET",
-    `${process.env.REACT_APP_API_URL_PROXY}/api/getdistributorslist`,
-    { selectedCountry },
+    `${process.env.REACT_APP_API_PYTHON_API}/get_file_details_with_status_array`,
   ]);
 
   return { reportsError, authError, realDistributorData, isLoading };
 }
 
 function Dashboard() {
+  const selectedCountry = getFromLocalStorage("selectedCountry");
   const { reportsData: realReportsData, isLoading: isReportsDataLoading } =
     useAuthRequestReports();
   const { realDistributorData, isLoading: isDistributorDataLoading } =
@@ -144,7 +144,10 @@ function Dashboard() {
     ];
   }
 
-  console.log(realReportsData, realDistributorData, "dashboard");
+  console.log(realReportsData?.data, realDistributorData?.data, "dashboard");
+  const filterData = (array: any, selectedCountry: string) => {
+       return array.filter((obj: any)=> obj?.country === selectedCountry);
+  }
 
   return (
     <>
@@ -165,6 +168,95 @@ function Dashboard() {
               transform: "translate(-50%, -50%)",
             }}
           />
+        )}
+        
+
+        { realReportsData?.data?.length> 0 && realDistributorData?.data?.length >0 &&  !isEMEA && (
+          <div>
+            <div className="inform-cards">
+              <div className="inform-cards__inform-card">
+                <Card
+                  name="Reports"
+                  bodyInfo={`${
+                    filterData(realReportsData?.data, selectedCountry).filter(
+                      (obj: any) => obj.status === "PROCESSING"
+                    ).length
+                  }/${filterData(realReportsData?.data, selectedCountry).length}`}
+                  bodyExplaining={"received/total"}
+                  status={""}
+                  update={""}
+                >
+                  {" "}
+                  <Link to={"/reports"} relative="path">
+                    See all
+                  </Link>
+                </Card>
+              </div>
+              <div className="inform-cards__inform-card">
+                <Card
+                  name="Exceptions Found"
+                  bodyInfo={`${
+                    filterData(realReportsData?.data, selectedCountry).filter(
+                      (obj: any) => obj.status === "REWORK"
+                    ).length
+                  }`}
+                  bodyExplaining={"reports to review"}
+                  status={""}
+                  isDangerStatus
+                >
+                  {" "}
+                  <Link to={"/reports?status=exception"} relative="path">
+                    See all
+                  </Link>
+                </Card>
+              </div>
+              <div className="inform-cards__inform-card">
+                <Card
+                  name="Mapped Successfully"
+                  bodyInfo={`${
+                    filterData(realReportsData?.data, selectedCountry).filter(
+                      (obj: any) => obj.status === "SUCCESS"
+                    ).length
+                  }`}
+                  bodyExplaining={"reports to approve"}
+                  status={"."}
+                >
+                  {" "}
+                  <Link to={"/reports?status=success"} relative="path">
+                    See all
+                  </Link>
+                </Card>
+              </div>
+            </div>
+
+            <div className="panel">
+              <div className="panel__chart">
+                <PieChart
+                  name="Distributors"
+                  data={handleDistributorssDataForChart(filterData(realDistributorData?.data, selectedCountry))}
+                  width={200}
+                  height={200}
+                />
+              </div>
+              <div className="panel__table">
+                <DashboardDistributorsTable data={filterData(realDistributorData?.data, selectedCountry)} />
+              </div>
+            </div>
+            <div className="panel">
+              <div className="panel__chart">
+                <PieChart
+                  name="Reports"
+                  data={handleReportsDataForChart(filterData(realReportsData?.data, selectedCountry))}
+                  width={200}
+                  height={200}
+                />
+              </div>
+
+              <div className="panel__table">
+                <DashboardReportsTable data={filterData(realReportsData?.data, selectedCountry)} />
+              </div>
+            </div>
+          </div>
         )}
       </>
     </>

@@ -5,10 +5,11 @@ export default function isIncludePermission(
   pageName: string,
   permission: PermissionType
 ) {
+
     if(pages && pageName && permission){
         return pages.some(
             (obj: any) =>
-              obj?.name === pageName && obj?.access?.includes(permission)
+              obj?.page === pageName && obj?.access?.includes(permission)
           );
     }
 }
