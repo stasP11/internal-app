@@ -74,11 +74,11 @@ const StatusCell: React.FC<any> = (params) => {
 };
 
 const ActionsCell: React.FC<any> = ({ params, onSelect }) => {
-  return (
-    <div>
-      <TableMenuPopup onSelect={onSelect} params={params} />
-    </div>
-  );
+    return (
+      <div className={params?.row?.status === 'REVIEW'? 'open': 'hided'}>
+        <TableMenuPopup onSelect={onSelect} params={params} />
+      </div>
+    )
 };
 
 const ReportsListTable: React.FC<ReportsListTableProps> = ({

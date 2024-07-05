@@ -7,6 +7,9 @@ import iconReports from "../../icons/reports/NavFile3Line.svg";
 import iconTimelines from "../../icons/timelines/NavNotificationLine.svg";
 import iconTemplates from "../../icons/templates/NavFileSettingsLine.svg";
 import iconOnboarding from "../../icons/onboarding/_Icon_.svg";
+
+import iconStewards from "../../icons/stewards/NavGroupLine.svg";
+import iconProducts from "../../icons/products/_Icon_.svg";
 import {
   getFromLocalStorage,
   saveToLocalStorage,
@@ -169,6 +172,44 @@ function Sidebar({ onPageChoose, activePage, userProfile }: any) {
                 to="/templates"
               >
                 Templates
+              </Link>
+            </div>
+          )}
+        </>
+
+
+        <>
+          {isIncludePermission(pages, "products", "read") && (
+            <div
+              className={`board-name
+          ${isActive("products")}`}
+            >
+              <img className="icon" src={iconProducts} alt="icon" />
+              <Link
+                onClick={() => onPageChoose("products")}
+                className="nav-link"
+                to="/products"
+              >
+                Products
+              </Link>
+            </div>
+          )}
+        </>
+
+
+        <>
+          {isIncludePermission(pages, "stewards", "read") && (
+            <div
+              className={`board-name
+          ${isActive("stewards")}`}
+            >
+              <img className="icon" src={iconStewards} alt="icon" />
+              <Link
+                onClick={() => onPageChoose("stewards")}
+                className="nav-link"
+                to="/stewards"
+              >
+                Data Stewards
               </Link>
             </div>
           )}
