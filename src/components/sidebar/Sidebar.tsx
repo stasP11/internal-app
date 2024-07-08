@@ -177,7 +177,6 @@ function Sidebar({ onPageChoose, activePage, userProfile }: any) {
           )}
         </>
 
-
         <>
           {isIncludePermission(pages, "products", "read") && (
             <div
@@ -195,7 +194,6 @@ function Sidebar({ onPageChoose, activePage, userProfile }: any) {
             </div>
           )}
         </>
-
 
         <>
           {isIncludePermission(pages, "stewards", "read") && (

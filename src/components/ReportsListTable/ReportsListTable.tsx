@@ -10,6 +10,12 @@ import "./ReportsListTable.scss";
 import Typography from "@mui/material/Typography";
 import TableMenuPopup from "../../customized-mui-elements/TableMenuPopup/TableMenuPopup";
 import getBaseUrl from "../../utils/getBaseUrl.js";
+import CircularProgress from "@mui/material/CircularProgress";
+// requests
+import {
+  aproveReportRequest,
+  rejectReportRequest,
+} from "../../api/files-requests";
 
 function ReportsListTableToolbar() {
   return (
@@ -74,11 +80,11 @@ const StatusCell: React.FC<any> = (params) => {
 };
 
 const ActionsCell: React.FC<any> = ({ params, onSelect }) => {
-    return (
-      <div className={params?.row?.status === 'REVIEW'? 'open': 'hided'}>
-        <TableMenuPopup onSelect={onSelect} params={params} />
-      </div>
-    )
+  return (
+    <div className={params?.row?.status === "REVIEW" ? "open" : "hided"}>
+      <TableMenuPopup onSelect={onSelect} params={params} />
+    </div>
+  );
 };
 
 const ReportsListTable: React.FC<ReportsListTableProps> = ({
@@ -86,23 +92,32 @@ const ReportsListTable: React.FC<ReportsListTableProps> = ({
 }): JSX.Element => {
   const fullUrl = window.location.href; // Get the full URL of the current page
   const baseUrl = getBaseUrl(fullUrl);
+  const [isAppreoveReportLoaded, setAppreoveReportLoaded] =
+    React.useState<boolean>(false);
 
-  console.log(baseUrl, 'baseUrl')
-
+  function handleResult(result: any) {
+    alert(result);
+    setAppreoveReportLoaded(false);
+  }
 
   function handleClick(SelectedActionParams: SelectedActionParams) {
-    const {selectedAction, params} = SelectedActionParams;
-    const {filename, distributor, country} = params;
-    
-    if(selectedAction === 'view'){
-        console.log(params);
-        window.open(`${baseUrl}/reports-list/${filename}&distributor=${distributor?.id}&country=${country}`, '_blank');
+    const { selectedAction, params } = SelectedActionParams;
+    const { filename, distributor, country } = params;
+
+    if (selectedAction === "view") {
+      console.log(params);
+      window.open(
+        `${baseUrl}/reports-list/${filename}&distributor=${distributor?.id}&country=${country}`,
+        "_blank"
+      );
     }
-    if(selectedAction === 'approve'){
-        console.log(params);
+    if (selectedAction === "approve") {
+       console.log(params);
+       aproveReportRequest(params?.filename, handleResult);
     }
-    if(selectedAction === 'reject'){
-        console.log(params);
+    if (selectedAction === "reject") {
+      console.log(params);
+      rejectReportRequest(params?.filename, handleResult);
     }
   }
 
@@ -129,7 +144,7 @@ const ReportsListTable: React.FC<ReportsListTableProps> = ({
         "RECEIVED",
         "REVIEW",
         "PROCESSING",
-        "SUCCESS"
+        "SUCCESS",
       ],
       flex: 0.5,
     },
@@ -145,6 +160,16 @@ const ReportsListTable: React.FC<ReportsListTableProps> = ({
 
   return (
     <div style={{ height: 500, width: "100%" }}>
+      {isAppreoveReportLoaded ? (
+        <CircularProgress
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+          }}
+        />
+      ) : null}
       <DataGridPro
         columns={columns}
         rows={reportsListData}
