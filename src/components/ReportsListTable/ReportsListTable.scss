@@ -1,17 +1,16 @@
 .distributor-cell {
-    display: flex;
-    height: 100%;
-    flex-direction: column;
-    justify-content: center;
-  
-    &__name {
-    }
-  
-    &__id {
-    }
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: center;
+
+  &__name {
   }
-  
-  .hided {
-    visibility: hidden;
+
+  &__id {
   }
-  
+}
+
+.hided {
+  visibility: hidden;
+}

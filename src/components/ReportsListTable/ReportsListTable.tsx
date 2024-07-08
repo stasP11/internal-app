@@ -4,14 +4,18 @@ import {
   GridToolbarContainer,
   GridToolbarColumnsButton,
   GridToolbarFilterButton,
-  GridToolbarDensitySelector,
+  GridToolbarExport,
+  GridRenderCellParams,
 } from "@mui/x-data-grid-pro";
 import "./ReportsListTable.scss";
 import Typography from "@mui/material/Typography";
 import TableMenuPopup from "../../customized-mui-elements/TableMenuPopup/TableMenuPopup";
 import getBaseUrl from "../../utils/getBaseUrl.js";
-import CircularProgress from "@mui/material/CircularProgress";
-// requests
+import { Chip } from "@mui/material";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
+import { CustomButton } from "components/DistributorsTable/components/CustomButton";
+import { ViewHeadlineOutlined } from "@mui/icons-material";
 import {
   aproveReportRequest,
   rejectReportRequest,
@@ -19,10 +23,20 @@ import {
 
 function ReportsListTableToolbar() {
   return (
-    <GridToolbarContainer>
+    <GridToolbarContainer sx={{minHeight: '38px'}}>
       <GridToolbarColumnsButton />
       <GridToolbarFilterButton />
-      <GridToolbarDensitySelector />
+      <CustomButton
+        IconComponent={ViewHeadlineOutlined}
+        buttonText="View"
+        handleClick={() => console.log("View button clicked")}
+      />
+      <GridToolbarExport />
+      <CustomButton
+        IconComponent={MailOutlineIcon}
+        buttonText="Share"
+        handleClick={() => console.log("Share button clicked")}
+      />
     </GridToolbarContainer>
   );
 }
@@ -33,7 +47,8 @@ type ReportStatus =
   | "APPROVED"
   | "RECEIVED"
   | "REVIEW"
-  | "PROCESSING";
+  | "PROCESSING"
+  | "SUCCESS";
 
 type OldReport = {
   distributor_id: number;
@@ -61,22 +76,23 @@ type SelectedActionParams = {
   selectedAction: "view" | "approve" | "reject";
 };
 
+const typographyStyles = {
+  fontFamily: "Helvetica Neue",
+  fontSize: "14px",
+};
+
 export interface ReportsListTableProps {
   reportsListData: Array<Report>;
 }
 
 const DistributorCell: React.FC<any> = ({ params }) => {
-  console.log(params.value, "params");
+  const [name, id] = params?.value?.split(/ (?=\d+$)/);
   return (
-    <div className="distributor-cell">
-      <Typography>{params?.value?.name}</Typography>
-      <Typography color="textSecondary">{params?.value?.id}</Typography>
+    <div className="distributor-cell" style={{ textTransform: "uppercase" }}>
+      <Typography sx={typographyStyles}>{name}</Typography>
+      <Typography sx={typographyStyles}>{id}</Typography>
     </div>
   );
-};
-
-const StatusCell: React.FC<any> = (params) => {
-  return <div></div>;
 };
 
 const ActionsCell: React.FC<any> = ({ params, onSelect }) => {
@@ -93,7 +109,7 @@ const ReportsListTable: React.FC<ReportsListTableProps> = ({
   const fullUrl = window.location.href; // Get the full URL of the current page
   const baseUrl = getBaseUrl(fullUrl);
   const [isAppreoveReportLoaded, setAppreoveReportLoaded] =
-    React.useState<boolean>(false);
+  React.useState<boolean>(false);
 
   function handleResult(result: any) {
     alert(result);
@@ -112,16 +128,32 @@ const ReportsListTable: React.FC<ReportsListTableProps> = ({
       );
     }
     if (selectedAction === "approve") {
-       console.log(params);
-       aproveReportRequest(params?.filename, handleResult);
+      aproveReportRequest(params?.filename, handleResult);
     }
     if (selectedAction === "reject") {
-      console.log(params);
       rejectReportRequest(params?.filename, handleResult);
     }
   }
 
+  const statusColorMap: Record<ReportStatus, string> = {
+    REWORK: "var(--red)",
+    REVIEW: "var(--orange)",
+    MISSING: "var(--red)",
+    PROCESSING: "var(--orange)",
+    APPROVED: "var(--green)",
+    RECEIVED: "var(--green)",
+    SUCCESS: "var(--green)",
+  };
+
   const columns: any = [
+    {
+      field: "#",
+      headerName: "#",
+      filterable: false,
+      renderCell: (params: GridRenderCellParams) =>
+        params.api.getAllRowIds().indexOf(params.id) + 1,
+      flex: 0.1,
+    },
     {
       field: "distributor",
       headerName: "Distributor",
@@ -146,6 +178,19 @@ const ReportsListTable: React.FC<ReportsListTableProps> = ({
         "PROCESSING",
         "SUCCESS",
       ],
+      renderCell: (params: any) => (
+        <Chip
+          label={params.value.toLowerCase()}
+          style={{
+            backgroundColor: statusColorMap[params.value as ReportStatus],
+            color: "#fff",
+            textTransform: "capitalize",
+            fontFamily: "Helvetica Neue",
+          }}
+          size="small"
+          variant="filled"
+        />
+      ),
       flex: 0.5,
     },
     {
@@ -160,20 +205,22 @@ const ReportsListTable: React.FC<ReportsListTableProps> = ({
 
   return (
     <div style={{ height: 500, width: "100%" }}>
-      {isAppreoveReportLoaded ? (
-        <CircularProgress
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-          }}
-        />
-      ) : null}
       <DataGridPro
+        sx={{
+          fontFamily: "Helvetica Neue",
+          color: "#10384F",
+          "& .MuiDataGrid-columnHeader, .MuiDataGrid-scrollbarFiller": {
+            backgroundColor: "#ECEFF1",
+          },
+          
+        }}
         columns={columns}
+        rowHeight={72}
         rows={reportsListData}
-        slots={{ toolbar: ReportsListTableToolbar }}
+        slots={{
+          toolbar: ReportsListTableToolbar,
+          exportIcon: ArrowUpwardIcon,
+        }}
       />
     </div>
   );

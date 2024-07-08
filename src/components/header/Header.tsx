@@ -11,6 +11,14 @@ function formatRoute(route: any) {
   return formattedRoute;
 }
 
+
+function UserProfileDropdown({ userName }: any){
+  return <div className="user-profile-dropdown">
+    <div className="user-profile-dropdown__name">{userName}</div>
+    <div className="user-profile-dropdown__ava">{userName[0]}</div>
+  </div>
+}
+
 function Header({ headerValue, userProfile }: any) {
   const location = useLocation();
   const [actualPage, setActualPage] = useState("");
@@ -25,8 +33,6 @@ function Header({ headerValue, userProfile }: any) {
   const user = accounts? accounts[0] : {name: 'default'};
 
   useEffect(() => {
-    // temporary
-    
     console.log(location, params, 'location')
     const parts = location.pathname.split('/');
     console.log(parts, 'parts')
@@ -39,8 +45,8 @@ function Header({ headerValue, userProfile }: any) {
     <div className="header">
       <h1 className="page-name">{actualPage}</h1>
 
-      <div className="user-logo" onClick={() => setActualPop(true)}>
-        <div className="user-logo__name">{user?.name}</div>
+      <div className="user-profile-tab" onClick={() => setActualPop(true)}>
+        <UserProfileDropdown userName={user?.name}/>
 
         <div className="header-popup">
           <BasePopUp

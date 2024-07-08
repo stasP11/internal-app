@@ -4,7 +4,7 @@
   position: relative;
   background-color: white;
   padding-left: 28px;
-  height: 80px;
+  height: 68px;
   font-weight: 400;
   border-width: 0px 0px 1px 0px;
   border-style: solid;
@@ -17,8 +17,10 @@
   }
 }
 
-.user-logo {
-  width: 160px;
+.user-profile-tab {
+  min-width: 160px;
+  max-width: 320px;
+  margin-right: 32px;
   position: relative;
   display: flex;
   flex-wrap: wrap;
@@ -51,6 +53,7 @@
   position: relative;
   position: absolute;
   top: 45px;
+  right: 10px;
   width: 170px;
   height: 60px;
 }
@@ -61,4 +64,28 @@
 
 .page-name {
   text-transform: capitalize;
+}
+
+
+
+.user-profile-dropdown {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+
+  &__name {
+    margin-right: 12px;
+  }
+
+  &__ava {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 100px;
+    background-color: rgba(102, 181, 18, 1);
+    color: white;
+  }
 }
