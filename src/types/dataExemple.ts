@@ -92,14 +92,14 @@ const dataTest1 = [
         {
           // DD-MM-YYYY
           id: "2024-01-01_2024-01-31",
-          startPerioud: "01-01-2024",
+          startPeriod: "01-01-2024",
           endPerioud: "22-02-2024",
           startDay: 1,
           dueDay: 31,
         },
         {
           id: "2024-02-01_2024-02-28",
-          startPerioud: "02-04-2024",
+          startPeriod: "02-04-2024",
           endPerioud: "22-06-2024",
           startDay: 1,
           dueDay: 28,

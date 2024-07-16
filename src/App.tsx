@@ -18,6 +18,7 @@ import {
   getFromLocalStorage,
   saveToLocalStorage,
 } from "./services/storageInterection";
+import iconTimelines from "./icons/timelines/NavNotificationLine.svg";
 
 type UserDataContextType = {
   pages?: Array<any>;

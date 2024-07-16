@@ -10,8 +10,9 @@ import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { Box, TextField } from "@mui/material";
 
+
 //utils
-import generateRandomId from "../../utils/genereteRandomId.js"
+import generateRandomId from "../../utils/genereteRandomId.js";
 
 const DynamicDaysCheckbox = ({
   selected,
@@ -20,6 +21,16 @@ const DynamicDaysCheckbox = ({
   onNewElementChecked,
 }: any) => {
   const [daysBefore, setDaysBefore] = useState(0);
+  const [isChecked, setIsChecked] = useState(false);
+  const [numberValue, setNumberValue] = useState(1);
+
+  const handleCheckboxChange = (event: any) => {
+    setIsChecked(event.target.checked);
+  };
+
+  const handleNumberChange = (event: any) => {
+    setNumberValue(event.target.value);
+  };
 
   const handleDaysChange = (event: any) => {
     const value = parseInt(event.target.value, 10);
@@ -42,15 +53,10 @@ const DynamicDaysCheckbox = ({
             onChange={(e) => handleSelect(e.target.checked)}
           />
         }
-        label={`${daysBefore} day${daysBefore > 1 ? "s" : ""} before`}
+        label={``}
       />
-      <TextField
-        type="number"
-        value={daysBefore}
-        onChange={handleDaysChange}
-        inputProps={{ min: 1 }}
-        style={{ marginRight: "8px", width: "60px" }}
-      />
+      <input className="number-input" type="number" value={daysBefore} onChange={handleDaysChange}></input>
+      <span>{` day${daysBefore > 1 ? "s" : ""} before`}</span>
     </Box>
   );
 };
@@ -287,7 +293,6 @@ const BeforeReportingStartDate: React.FC<any> = ({
   data,
   onUpdate,
 }): JSX.Element => {
-
   function handleSelect(id: any, isSelected: any) {
     const updatedData = data;
 
@@ -326,7 +331,7 @@ const BeforeReportingStartDate: React.FC<any> = ({
     });
     onUpdate({ beforeReportingStartDate: [...data] });
   }
-  
+
   return (
     <div className="before-start-date">
       <h3 className="before-start-date__title">Before reporting Start Day</h3>
@@ -388,10 +393,7 @@ const NotificationRules: React.FC<any> = ({
   onQuarterlyNotifications,
   onCustomNotifications,
 }): JSX.Element => {
-  console.log(
-    monthlyNotifications,
-    "monthlyNotifications"
-  );
+  console.log(monthlyNotifications, "monthlyNotifications");
 
   return (
     <div className="notification-rules">
@@ -439,7 +441,7 @@ const NotificationRules: React.FC<any> = ({
           </>
         )}
 
-        {selectedPeriod === "Quarterly" &&  quarterlyNotifications &&  (
+        {selectedPeriod === "Quarterly" && quarterlyNotifications && (
           <>
             <BeforeReportingStartDate
               data={quarterlyNotifications?.beforeReportingStartDate}
@@ -460,21 +462,21 @@ const NotificationRules: React.FC<any> = ({
 
         {selectedPeriod === "Custom" && customNotifications && (
           <>
-          <BeforeReportingStartDate
-            data={customNotifications?.beforeReportingStartDate}
-            onUpdate={onCustomNotifications}
-          />
-          <BeforeReportingDueDate
-            data={customNotifications?.beforeReportingDueDate}
-            onUpdate={onCustomNotifications}
-          />
-          <AfterReportingDueDate
-            selectedDailyFrequency={
-              customNotifications?.afterReportingDueDate
-            }
-            onFrequencyChange={onCustomNotifications}
-          />
-        </>
+            <BeforeReportingStartDate
+              data={customNotifications?.beforeReportingStartDate}
+              onUpdate={onCustomNotifications}
+            />
+            <BeforeReportingDueDate
+              data={customNotifications?.beforeReportingDueDate}
+              onUpdate={onCustomNotifications}
+            />
+            <AfterReportingDueDate
+              selectedDailyFrequency={
+                customNotifications?.afterReportingDueDate
+              }
+              onFrequencyChange={onCustomNotifications}
+            />
+          </>
         )}
       </div>
     </div>

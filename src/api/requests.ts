@@ -117,7 +117,7 @@ export function fakeGetReportData() {
   return mockReportDetails;
 }
 
-export async function updateReportingPeriods(updatedData: any) {
+export async function updateReportingPeriods(updatedData: any, onResult: any) {
   const url = `${process.env.REACT_APP_API_PYTHON_API}/update_reporting_periods`;
   const options = {
     method: 'POST',
@@ -131,11 +131,14 @@ export async function updateReportingPeriods(updatedData: any) {
   try {
     const response = await fetch(url, options);
     if (!response.ok) {
+      onResult({status: "FAIL", message: 'Something went wrong'});
       throw new Error('Network response was not ok');
     }
     const data = await response.json(); // Assuming the response is JSON
+    onResult({status: "OK", message: 'The request was completed successfully'});
     console.log('Response:', data);
   } catch (error) {
+    onResult({status: "FAIL", message: 'Something went wrong'});
     console.error('There was a problem with your fetch operation:', error);
   }
 }

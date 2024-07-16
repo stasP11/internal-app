@@ -55,8 +55,8 @@ const DashboardDistributorsTable: React.FC<MyTableProps> = ({ data }) => {
         <TableHead>
           <TableRow>
             <TableCell>Distributor</TableCell>
-            <TableCell>Filenames</TableCell>
             <TableCell>Statuses</TableCell>
+            <TableCell>Filenames</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

@@ -1,5 +1,5 @@
 type CustomPerioud = {
-  startPerioud: string;
+  startPeriod: string;
   endPerioud: string;
   startDay: number;
   dueDay: number;

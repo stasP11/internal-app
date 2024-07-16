@@ -1,15 +1,23 @@
 import React, { useState, useEffect } from "react";
 import NotificationPeriods from "components/NotificationSettings/NotificationPeriods";
 import NotificationRules from "components/NotificationSettings/NotificationRules";
-import {
-  getFromLocalStorage,
-} from "../../services/storageInterection";
+import { getFromLocalStorage } from "../../services/storageInterection";
+import Button from "@mui/material/Button";
 import "./Notification.scss";
 
 // utils
 function isExistinArray(array: Array<any>, key: any, value: any) {
   return array.some((obj) => obj[key] === value);
 }
+
+type Period = "Daily" | "Weekly" | "Monthly" | "Quarterly" | "Custom";
+const notificationPeriods: Array<Period> = [
+  "Daily",
+  "Weekly",
+  "Monthly",
+  "Quarterly",
+  "Custom",
+];
 
 const exempleData2 = [
   {
@@ -71,15 +79,15 @@ const exempleData2 = [
     periodsSettings: [
       {
         id: "21211221",
-        startPerioud: "01-02-2024",
-        endPerioud: "22-02-2024",
+        startPeriod: "01-02-2024",
+        endPeriod: "22-02-2024",
         startDay: 1,
         dueDay: 31,
       },
       {
         id: "21y21812",
-        startPerioud: "02-04-2024",
-        endPerioud: "22-06-2024",
+        startPeriod: "02-04-2024",
+        endPeriod: "22-06-2024",
         startDay: 1,
         dueDay: 28,
       },
@@ -96,167 +104,265 @@ const exempleData2 = [
     },
   },
 ];
-type Period = "Daily" | "Weekly" | "Monthly" | "Quarterly" | "Custom";
-const notificationPeriods: Array<Period> = [
-  "Daily",
-  "Weekly",
-  "Monthly",
-  "Quarterly",
-  "Custom",
-];
+
+// utils
+function formatBackendDataToFrontend(data: any) {
+  const rowData = [
+    {
+      name: "daily",
+      periodsSettings: {},
+      notificationRules: {
+        afterReportingDueDate: [],
+      },
+    },
+    {
+      name: "weekly",
+      periodsSettings: {
+        dueDay: 0,
+      },
+      notificationRules: {
+        afterReportingDueDate: [],
+        beforeReportingDueDate: [],
+      },
+    },
+    {
+      name: "monthly",
+      periodsSettings: {
+        startDay: 1,
+        dueDay: 30,
+      },
+      notificationRules: {
+        afterReportingDueDate: [],
+        beforeReportingDueDate: [],
+        beforeReportingStartDate: [],
+      },
+    },
+    {
+      name: "quarterly",
+      periodsSettings: {
+        startDay: 1,
+        dueDay: 30,
+      },
+      notificationRules: {
+        afterReportingDueDate: [],
+        beforeReportingDueDate: [],
+        beforeReportingStartDate: [],
+      },
+    },
+    {
+      name: "custom",
+      periodsSettings: [],
+      notificationRules: {
+        afterReportingDueDate: [],
+        beforeReportingDueDate: [],
+        beforeReportingStartDate: [],
+      },
+    },
+  ];
+
+  function formatDataforCheckButtons(array: any, label: string) {
+    const result: any = [];
+    array.forEach((element: number) => {
+      result.push({
+        label: `${element} ${label}`,
+        selected: true,
+        value: element,
+        id: element,
+      });
+    });
+    return result;
+  }
+
+  const reportingFrequency = (data?.reporting_frequency).toLowerCase();
+  if (reportingFrequency === "daily") {
+    rowData.forEach((obj) => {
+      if (obj.name === "daily") {
+        obj.notificationRules.afterReportingDueDate =
+          data?.after_due_date || [];
+      }
+    });
+  }
+
+  if (reportingFrequency === "weekly") {
+    rowData.forEach((obj: any) => {
+      if (obj.name === "weekly") {
+        obj.periodsSettings.dueDay = data?.reporting_due_date || 0;
+        obj.notificationRules.afterReportingDueDate =
+          data?.after_due_date || [];
+        obj.notificationRules.beforeReportingDueDate =
+          formatDataforCheckButtons(data?.before_due_date, "day before") || [];
+      }
+    });
+  }
+
+  if (reportingFrequency === "monthly") {
+    rowData.forEach((obj: any) => {
+      if (obj.name === "monthly") {
+        obj.periodsSettings.startDay = data?.reporting_start_date || 0;
+        obj.periodsSettings.dueDay = data?.reporting_due_date || 0;
+        obj.notificationRules.afterReportingDueDate =
+          data?.after_due_date || [];
+        obj.notificationRules.beforeReportingDueDate =
+          formatDataforCheckButtons(data?.before_due_date, "day before") || [];
+        obj.notificationRules.beforeReportingStartDate =
+          formatDataforCheckButtons(data?.before_start_date, "day before") ||
+          [];
+      }
+    });
+  }
+
+  if (reportingFrequency === "quarterly") {
+    rowData.forEach((obj: any) => {
+      if (obj.name === "quarterly") {
+        obj.periodsSettings.startDay = data?.reporting_start_date || 0;
+        obj.periodsSettings.dueDay = data?.reporting_due_date || 0;
+        obj.notificationRules.afterReportingDueDate =
+          data?.after_due_date || [];
+        obj.notificationRules.beforeReportingDueDate =
+          formatDataforCheckButtons(data?.before_due_date, "day before") || [];
+        obj.notificationRules.beforeReportingStartDate =
+          formatDataforCheckButtons(data?.before_start_date, "day before") ||
+          [];
+      }
+    });
+  }
+
+  if (reportingFrequency === "custom") {
+    rowData.forEach((obj: any) => {
+      if (obj.name === "custom") {
+        obj.periodsSettings = data?.custom_periods;
+        obj.notificationRules.afterReportingDueDate =
+          data?.after_due_date || [];
+        obj.notificationRules.beforeReportingDueDate =
+          formatDataforCheckButtons(data?.before_due_date, "day before") || [];
+        obj.notificationRules.beforeReportingStartDate =
+          formatDataforCheckButtons(data?.before_start_date, "day before") ||
+          [];
+      }
+    });
+  }
+
+  return rowData;
+}
 
 const NotificationComponent: React.FC<any> = ({
-  onSaveNotificationData,
+  onSave,
+  data,
 }: any): JSX.Element => {
   const selectedCountry = getFromLocalStorage("selectedCountry");
-  const [selectedPeriod, selectPeriod] = useState<Period>("Daily");
+  const [formatedData, setFormatedData] = useState<any>();
+  const [selectedPeriod, selectPeriod] = useState<Period>(
+    data?.reporting_frequency
+  );
+  const [editStatus, setEditStatus] = useState(true);
 
-  const [dailyPerioud, setDailyPerioud] = useState<any>();
+  const [dailyPeriod, setDailyPeriod] = useState<any>();
   const [dailyNotifications, setDailyNotifications] = useState<any>();
 
-  const [weeklyPerioud, setWeeklyPerioud] = useState<any>();
+  const [weeklyPeriod, setWeeklyPeriod] = useState<any>();
   const [weeklyNotifications, setWeeklyNotifications] = useState<any>();
 
-  const [monthlyPerioud, setMonthlyPerioud] = useState<any>();
+  const [monthlyPeriod, setMonthlyPeriod] = useState<any>();
   const [monthlyNotifications, setMonthlyNotifications] = useState<any>();
 
-  const [quarterlyPerioud, setQuarterlyPerioud] = useState<any>();
+  const [quarterlyPeriod, setQuarterlyPeriod] = useState<any>();
   const [quarterlyNotifications, setQuarterlyNotifications] = useState<any>();
 
-  const [customPeriouds, setCustomPeriouds] = useState<any>();
+  const [customPeriods, setCustomPeriods] = useState<any>();
   const [customNotifications, setCustomNotifications] = useState<any>();
 
-  function handleWeeklyPerioudUpdate(selectedDay: any) {
-    setWeeklyPerioud({ dueDay: selectedDay });
+  function hendleTest(data: any) {
+    if (data) {
+      const transformedData = formatBackendDataToFrontend(data);
+      setFormatedData(transformedData);
+    }
   }
 
-  function handleMonthlyPerioudUpdate(selectedData: any) {
+  useEffect(() => {
+    hendleTest(data);
+  }, [data]);
+
+  function handleWeeklyPeriodUpdate(selectedDay: any) {
+    setWeeklyPeriod({ dueDay: selectedDay });
+    setEditStatus(false);
+  }
+
+  function handleMonthlyPeriodUpdate(selectedData: any) {
     selectedData.startDay
-      ? setMonthlyPerioud({
+      ? setMonthlyPeriod({
           startDay: selectedData?.startDay,
-          dueDay: monthlyPerioud?.dueDay,
+          dueDay: monthlyPeriod?.dueDay,
         })
-      : setMonthlyPerioud({
-          startDay: monthlyPerioud?.startDay,
+      : setMonthlyPeriod({
+          startDay: monthlyPeriod?.startDay,
           dueDay: selectedData?.dueDay,
         });
+
+    setEditStatus(false);
   }
 
-  function handleQuarterlyPerioudUpdate(selectedData: any) {
+  function handleQuarterlyPeriodUpdate(selectedData: any) {
     selectedData.startDay
-      ? setQuarterlyPerioud({
+      ? setQuarterlyPeriod({
           startDay: selectedData?.startDay,
-          dueDay: quarterlyPerioud?.dueDay,
+          dueDay: quarterlyPeriod?.dueDay,
         })
-      : setQuarterlyPerioud({
-          startDay: quarterlyPerioud?.startDay,
+      : setQuarterlyPeriod({
+          startDay: quarterlyPeriod?.startDay,
           dueDay: selectedData?.dueDay,
         });
+    setEditStatus(false);
   }
 
-  function handleCustomPerioud(updatedPeriod: any) {
-    console.log(updatedPeriod, "updatedPeriod");
-    if (isExistinArray(customPeriouds, "id", updatedPeriod.id)) {
-      const updatedPeriods = customPeriouds.map((period: any) =>
+  function handleCustomPeriod(updatedPeriod: any) {
+    if (isExistinArray(customPeriods, "id", updatedPeriod.id)) {
+      const updatedPeriods = customPeriods.map((period: any) =>
         period.id === updatedPeriod.id ? { ...updatedPeriod } : period
       );
-      setCustomPeriouds(() => [...updatedPeriods]);
+      setCustomPeriods(() => [...updatedPeriods]);
     } else {
-      setCustomPeriouds((prev: any) => [...prev, updatedPeriod]);
+      setCustomPeriods((prev: any) => [...prev, updatedPeriod]);
     }
+    setEditStatus(false);
   }
 
   useEffect(() => {
-    exempleData2.forEach(
-      ({ name, periodsSettings, notificationRules }: any) => {
-        if (name === "daily") {
-          setDailyPerioud(periodsSettings);
-          setDailyNotifications(notificationRules);
-        }
-        if (name === "weekly") {
-          setWeeklyPerioud(periodsSettings);
-          setWeeklyNotifications(notificationRules);
-        }
+    if (formatedData) {
+      formatedData.forEach(
+        ({ name, periodsSettings, notificationRules }: any) => {
+          if (name === "daily") {
+            setDailyPeriod(periodsSettings);
+            setDailyNotifications(notificationRules);
+          }
+          if (name === "weekly") {
+            setWeeklyPeriod(periodsSettings);
+            setWeeklyNotifications(notificationRules);
+          }
 
-        if (name === "monthly") {
-          setMonthlyPerioud(periodsSettings);
-          setMonthlyNotifications(notificationRules);
-        }
+          if (name === "monthly") {
+            setMonthlyPeriod(periodsSettings);
+            setMonthlyNotifications(notificationRules);
+          }
 
-        if (name === "quarterly") {
-          setQuarterlyPerioud(periodsSettings);
-          setQuarterlyNotifications(notificationRules);
-        }
+          if (name === "quarterly") {
+            setQuarterlyPeriod(periodsSettings);
+            setQuarterlyNotifications(notificationRules);
+          }
 
-        if (name === "custom") {
-          setCustomPeriouds(periodsSettings);
-          setCustomNotifications(notificationRules);
+          if (name === "custom") {
+            setCustomPeriods(periodsSettings);
+            setCustomNotifications(notificationRules);
+          }
         }
-      }
-    );
-  }, []);
-
-  useEffect(() => {
-    if(selectedPeriod === 'Daily'){
-    onSaveNotificationData({ ...dailyPerioud, ...dailyNotifications, reportingFrequency: selectedPeriod, country: selectedCountry });
+      );
     }
-  }, [
-    selectedPeriod,
-    dailyPerioud,
-    dailyNotifications,
-    onSaveNotificationData,
-    selectedCountry
-  ]);
-  useEffect(() => {
-    if(selectedPeriod === 'Weekly'){
-    onSaveNotificationData({ ...weeklyPerioud, ...weeklyNotifications, reportingFrequency: selectedPeriod, country: selectedCountry });
-    }
-  }, [
-    selectedPeriod,
-    weeklyPerioud,
-    weeklyNotifications,
-    onSaveNotificationData,
-    selectedCountry
-  ]);
-  useEffect(() => {
-    if(selectedPeriod === 'Monthly'){
-    onSaveNotificationData({ ...monthlyPerioud, ...monthlyNotifications, reportingFrequency: selectedPeriod, country: selectedCountry });
-    }
-  }, [
-    selectedPeriod,
-    monthlyPerioud,
-    monthlyNotifications,
-    onSaveNotificationData,
-    selectedCountry
-  ]);
-  useEffect(() => {
-    if(selectedPeriod === 'Quarterly'){
-    onSaveNotificationData({ ...quarterlyPerioud, ...quarterlyNotifications, reportingFrequency: selectedPeriod, country: selectedCountry });
-    }
-  }, [
-    selectedPeriod,
-    quarterlyPerioud,
-    quarterlyNotifications,
-    onSaveNotificationData,
-    selectedCountry
-  ]);
-  useEffect(() => {
-    if(selectedPeriod === 'Custom'){
-      console.log({ periodsSettings: customPeriouds, ...customNotifications, reportingFrequency: selectedPeriod, country: selectedCountry }, 'yyy')
-      onSaveNotificationData({ periodsSettings: customPeriouds, ...customNotifications, reportingFrequency: selectedPeriod, country: selectedCountry });
-    }
-  }, [
-    selectedPeriod,
-    customPeriouds,
-    customNotifications,
-    onSaveNotificationData,
-    selectedCountry
-  ]);
+  }, [formatedData]);
 
   function handleDailyNotificationsUpdate(data: any) {
     const updatedData = { ...dailyNotifications };
     updatedData.afterReportingDueDate = data?.afterReportingDueDate;
     setDailyNotifications(() => updatedData);
+    setEditStatus(false);
   }
 
   function handleWeeklyNotifications(data: any) {
@@ -270,6 +376,7 @@ const NotificationComponent: React.FC<any> = ({
       updatedData.beforeReportingDueDate = data?.beforeReportingDueDate;
       setWeeklyNotifications(() => updatedData);
     }
+    setEditStatus(false);
   }
 
   function handleMonthlyNotifications(data: any) {
@@ -288,6 +395,8 @@ const NotificationComponent: React.FC<any> = ({
       updatedData.beforeReportingStartDate = data?.beforeReportingStartDate;
       setMonthlyNotifications(() => updatedData);
     }
+
+    setEditStatus(false);
   }
 
   function handleQuarterlyNotifications(data: any) {
@@ -306,6 +415,8 @@ const NotificationComponent: React.FC<any> = ({
       updatedData.beforeReportingStartDate = data?.beforeReportingStartDate;
       setQuarterlyNotifications(() => updatedData);
     }
+
+    setEditStatus(false);
   }
 
   function handleCustomNotifications(data: any) {
@@ -324,53 +435,123 @@ const NotificationComponent: React.FC<any> = ({
       updatedData.beforeReportingStartDate = data?.beforeReportingStartDate;
       setCustomNotifications(() => updatedData);
     }
+
+    setEditStatus(false);
   }
 
-  const [selectedDaysDueDate, setSselectedDaysDueDate] = React.useState<any>(
-    []
-  );
+  const [selectedDaysDueDate, setSelectedDaysDueDate] = React.useState<any>([]);
   const [selectedFrequencyDueDate, setSelectedFrequencyDueDate] =
     React.useState<any>("Weekly");
 
+  function handleSelectedFrequencyDueDate(data: string) {
+    setSelectedFrequencyDueDate(data);
+    setEditStatus(false);
+  }
+
+  function handleSelectedDaysDueDate(data: any) {
+    setSelectedDaysDueDate(data);
+    setEditStatus(false);
+  }
+
   function handlePeriodChange(e: any) {
     selectPeriod(e.target.value);
+    setEditStatus(false);
+  }
+
+  function handleSaveSelectedData() {
+    if (selectedPeriod === "Daily") {
+      onSave({
+        ...dailyPeriod,
+        ...dailyNotifications,
+        reportingFrequency: selectedPeriod,
+        country: selectedCountry,
+      });
+    }
+    if (selectedPeriod === "Weekly") {
+      onSave({
+        ...weeklyPeriod,
+        ...weeklyNotifications,
+        reportingFrequency: selectedPeriod,
+        country: selectedCountry,
+      });
+    }
+    if (selectedPeriod === "Monthly") {
+      onSave({
+        ...monthlyPeriod,
+        ...monthlyNotifications,
+        reportingFrequency: selectedPeriod,
+        country: selectedCountry,
+      });
+    }
+    if (selectedPeriod === "Quarterly") {
+      onSave({
+        ...quarterlyPeriod,
+        ...quarterlyNotifications,
+        reportingFrequency: selectedPeriod,
+        country: selectedCountry,
+      });
+    }
+    if (selectedPeriod === "Custom") {
+      onSave({
+        periodsSettings: customPeriods,
+        ...customNotifications,
+        reportingFrequency: selectedPeriod,
+        country: selectedCountry,
+      });
+    }
   }
 
   return (
     <div className="notification-page">
-      <NotificationPeriods
-        selectedPeriod={selectedPeriod}
-        notificationPeriods={notificationPeriods}
-        weeklyPerioud={weeklyPerioud}
-        monthlyPerioud={monthlyPerioud}
-        quarterlyPerioud={quarterlyPerioud}
-        customPerioud={customPeriouds}
-        onPeriodChange={handlePeriodChange}
-        onWeeklyPerioud={handleWeeklyPerioudUpdate}
-        onMonthlyPerioud={handleMonthlyPerioudUpdate}
-        onQuarterlyPerioud={handleQuarterlyPerioudUpdate}
-        onCustomPerioud={handleCustomPerioud}
-      />
+      {formatedData && (
+        <>
+          <NotificationPeriods
+            selectedPeriod={selectedPeriod}
+            notificationPeriods={notificationPeriods}
+            weeklyPeriod={weeklyPeriod}
+            monthlyPeriod={monthlyPeriod}
+            quarterlyPeriod={quarterlyPeriod}
+            customPeriod={customPeriods}
+            onPeriodChange={handlePeriodChange}
+            onWeeklyPeriod={handleWeeklyPeriodUpdate}
+            onMonthlyPeriod={handleMonthlyPeriodUpdate}
+            onQuarterlyPeriod={handleQuarterlyPeriodUpdate}
+            onCustomPeriod={handleCustomPeriod}
+          />
 
-      <NotificationRules
-        selectedPeriod={selectedPeriod}
-        dailyNotifications={dailyNotifications}
-        weeklyNotifications={weeklyNotifications}
-        monthlyNotifications={monthlyNotifications}
-        quarterlyNotifications={quarterlyNotifications}
-        customNotifications={customNotifications}
-        onDailyNotificationsUpdate={handleDailyNotificationsUpdate}
-        onWeeklyNotificationsUpdate={handleWeeklyNotifications}
-        onMonthlyNotifications={handleMonthlyNotifications}
-        onQuarterlyNotifications={handleQuarterlyNotifications}
-        onCustomNotifications={handleCustomNotifications}
-        selectedDaysState={selectedDaysDueDate}
-        onSelectedDaysState={setSselectedDaysDueDate}
-        selectedFrequency={selectedFrequencyDueDate}
-        onFrequencyChange={(e: any) =>
-          setSelectedFrequencyDueDate(e.target.value)
-        }
-      />
+          <NotificationRules
+            selectedPeriod={selectedPeriod}
+            dailyNotifications={dailyNotifications}
+            weeklyNotifications={weeklyNotifications}
+            monthlyNotifications={monthlyNotifications}
+            quarterlyNotifications={quarterlyNotifications}
+            customNotifications={customNotifications}
+            selectedDaysState={selectedDaysDueDate}
+            selectedFrequency={selectedFrequencyDueDate}
+            onDailyNotificationsUpdate={handleDailyNotificationsUpdate}
+            onWeeklyNotificationsUpdate={handleWeeklyNotifications}
+            onMonthlyNotifications={handleMonthlyNotifications}
+            onQuarterlyNotifications={handleQuarterlyNotifications}
+            onCustomNotifications={handleCustomNotifications}
+            onSelectedDaysState={handleSelectedDaysDueDate}
+            onFrequencyChange={(e: any) =>
+              handleSelectedFrequencyDueDate(e.target.value)
+            }
+          />
+
+          <div className="notification-control">
+            <div className="notification-control__buttons">
+              <Button
+                variant="contained"
+                onClick={handleSaveSelectedData}
+                disabled={editStatus}
+              >
+                Save
+              </Button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

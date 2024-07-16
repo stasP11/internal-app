@@ -1,37 +1,36 @@
 .notification-rules {
-    background-color: rgb(255, 255, 255);
-    padding: 0 24px 24px 24px;
-    margin-top: 2px;
-    border-top: 1px solid rgba(0, 0, 0, 0.14);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.14);
+  background-color: rgb(255, 255, 255);
+  padding: 0 24px 24px 24px;
+  margin-top: 2px;
+  border-top: 1px solid rgba(0, 0, 0, 0.14);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.14);
 
-    &__title {
-        text-align: left;
-        font-size: 18px;
-        line-height: 24px;
-        font-weight: 500;
-        color: rgba(16, 56, 79, 1);
-        margin-top: 0;
-        padding-top: 24px;
-    }
+  &__title {
+    text-align: left;
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: 500;
+    color: rgba(16, 56, 79, 1);
+    margin-top: 0;
+    padding-top: 24px;
+  }
 }
 
 .content {
-    display: flex;
-    >* {
-        margin-right: 10px;
-    }
+  display: flex;
+  > * {
+    margin-right: 10px;
+  }
 }
-.after-due-date{
-    max-width: 352px;
-    min-width: 352px;
+.after-due-date {
+  max-width: 352px;
+  min-width: 352px;
 
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-
-    &__title {
+  &__title {
     margin: 0;
     width: 95%;
     text-align: start;
@@ -43,27 +42,27 @@
     line-height: 24px;
     font-weight: 400;
     border-radius: 4px;
-    }
+  }
 
-    &__selector {
-        margin-top: 25px;
-        margin-bottom: 25px;
-    }
+  &__selector {
+    margin-top: 25px;
+    margin-bottom: 25px;
+  }
 
-    &__day-of-week-selector{
-      height: 36px;
-    }
+  &__day-of-week-selector {
+    height: 36px;
+  }
 }
 
-.before-due-date{
-    max-width: 352px;
-    min-width: 352px;
+.before-due-date {
+  max-width: 352px;
+  min-width: 352px;
 
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 
-    &__title {
+  &__title {
     margin: 0;
     width: 95%;
     text-align: start;
@@ -75,24 +74,23 @@
     line-height: 24px;
     font-weight: 400;
     border-radius: 4px;
-    }
-    
+  }
 
-    &__checkboxes{
-        margin-top: 11px;
-        margin-bottom: 11px;
-    }
+  &__checkboxes {
+    margin-top: 11px;
+    margin-bottom: 11px;
+  }
 }
 
-.before-start-date{
-    max-width: 352px;
-    min-width: 352px;
+.before-start-date {
+  max-width: 352px;
+  min-width: 352px;
 
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 
-    &__title {
+  &__title {
     margin: 0;
     width: 95%;
     text-align: start;
@@ -104,45 +102,56 @@
     line-height: 24px;
     font-weight: 400;
     border-radius: 4px;
-    }
-    
+  }
 
-    &__checkboxes{
-        margin-top: 11px;
-        margin-bottom: 11px;
-    }
+  &__checkboxes {
+    margin-top: 11px;
+    margin-bottom: 11px;
+  }
 }
 
 .selector-container {
-    width: 240px;
+  width: 240px;
 }
 
-
 .day-selector {
-    width: 265px;
+  width: 265px;
+  display: flex;
+  justify-content: space-between;
+
+  &__day {
+    width: 36px;
+    height: 36px;
+    border-radius: 100px;
     display: flex;
-    justify-content: space-between;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 400;
+    background-color: rgba(235, 237, 245, 1);
+    color: rgba(16, 56, 79, 1);
+  }
 
-    &__day {
-        width: 36px;
-        height: 36px;
-        border-radius: 100px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 14px;
-        font-weight: 400;
-        background-color: rgba(235, 237, 245, 1);
-        color: rgba(16, 56, 79, 1);
-    }
+  .--selected-day {
+    background-color: rgba(33, 150, 243, 1);
+    color: rgba(255, 255, 255, 1);
+  }
 
-    .--selected-day {
-        background-color: rgba(33, 150, 243, 1);
-        color: rgba(255, 255, 255, 1);
-    }
+  .--disabled-day {
+    background-color: rgba(235, 237, 245, 1);
+    color: rgba(16, 56, 79, 1);
+  }
+}
 
-    .--disabled-day {
-        background-color: rgba(235, 237, 245, 1);
-        color: rgba(16, 56, 79, 1);
-    }
+.number-input {
+  border: none;
+  width: 36px;
+  outline: none;
+  padding: 4px;
+  border-bottom: 2px solid rgba(108, 111, 128, 1);
+  font-size: 16px;
+  margin-left: -18px;
+  text-align: left;
+  padding-left: -36px;
+  margin-right: 5px;
 }

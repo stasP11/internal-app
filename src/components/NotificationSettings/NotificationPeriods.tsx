@@ -17,7 +17,7 @@ import generateRandomId from "../../utils/genereteRandomId.js"
 
 type Period = "Daily" | "Weekly" | "Monthly" | "Quarterly" | "Custom";
 
-const dateFormat ='DD-MM-YYYY';
+const dateFormat ='YYYY-MM-DD';
 
 const dayNumbers = [
   1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22,
@@ -27,15 +27,15 @@ const dayNumbers = [
 interface NotificationPeriodsProps {
   selectedPeriod: "Daily" | "Weekly" | "Monthly" | "Quarterly" | "Custom";
   notificationPeriods: Array<Period>;
-  weeklyPerioud: any;
-  monthlyPerioud: any;
-  quarterlyPerioud: any;
-  customPerioud: any;
+  weeklyPeriod: any;
+  monthlyPeriod: any;
+  quarterlyPeriod: any;
+  customPeriod: any;
   onPeriodChange: Function;
-  onWeeklyPerioud: Function;
-  onMonthlyPerioud: Function;
-  onQuarterlyPerioud: Function;
-  onCustomPerioud: Function;
+  onWeeklyPeriod: Function;
+  onMonthlyPeriod: Function;
+  onQuarterlyPeriod: Function;
+  onCustomPeriod: Function;
 }
 
 const CustomizedMUISelector: React.FC<any> = ({
@@ -89,7 +89,6 @@ const MonthlyPeriods: React.FC<any> = ({
   data,
   onUpdate,
 }: any): JSX.Element => {
-  console.log(data, "data-test");
   return (
     <div className="monthly-periods">
       <div className="selector-container">
@@ -189,112 +188,113 @@ const QuarterlyPeriods: React.FC<any> = ({
 
 const CustomPeriod: React.FC<any> = ({
   id,
-  startPerioud,
-  endPerioud,
+  startPeriod,
+  endPeriod,
   startDay,
   dueDay,
   onUpdate,
 }: any): JSX.Element => {
-  console.log(startPerioud, endPerioud, 'endPerioud');
+  console.log(startPeriod, endPeriod, 'CustomPeriod data');
   function handleDatePikerData(value: any) {
     const [start, end] = value;
     if (start) {
-      const startPerioud = dayjs(start).format(dateFormat);
+      const startPeriod = dayjs(start).format(dateFormat);
       onUpdate({
         id,
-        startPerioud,
-        endPerioud,
+        startPeriod,
+        endPeriod,
         startDay,
         dueDay,
       });
     }
     if (end) {
-      const endPerioud = dayjs(end).format(dateFormat);
+      const endPeriod = dayjs(end).format(dateFormat);
       onUpdate({
         id,
-        startPerioud,
-        endPerioud,
+        startPeriod,
+        endPeriod,
         startDay,
         dueDay,
       });
     }
   }
 
-  const result  = dayjs(`${startPerioud}`, dateFormat);
-  const result2  = dayjs(`${startPerioud}`, dateFormat);
+  const result  = dayjs(`${startPeriod}`, dateFormat);
+  const result2  = dayjs(`${endPeriod}`, dateFormat);
 
   return (
-    <div className="custom-period">
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <DemoContainer components={["SingleInputDateRangeField"]}>
-          <DateRangePicker
-            defaultValue={[result, result2]}
-            onChange={(e) => handleDatePikerData(e)}
-            format={dateFormat}
-            slots={{ field: SingleInputDateRangeField }}
-          />
-        </DemoContainer>
-      </LocalizationProvider>
-
-      <div className="selector-container">
-        <Select
-          value={startDay}
-          label={"Due date"}
-          fullWidth
-          onChange={(e) =>
-            onUpdate({
-              id,
-              startPerioud,
-              endPerioud,
-              startDay: e.target.value,
-              dueDay,
-            })
-          }
-        >
-          {dayNumbers.map((period: any) => (
-            <MenuItem key={period} value={period}>
-              {period}
-            </MenuItem>
-          ))}
-        </Select>
-        <span className="selector-container__desciption">
-          Start Day of the Next Period
-        </span>
+        <div className="custom-period">
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DemoContainer components={["SingleInputDateRangeField"]}>
+            <DateRangePicker
+              defaultValue={[result, result2]}
+              onChange={(e) => handleDatePikerData(e)}
+              format={dateFormat}
+              slots={{ field: SingleInputDateRangeField }}
+            />
+          </DemoContainer>
+        </LocalizationProvider>
+  
+        <div className="selector-container">
+          <Select
+            value={startDay}
+            label={"Due date"}
+            fullWidth
+            onChange={(e) =>
+              onUpdate({
+                id,
+                startPeriod,
+                endPeriod,
+                startDay: e.target.value,
+                dueDay,
+              })
+            }
+          >
+            {dayNumbers.map((period: any) => (
+              <MenuItem key={period} value={period}>
+                {period}
+              </MenuItem>
+            ))}
+          </Select>
+          <span className="selector-container__desciption">
+            Start Day of the Next Period
+          </span>
+        </div>
+        <div className="selector-container">
+          <Select
+            value={dueDay}
+            label={"Due date"}
+            fullWidth
+            onChange={(e) =>
+              onUpdate({
+                id,
+                startPeriod,
+                endPeriod,
+                startDay,
+                dueDay: e.target.value,
+              })
+            }
+          >
+            {dayNumbers.map((period: any) => (
+              <MenuItem key={period} value={period}>
+                {period}
+              </MenuItem>
+            ))}
+          </Select>
+          <span className="selector-container__desciption">
+            Due Day of the Next Period
+          </span>
+        </div>
       </div>
-      <div className="selector-container">
-        <Select
-          value={dueDay}
-          label={"Due date"}
-          fullWidth
-          onChange={(e) =>
-            onUpdate({
-              id,
-              startPerioud,
-              endPerioud,
-              startDay,
-              dueDay: e.target.value,
-            })
-          }
-        >
-          {dayNumbers.map((period: any) => (
-            <MenuItem key={period} value={period}>
-              {period}
-            </MenuItem>
-          ))}
-        </Select>
-        <span className="selector-container__desciption">
-          Due Day of the Next Period
-        </span>
-      </div>
-    </div>
   );
 };
 
 const CustomPeriods: React.FC<any> = ({ data, onUpdate }: any): JSX.Element => {
+  console.log(data, 'custom periods !!')
   function addNewPeriod() {
     onUpdate({
-      startPerioud: null,
-      endPerioud: null,
+      startPeriod: null,
+      endPeriod: null,
       startDay: "1",
       dueDay: "15",
       id: `${generateRandomId()}`,
@@ -303,12 +303,12 @@ const CustomPeriods: React.FC<any> = ({ data, onUpdate }: any): JSX.Element => {
 
   return (
     <div className="custom-periods">
-      {data.map(({ startPerioud, endPerioud, startDay, dueDay, id }: any) => (
+      {data && data.map(({ startPeriod, endPeriod, startDay, dueDay, id }: any) => (
         <CustomPeriod
           key={id}
           id={id}
-          startPerioud={startPerioud}
-          endPerioud={endPerioud}
+          startPeriod={startPeriod}
+          endPeriod={endPeriod}
           startDay={startDay}
           dueDay={dueDay}
           onUpdate={onUpdate}
@@ -336,15 +336,15 @@ const CustomPeriods: React.FC<any> = ({ data, onUpdate }: any): JSX.Element => {
 const NotificationPeriods: React.FC<NotificationPeriodsProps> = ({
   selectedPeriod,
   notificationPeriods,
-  weeklyPerioud,
-  monthlyPerioud,
-  quarterlyPerioud,
-  customPerioud,
+  weeklyPeriod,
+  monthlyPeriod,
+  quarterlyPeriod,
+  customPeriod,
   onPeriodChange,
-  onWeeklyPerioud,
-  onMonthlyPerioud,
-  onQuarterlyPerioud,
-  onCustomPerioud,
+  onWeeklyPeriod,
+  onMonthlyPeriod,
+  onQuarterlyPeriod,
+  onCustomPeriod,
 }): JSX.Element => {
   return (
     <div className="notification-periods">
@@ -359,20 +359,20 @@ const NotificationPeriods: React.FC<NotificationPeriodsProps> = ({
       </div>
 
       <div className="notification-periods-content">
-        {selectedPeriod === "Weekly" && (
-          <WeeklyPeriods data={weeklyPerioud} onUpdate={onWeeklyPerioud} />
+        {selectedPeriod === "Weekly" && weeklyPeriod && (
+          <WeeklyPeriods data={weeklyPeriod} onUpdate={onWeeklyPeriod} />
         )}
-        {selectedPeriod === "Monthly" && (
-          <MonthlyPeriods data={monthlyPerioud} onUpdate={onMonthlyPerioud} />
+        {selectedPeriod === "Monthly" && monthlyPeriod && (
+          <MonthlyPeriods data={monthlyPeriod} onUpdate={onMonthlyPeriod} />
         )}
-        {selectedPeriod === "Quarterly" && (
+        {selectedPeriod === "Quarterly" && quarterlyPeriod && (
           <QuarterlyPeriods
-            data={quarterlyPerioud}
-            onUpdate={onQuarterlyPerioud}
+            data={quarterlyPeriod}
+            onUpdate={onQuarterlyPeriod}
           />
         )}
-        {selectedPeriod === "Custom" && (
-          <CustomPeriods data={customPerioud} onUpdate={onCustomPerioud} />
+        {selectedPeriod === "Custom" && customPeriod && (
+          <CustomPeriods data={customPeriod} onUpdate={onCustomPeriod} />
         )}
       </div>
     </div>
