@@ -3,7 +3,7 @@ import { Card } from "components/card/Card";
 import { Link } from "react-router-dom";
 import PieChart from "components/charts/Chart";
 import { useReportsData } from "../../hooks/swr-hooks/useReports";
-import { useEffect, useState, useContext } from "react";
+import { useContext } from "react";
 import DashboardReportsTable from "./DashboardReportsTable";
 import DashboardDistributorsTable from "./DashboardDistributorsTable";
 import { getFromLocalStorage } from "../../services/storageInterection";
@@ -19,9 +19,9 @@ import DashBoardProroImage from "./Frame 1707478304.png";
 function hasOnlyMissings(arr: any) {
   // Check if all elements in the array are "MISSING"
   for (let i = 0; i < arr.length; i++) {
-      if (arr[i] !== 'MISSING') {
-          return false; // Return false if any element is not "MISSING"
-      }
+    if (arr[i] !== "MISSING") {
+      return false; // Return false if any element is not "MISSING"
+    }
   }
   return true; // Return true if all elements are "MISSING"
 }
@@ -29,9 +29,9 @@ function hasOnlyMissings(arr: any) {
 function hasOnlyNotMissings(arr: any) {
   // Check if all elements in the array are "MISSING"
   for (let i = 0; i < arr.length; i++) {
-      if (arr[i] !== 'MISSING') {
-          return true; // Return false if any element is not "MISSING"
-      }
+    if (arr[i] !== "MISSING") {
+      return true; // Return false if any element is not "MISSING"
+    }
   }
   return false; // Return true if all elements are "MISSING"
 }
@@ -88,7 +88,6 @@ function useAuthRequestDistributors() {
     scopes: protectedResources.apiTodoList.scopes.read,
   });
 
-
   const {
     data: realDistributorData,
     error: reportsError,
@@ -110,13 +109,21 @@ function Dashboard() {
     useAuthRequestDistributors();
 
   function handleDistributorssDataForChart(distributorsData: any) {
-    console.log(distributorsData, 'distributorsData-01')
+    console.log(distributorsData, "distributorsData-01");
     return [
       { type: "Reported", typeNumber: 0, total: distributorsData.length },
-      { type: "Missing", typeNumber: distributorsData.filter((obj: any) => hasOnlyMissings(obj.status)).length, total: distributorsData.length },
+      {
+        type: "Missing",
+        typeNumber: distributorsData.filter((obj: any) =>
+          hasOnlyMissings(obj.status)
+        ).length,
+        total: distributorsData.length,
+      },
       {
         type: "Partially Reported",
-        typeNumber: distributorsData.filter((obj: any) => hasOnlyNotMissings(obj.status)).length,
+        typeNumber: distributorsData.filter((obj: any) =>
+          hasOnlyNotMissings(obj.status)
+        ).length,
         total: distributorsData.length,
       },
     ];
@@ -128,10 +135,8 @@ function Dashboard() {
     return [
       {
         type: "Received",
-        typeNumber: reportData.filter(
-          (obj: any) =>
-            obj.status !== "MISSING"
-        ).length,
+        typeNumber: reportData.filter((obj: any) => obj.status !== "MISSING")
+          .length,
         total: reportData?.length,
       },
       {
@@ -145,8 +150,8 @@ function Dashboard() {
 
   console.log(realReportsData?.data, realDistributorData?.data, "dashboard");
   const filterData = (array: any, selectedCountry: string) => {
-       return array.filter((obj: any)=> obj?.country === selectedCountry);
-  }
+    return array.filter((obj: any) => obj?.country === selectedCountry);
+  };
 
   return (
     <>
@@ -168,95 +173,109 @@ function Dashboard() {
             }}
           />
         )}
-        
 
-        { realReportsData?.data?.length> 0 && realDistributorData?.data?.length >0 &&  !isEMEA && (
-          <div>
-            <div className="inform-cards">
-              <div className="inform-cards__inform-card">
-                <Card
-                  name="Reports"
-                  bodyInfo={`${
-                    filterData(realReportsData?.data, selectedCountry).filter(
-                      (obj: any) => obj.status === "PROCESSING"
-                    ).length
-                  }/${filterData(realReportsData?.data, selectedCountry).length}`}
-                  bodyExplaining={"received/total"}
-                  status={""}
-                  update={""}
-                >
-                  {" "}
-                  <Link to={"/reports"} relative="path">
-                    See all
-                  </Link>
-                </Card>
-              </div>
-              <div className="inform-cards__inform-card">
-                <Card
-                  name="Exceptions Found"
-                  bodyInfo={`${
-                    filterData(realReportsData?.data, selectedCountry).filter(
-                      (obj: any) => obj.status === "REWORK"
-                    ).length
-                  }`}
-                  bodyExplaining={"reports to review"}
-                  status={""}
-                  isDangerStatus
-                >
-                  {" "}
-                  <Link to={"/reports?status=exception"} relative="path">
-                    See all
-                  </Link>
-                </Card>
-              </div>
-              <div className="inform-cards__inform-card">
-                <Card
-                  name="Mapped Successfully"
-                  bodyInfo={`${
-                    filterData(realReportsData?.data, selectedCountry).filter(
-                      (obj: any) => obj.status === "SUCCESS"
-                    ).length
-                  }`}
-                  bodyExplaining={"reports to approve"}
-                  status={"."}
-                >
-                  {" "}
-                  <Link to={"/reports?status=success"} relative="path">
-                    See all
-                  </Link>
-                </Card>
-              </div>
-            </div>
-
-            <div className="panel">
-              <div className="panel__chart">
-                <PieChart
-                  name="Distributors"
-                  data={handleDistributorssDataForChart(filterData(realDistributorData?.data, selectedCountry))}
-                  width={200}
-                  height={200}
-                />
-              </div>
-              <div className="panel__table">
-                <DashboardDistributorsTable data={filterData(realDistributorData?.data, selectedCountry)} />
-              </div>
-            </div>
-            <div className="panel">
-              <div className="panel__chart">
-                <PieChart
-                  name="Reports"
-                  data={handleReportsDataForChart(filterData(realReportsData?.data, selectedCountry))}
-                  width={200}
-                  height={200}
-                />
+        {realReportsData?.data?.length > 0 &&
+          realDistributorData?.data?.length > 0 &&
+          !isEMEA && (
+            <div>
+              <div className="inform-cards">
+                <div className="inform-cards__inform-card">
+                  <Card
+                    name="Reports"
+                    bodyInfo={`${
+                      filterData(realReportsData?.data, selectedCountry).filter(
+                        (obj: any) => obj.status === "PROCESSING"
+                      ).length
+                    }/${
+                      filterData(realReportsData?.data, selectedCountry).length
+                    }`}
+                    bodyExplaining={"received/total"}
+                    status={""}
+                    update={""}
+                  >
+                    {" "}
+                    <Link to={"/reports"} relative="path">
+                      See all
+                    </Link>
+                  </Card>
+                </div>
+                <div className="inform-cards__inform-card">
+                  <Card
+                    name="Exceptions Found"
+                    bodyInfo={`${
+                      filterData(realReportsData?.data, selectedCountry).filter(
+                        (obj: any) => obj.status === "REWORK"
+                      ).length
+                    }`}
+                    bodyExplaining={"reports to review"}
+                    status={""}
+                    isDangerStatus
+                  >
+                    {" "}
+                    <Link to={"/reports?status=exception"} relative="path">
+                      See all
+                    </Link>
+                  </Card>
+                </div>
+                <div className="inform-cards__inform-card">
+                  <Card
+                    name="Mapped Successfully"
+                    bodyInfo={`${
+                      filterData(realReportsData?.data, selectedCountry).filter(
+                        (obj: any) => obj.status === "SUCCESS"
+                      ).length
+                    }`}
+                    bodyExplaining={"reports to approve"}
+                    status={"."}
+                  >
+                    {" "}
+                    <Link to={"/reports?status=success"} relative="path">
+                      See all
+                    </Link>
+                  </Card>
+                </div>
               </div>
 
-              <div className="panel__table">
-                <DashboardReportsTable data={filterData(realReportsData?.data, selectedCountry)} />
+              <div className="panel">
+                <div className="panel__chart">
+                  <PieChart
+                    name="Distributors"
+                    data={handleDistributorssDataForChart(
+                      filterData(realDistributorData?.data, selectedCountry)
+                    )}
+                    width={200}
+                    height={200}
+                  />
+                </div>
+                <div className="panel__table">
+                  <DashboardDistributorsTable
+                    data={filterData(
+                      realDistributorData?.data,
+                      selectedCountry
+                    )}
+                  />
+                </div>
+              </div>
+              <div className="panel">
+                <div className="panel__chart">
+                  <PieChart
+                    name="Reports"
+                    data={handleReportsDataForChart(
+                      filterData(realReportsData?.data, selectedCountry)
+                    )}
+                    width={200}
+                    height={200}
+                  />
+                </div>
+
+                <div className="panel__table">
+                  <DashboardReportsTable
+                    data={filterData(realReportsData?.data, selectedCountry)}
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
       </>
     </>
   );

@@ -64,8 +64,8 @@ export function ErrorAlert({ onClose, message }: any) {
 export function TimelinesAlert({ status, onClose }: any) {
   return (
     <div className="alert-window">
-      {status?.status === "OK" && <SuccessAlert onClose={onClose} message={status?.message} />}
-      {status?.status === "FAIL" && <SuccessAlert onClose={onClose} message={status?.message}/>}
+      {status?.type === "success" && <SuccessAlert onClose={onClose} message={status?.message} />}
+      {status?.type === "error" && <ErrorAlert onClose={onClose} message={status?.message}/>}
       {status === null && <></>}
     </div>
   );

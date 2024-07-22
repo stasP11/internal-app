@@ -130,15 +130,9 @@ export async function updateReportingPeriods(updatedData: any, onResult: any) {
 
   try {
     const response = await fetch(url, options);
-    if (!response.ok) {
-      onResult({status: "FAIL", message: 'Something went wrong'});
-      throw new Error('Network response was not ok');
-    }
-    const data = await response.json(); // Assuming the response is JSON
-    onResult({status: "OK", message: 'The request was completed successfully'});
-    console.log('Response:', data);
+    onResult(response);
   } catch (error) {
-    onResult({status: "FAIL", message: 'Something went wrong'});
+    onResult({status: "ERROR", error});
     console.error('There was a problem with your fetch operation:', error);
   }
 }

@@ -1,10 +1,11 @@
-import React, { useState, useEffect, lazy, memo, useTransition } from "react";
-import NotificationPeriods from "components/NotificationSettings/NotificationPeriods";
-import NotificationRules from "components/NotificationSettings/NotificationRules";
-import Button from "@mui/material/Button";
-import FormGroup from "@mui/material/FormGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Switch from "@mui/material/Switch";
+import React, {
+  useState,
+  useEffect,
+  lazy,
+  memo,
+  useTransition,
+  useMemo,
+} from "react";
 import "./NotificationPage.scss";
 
 import NotificationComponent from "components/NotificationSettings/Notification";
@@ -12,11 +13,19 @@ import { updateReportingPeriods } from "../../api/requests";
 import useReportingPeriodsData from "../../hooks/swr-hooks/useReportingPeriods";
 import { getFromLocalStorage } from "../../services/storageInterection";
 import CircularProgress from "@mui/material/CircularProgress";
-import { SuccessAlert, ErrorAlert, TimelinesAlert } from "components/Alerts/Alerts"
+import {
+  SuccessAlert,
+  ErrorAlert,
+  TimelinesAlert,
+} from "components/Alerts/Alerts";
 
+import Button from "@mui/material/Button";
+import CustomizedSwitches from "../../customized-mui-elements/SwitcherButton/SwitcherButton";
+
+import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { Message } from "@mui/icons-material";
 
 const MemoizedNotificationComponent = memo(NotificationComponent);
-
 
 interface ReportingData {
   after_due_date: number[];
@@ -94,36 +103,43 @@ function extractUpdateForTimelines(data: any) {
   return handledDataObject;
 }
 
+// utils
+function updateObj(original: any, updates: any) {
+  for (let key in updates) {
+    if (key in original) {
+      original[key] = updates[key];
+    }
+  }
+
+  return original;
+}
+
 const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
   const [reportType, setReportType] = useState("inventory");
+  const [isDefaulrReport, setDefaultReportStatus] = useState(false);
   const selectedCountry = getFromLocalStorage("selectedCountry");
-  const { data, isLoading, error } = useReportingPeriodsData(
+  const { data, isLoading, error, mutate } = useReportingPeriodsData(
     selectedCountry,
-    reportType
+    reportType,
+    isDefaulrReport
   );
-  const notificationPeriodsData: ReportingData = data?.data[0];
+  const notificationPeriodsData: ReportingData = data?.data? data?.data[0]: undefined;
+  const [formatedNotificationData, setFormatedNotificationData] = useState(
+    notificationPeriodsData
+  );
   const [updateStatus, setUpdateStatus] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [alertStatus, setAlertStatus] = useState<any>(null);
+  const [editStatus, setEditStatus] = useState(true);
 
-  function handleReportTypeSwitch(reportType: 'inventory'| 'sellout'){
-    startTransition(()=>{
+
+  function handleReportTypeSwitch(reportType: "inventory" | "sellout") {
+    startTransition(() => {
       setReportType(reportType);
-    })
+    });
   }
 
   function handleSave(data: any) {
-    // utils
-    function updateObj(original: any, updates: any) {
-      for (let key in updates) {
-        if (key in original) {
-          original[key] = updates[key];
-        }
-      }
-
-      return original;
-    }
-
     const formatedDataForBackEnd = formatDataForBackEnd(
       notificationPeriodsData
     );
@@ -132,16 +148,41 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
     setUpdateStatus(true);
 
     // utils
-    function getSaveRequestStatus(requestStatus: string) {
-      setUpdateStatus(false);
-      setAlertStatus(requestStatus);
+    function getSaveRequestStatus(responce: any) {
+      if (responce?.ok) {
+        setUpdateStatus(false);
+        setAlertStatus({
+          type: "success",
+          message: "The request was completed successfully",
+        });
+        setDefaultReportStatus(false);
+        setEditStatus(false)
+
+        // temporary
+        setTimeout(()=>{
+          mutate(
+            `${process.env.REACT_APP_API_PYTHON_API}/get_reporting_periods?country=${selectedCountry}&report_type=${reportType}`
+          );
+        }, 2000)
+      } else {
+        setAlertStatus({ type: "error", message: "Some mistake happened" });
+      }
     }
     updateReportingPeriods({ data: [dataForSave] }, getSaveRequestStatus);
   }
 
+  useEffect(() => {
+    if (notificationPeriodsData) {
+      setFormatedNotificationData(notificationPeriodsData);
+    }
+  }, [notificationPeriodsData]);
+
   return (
     <div className="notification-page">
-      <TimelinesAlert status={alertStatus} onClose={()=>setAlertStatus(null)}/>
+      <TimelinesAlert
+        status={alertStatus}
+        onClose={() => setAlertStatus(null)}
+      />
 
       <div className="notification-switcher">
         <div
@@ -157,17 +198,25 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
           Sell-out report
         </div>
       </div>
-      {reportType === "inventory" && notificationPeriodsData  &&(
+      {reportType === "inventory" && formatedNotificationData && (
         <MemoizedNotificationComponent
-          data={notificationPeriodsData}
+          data={formatedNotificationData}
           onSave={handleSave}
+          onDefault={setDefaultReportStatus}
+          isDefault={isDefaulrReport}
+          editStatus={editStatus}
+          onEdit={setEditStatus}
         />
       )}
 
-      {reportType === "sellout" && notificationPeriodsData &&(
+      {reportType === "sellout" && formatedNotificationData && (
         <MemoizedNotificationComponent
-          data={notificationPeriodsData}
+          data={formatedNotificationData}
           onSave={handleSave}
+          onDefault={setDefaultReportStatus}
+          isDefault={isDefaulrReport}
+          editStatus={editStatus}
+          onEdit={setEditStatus}
         />
       )}
 

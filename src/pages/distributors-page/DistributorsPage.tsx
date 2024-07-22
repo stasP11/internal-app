@@ -16,7 +16,7 @@ function getDistributorsRowData(
   return data.map((distributor, index) => ({
     id: index + 1,
     distributorName: [distributor.distributor_name, distributor.distributor_id],
-    email: distributor.emails,
+    email: distributor.emails.join(", "),
     phone: distributor.phone,
     injectionChannels: distributor.injection_channels,
     active: Boolean(distributor.active),
@@ -29,7 +29,10 @@ export default function DistributorsPage() {
   });
 
   const selectedCountry = getFromLocalStorage("selectedCountry");
-  const { data, isLoading, } = useDistributorsDetails(authResult, selectedCountry);
+  const { data, isLoading } = useDistributorsDetails(
+    authResult,
+    selectedCountry
+  );
   const distributorsData = data?.data;
 
   const rowData = useMemo(() => {

@@ -1,4 +1,19 @@
-type CustomPerioud = {
+export type Period = "Daily" | "Weekly" | "Monthly" | "Quarterly" | "Custom";
+export interface NotificationPeriodsProps {
+  selectedPeriod: "Daily" | "Weekly" | "Monthly" | "Quarterly" | "Custom";
+  notificationPeriods: Array<Period>;
+  weeklyPeriod: any;
+  monthlyPeriod: any;
+  quarterlyPeriod: any;
+  customPeriod: any;
+  onPeriodChange: Function;
+  onWeeklyPeriod: Function;
+  onMonthlyPeriod: Function;
+  onQuarterlyPeriod: Function;
+  onCustomPeriod: Function;
+}
+
+export type CustomPerioud = {
   startPeriod: string;
   endPerioud: string;
   startDay: number;

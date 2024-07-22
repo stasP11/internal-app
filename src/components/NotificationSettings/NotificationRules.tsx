@@ -9,6 +9,7 @@ import Button from "@mui/material/Button";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { Box, TextField } from "@mui/material";
+import CustomizedMUISelector from "../../customized-mui-elements/CustomizedMUISelector/CustomizedMUISelector";
 
 
 //utils
@@ -20,7 +21,7 @@ const DynamicDaysCheckbox = ({
   id,
   onNewElementChecked,
 }: any) => {
-  const [daysBefore, setDaysBefore] = useState(0);
+  const [daysBefore, setDaysBefore] = useState(value);
   const [isChecked, setIsChecked] = useState(false);
   const [numberValue, setNumberValue] = useState(1);
 
@@ -87,31 +88,6 @@ interface DaySelectorSelectorProps {
   selectedDaysState: Array<WeekDayType>;
   onSelectedDaysState: Function;
 }
-
-const CustomizedMUISelector: React.FC<any> = ({
-  selectedOption,
-  options,
-  label,
-  onChange,
-}): JSX.Element => {
-  console.log(selectedOption, "selectedOption");
-  return (
-    <div>
-      <Select
-        value={selectedOption}
-        label={label}
-        fullWidth
-        onChange={onChange}
-      >
-        {options.map((period: any) => (
-          <MenuItem key={period} value={period}>
-            {period}
-          </MenuItem>
-        ))}
-      </Select>
-    </div>
-  );
-};
 
 const DaySelector: React.FC<any> = ({
   selectedDays,
@@ -180,9 +156,9 @@ const AfterReportingDueDate: React.FC<any> = ({
 
       <div className="after-due-date__selector selector-container">
         <CustomizedMUISelector
-          selectedOption={frequency}
-          options={["Daily", "Weekly"]}
-          onChange={(e: any) => handleFrequency(e.target.value)}
+          value={frequency}
+          data={["Daily", "Weekly"]}
+          onUpdate={(e: any) => handleFrequency(e.target.value)}
           label={"Frequency"}
         />
       </div>

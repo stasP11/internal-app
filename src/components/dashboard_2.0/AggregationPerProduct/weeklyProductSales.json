@@ -1,0 +1,578 @@
+[
+  {
+    "productId": "ProductID1",
+    "productName": "Product1",
+    "date": "2024-04-01",
+    "units": 42615
+  },
+  {
+    "productId": "ProductID2",
+    "productName": "Product2",
+    "date": "2024-04-01",
+    "units": 29073
+  },
+  {
+    "productId": "ProductID3",
+    "productName": "Product3",
+    "date": "2024-04-01",
+    "units": 26146
+  },
+  {
+    "productId": "ProductID4",
+    "productName": "Product4",
+    "date": "2024-04-01",
+    "units": 12883
+  },
+  {
+    "productId": "ProductID5",
+    "productName": "Product5",
+    "date": "2024-04-01",
+    "units": 25201
+  },
+  {
+    "productId": "ProductID6",
+    "productName": "Product6",
+    "date": "2024-04-01",
+    "units": 30385
+  },
+  {
+    "productId": "ProductID1",
+    "productName": "Product1",
+    "date": "2024-04-08",
+    "units": 40807
+  },
+  {
+    "productId": "ProductID2",
+    "productName": "Product2",
+    "date": "2024-04-08",
+    "units": 2898
+  },
+  {
+    "productId": "ProductID3",
+    "productName": "Product3",
+    "date": "2024-04-08",
+    "units": 13861
+  },
+  {
+    "productId": "ProductID4",
+    "productName": "Product4",
+    "date": "2024-04-08",
+    "units": 39595
+  },
+  {
+    "productId": "ProductID5",
+    "productName": "Product5",
+    "date": "2024-04-08",
+    "units": 32109
+  },
+  {
+    "productId": "ProductID6",
+    "productName": "Product6",
+    "date": "2024-04-08",
+    "units": 3487
+  },
+  {
+    "productId": "ProductID1",
+    "productName": "Product1",
+    "date": "2024-04-15",
+    "units": 18772
+  },
+  {
+    "productId": "ProductID2",
+    "productName": "Product2",
+    "date": "2024-04-15",
+    "units": 2033
+  },
+  {
+    "productId": "ProductID3",
+    "productName": "Product3",
+    "date": "2024-04-15",
+    "units": 48908
+  },
+  {
+    "productId": "ProductID4",
+    "productName": "Product4",
+    "date": "2024-04-15",
+    "units": 4547
+  },
+  {
+    "productId": "ProductID5",
+    "productName": "Product5",
+    "date": "2024-04-15",
+    "units": 7893
+  },
+  {
+    "productId": "ProductID6",
+    "productName": "Product6",
+    "date": "2024-04-15",
+    "units": 33199
+  },
+  {
+    "productId": "ProductID1",
+    "productName": "Product1",
+    "date": "2024-04-22",
+    "units": 7337
+  },
+  {
+    "productId": "ProductID2",
+    "productName": "Product2",
+    "date": "2024-04-22",
+    "units": 32853
+  },
+  {
+    "productId": "ProductID3",
+    "productName": "Product3",
+    "date": "2024-04-22",
+    "units": 8359
+  },
+  {
+    "productId": "ProductID4",
+    "productName": "Product4",
+    "date": "2024-04-22",
+    "units": 42536
+  },
+  {
+    "productId": "ProductID5",
+    "productName": "Product5",
+    "date": "2024-04-22",
+    "units": 30712
+  },
+  {
+    "productId": "ProductID6",
+    "productName": "Product6",
+    "date": "2024-04-22",
+    "units": 12626
+  },
+  {
+    "productId": "ProductID1",
+    "productName": "Product1",
+    "date": "2024-04-29",
+    "units": 33976
+  },
+  {
+    "productId": "ProductID2",
+    "productName": "Product2",
+    "date": "2024-04-29",
+    "units": 40839
+  },
+  {
+    "productId": "ProductID3",
+    "productName": "Product3",
+    "date": "2024-04-29",
+    "units": 50032
+  },
+  {
+    "productId": "ProductID4",
+    "productName": "Product4",
+    "date": "2024-04-29",
+    "units": 49363
+  },
+  {
+    "productId": "ProductID5",
+    "productName": "Product5",
+    "date": "2024-04-29",
+    "units": 32243
+  },
+  {
+    "productId": "ProductID6",
+    "productName": "Product6",
+    "date": "2024-04-29",
+    "units": 26833
+  },
+  {
+    "productId": "ProductID1",
+    "productName": "Product1",
+    "date": "2024-05-06",
+    "units": 1192
+  },
+  {
+    "productId": "ProductID2",
+    "productName": "Product2",
+    "date": "2024-05-06",
+    "units": 27012
+  },
+  {
+    "productId": "ProductID3",
+    "productName": "Product3",
+    "date": "2024-05-06",
+    "units": 9801
+  },
+  {
+    "productId": "ProductID4",
+    "productName": "Product4",
+    "date": "2024-05-06",
+    "units": 6017
+  },
+  {
+    "productId": "ProductID5",
+    "productName": "Product5",
+    "date": "2024-05-06",
+    "units": 16768
+  },
+  {
+    "productId": "ProductID6",
+    "productName": "Product6",
+    "date": "2024-05-06",
+    "units": 24444
+  },
+  {
+    "productId": "ProductID1",
+    "productName": "Product1",
+    "date": "2024-05-13",
+    "units": 7983
+  },
+  {
+    "productId": "ProductID2",
+    "productName": "Product2",
+    "date": "2024-05-13",
+    "units": 1499
+  },
+  {
+    "productId": "ProductID3",
+    "productName": "Product3",
+    "date": "2024-05-13",
+    "units": 5824
+  },
+  {
+    "productId": "ProductID4",
+    "productName": "Product4",
+    "date": "2024-05-13",
+    "units": 12260
+  },
+  {
+    "productId": "ProductID5",
+    "productName": "Product5",
+    "date": "2024-05-13",
+    "units": 12499
+  },
+  {
+    "productId": "ProductID6",
+    "productName": "Product6",
+    "date": "2024-05-13",
+    "units": 48665
+  },
+  {
+    "productId": "ProductID1",
+    "productName": "Product1",
+    "date": "2024-05-20",
+    "units": 11367
+  },
+  {
+    "productId": "ProductID2",
+    "productName": "Product2",
+    "date": "2024-05-20",
+    "units": 728
+  },
+  {
+    "productId": "ProductID3",
+    "productName": "Product3",
+    "date": "2024-05-20",
+    "units": 44732
+  },
+  {
+    "productId": "ProductID4",
+    "productName": "Product4",
+    "date": "2024-05-20",
+    "units": 30771
+  },
+  {
+    "productId": "ProductID5",
+    "productName": "Product5",
+    "date": "2024-05-20",
+    "units": 7049
+  },
+  {
+    "productId": "ProductID6",
+    "productName": "Product6",
+    "date": "2024-05-20",
+    "units": 34355
+  },
+  {
+    "productId": "ProductID1",
+    "productName": "Product1",
+    "date": "2024-05-27",
+    "units": 666
+  },
+  {
+    "productId": "ProductID2",
+    "productName": "Product2",
+    "date": "2024-05-27",
+    "units": 15006
+  },
+  {
+    "productId": "ProductID3",
+    "productName": "Product3",
+    "date": "2024-05-27",
+    "units": 27348
+  },
+  {
+    "productId": "ProductID4",
+    "productName": "Product4",
+    "date": "2024-05-27",
+    "units": 36268
+  },
+  {
+    "productId": "ProductID5",
+    "productName": "Product5",
+    "date": "2024-05-27",
+    "units": 37087
+  },
+  {
+    "productId": "ProductID6",
+    "productName": "Product6",
+    "date": "2024-05-27",
+    "units": 40524
+  },
+  {
+    "productId": "ProductID1",
+    "productName": "Product1",
+    "date": "2024-06-03",
+    "units": 6851
+  },
+  {
+    "productId": "ProductID2",
+    "productName": "Product2",
+    "date": "2024-06-03",
+    "units": 21654
+  },
+  {
+    "productId": "ProductID3",
+    "productName": "Product3",
+    "date": "2024-06-03",
+    "units": 34260
+  },
+  {
+    "productId": "ProductID4",
+    "productName": "Product4",
+    "date": "2024-06-03",
+    "units": 28893
+  },
+  {
+    "productId": "ProductID5",
+    "productName": "Product5",
+    "date": "2024-06-03",
+    "units": 27940
+  },
+  {
+    "productId": "ProductID6",
+    "productName": "Product6",
+    "date": "2024-06-03",
+    "units": 1330
+  },
+  {
+    "productId": "ProductID1",
+    "productName": "Product1",
+    "date": "2024-06-10",
+    "units": 29407
+  },
+  {
+    "productId": "ProductID2",
+    "productName": "Product2",
+    "date": "2024-06-10",
+    "units": 1193
+  },
+  {
+    "productId": "ProductID3",
+    "productName": "Product3",
+    "date": "2024-06-10",
+    "units": 38755
+  },
+  {
+    "productId": "ProductID4",
+    "productName": "Product4",
+    "date": "2024-06-10",
+    "units": 4337
+  },
+  {
+    "productId": "ProductID5",
+    "productName": "Product5",
+    "date": "2024-06-10",
+    "units": 26033
+  },
+  {
+    "productId": "ProductID6",
+    "productName": "Product6",
+    "date": "2024-06-10",
+    "units": 3066
+  },
+  {
+    "productId": "ProductID1",
+    "productName": "Product1",
+    "date": "2024-06-17",
+    "units": 40809
+  },
+  {
+    "productId": "ProductID2",
+    "productName": "Product2",
+    "date": "2024-06-17",
+    "units": 22023
+  },
+  {
+    "productId": "ProductID3",
+    "productName": "Product3",
+    "date": "2024-06-17",
+    "units": 11483
+  },
+  {
+    "productId": "ProductID4",
+    "productName": "Product4",
+    "date": "2024-06-17",
+    "units": 7614
+  },
+  {
+    "productId": "ProductID5",
+    "productName": "Product5",
+    "date": "2024-06-17",
+    "units": 36815
+  },
+  {
+    "productId": "ProductID6",
+    "productName": "Product6",
+    "date": "2024-06-17",
+    "units": 28160
+  },
+  {
+    "productId": "ProductID1",
+    "productName": "Product1",
+    "date": "2024-06-24",
+    "units": 3845
+  },
+  {
+    "productId": "ProductID2",
+    "productName": "Product2",
+    "date": "2024-06-24",
+    "units": 41624
+  },
+  {
+    "productId": "ProductID3",
+    "productName": "Product3",
+    "date": "2024-06-24",
+    "units": 10763
+  },
+  {
+    "productId": "ProductID4",
+    "productName": "Product4",
+    "date": "2024-06-24",
+    "units": 26450
+  },
+  {
+    "productId": "ProductID5",
+    "productName": "Product5",
+    "date": "2024-06-24",
+    "units": 44613
+  },
+  {
+    "productId": "ProductID6",
+    "productName": "Product6",
+    "date": "2024-06-24",
+    "units": 45723
+  },
+  {
+    "productId": "ProductID1",
+    "productName": "Product1",
+    "date": "2024-07-01",
+    "units": 41771
+  },
+  {
+    "productId": "ProductID2",
+    "productName": "Product2",
+    "date": "2024-07-01",
+    "units": 36479
+  },
+  {
+    "productId": "ProductID3",
+    "productName": "Product3",
+    "date": "2024-07-01",
+    "units": 12066
+  },
+  {
+    "productId": "ProductID4",
+    "productName": "Product4",
+    "date": "2024-07-01",
+    "units": 23718
+  },
+  {
+    "productId": "ProductID5",
+    "productName": "Product5",
+    "date": "2024-07-01",
+    "units": 37728
+  },
+  {
+    "productId": "ProductID6",
+    "productName": "Product6",
+    "date": "2024-07-01",
+    "units": 35117
+  },
+  {
+    "productId": "ProductID1",
+    "productName": "Product1",
+    "date": "2024-07-08",
+    "units": 31143
+  },
+  {
+    "productId": "ProductID2",
+    "productName": "Product2",
+    "date": "2024-07-08",
+    "units": 38683
+  },
+  {
+    "productId": "ProductID3",
+    "productName": "Product3",
+    "date": "2024-07-08",
+    "units": 40478
+  },
+  {
+    "productId": "ProductID4",
+    "productName": "Product4",
+    "date": "2024-07-08",
+    "units": 31094
+  },
+  {
+    "productId": "ProductID5",
+    "productName": "Product5",
+    "date": "2024-07-08",
+    "units": 849
+  },
+  {
+    "productId": "ProductID6",
+    "productName": "Product6",
+    "date": "2024-07-08",
+    "units": 1272
+  },
+  {
+    "productId": "ProductID1",
+    "productName": "Product1",
+    "date": "2024-07-15",
+    "units": 31606
+  },
+  {
+    "productId": "ProductID2",
+    "productName": "Product2",
+    "date": "2024-07-15",
+    "units": 10793
+  },
+  {
+    "productId": "ProductID3",
+    "productName": "Product3",
+    "date": "2024-07-15",
+    "units": 33088
+  },
+  {
+    "productId": "ProductID4",
+    "productName": "Product4",
+    "date": "2024-07-15",
+    "units": 6729
+  },
+  {
+    "productId": "ProductID5",
+    "productName": "Product5",
+    "date": "2024-07-15",
+    "units": 35210
+  },
+  {
+    "productId": "ProductID6",
+    "productName": "Product6",
+    "date": "2024-07-15",
+    "units": 43844
+  }
+]

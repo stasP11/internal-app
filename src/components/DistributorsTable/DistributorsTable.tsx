@@ -4,10 +4,10 @@ import {
   GridColDef,
   GridRenderCellParams,
 } from "@mui/x-data-grid-pro";
-import ExplandableCell from "./components/ExpandableCell";
-import ToggleaSwitch from "./components/ToggleSwitch";
+import ExpandableCell from "./components/ExpandableCell";
 import { DistributorsTableProps } from "./types";
 import DistributorsTableToolbar from "./components/DistributorsTableToolbar";
+import ToggleActiveSwitch from "./components/ToggleActiveSwitch";
 
 export default function DistributorsTable({ rowData }: DistributorsTableProps) {
   const columns: GridColDef<any>[] = [
@@ -32,17 +32,20 @@ export default function DistributorsTable({ rowData }: DistributorsTableProps) {
       field: "email",
       headerName: "Email",
       width: 350,
-      renderCell: (params) => <ExplandableCell items={params.value} />,
+      renderCell: (params) => <ExpandableCell items={params.value} />,
       flex: 0,
     },
     { field: "phone", headerName: "Phone", flex: 1 },
-    { field: "injectionChannels", headerName: "Injection channels", flex: 1 },
+    { field: "injectionChannels", headerName: "Ingestion Channels", flex: 1 },
     {
       field: "active",
       headerName: "Active",
+      type: "boolean",
       width: 100,
       flex: 1,
-      renderCell: (params) => <ToggleaSwitch initialValue={params.value} />,
+      renderCell: (params) => (
+        <ToggleActiveSwitch initialValue={params.value} />
+      ),
     },
   ];
 
