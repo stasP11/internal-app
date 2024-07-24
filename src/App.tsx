@@ -2,23 +2,22 @@ import "./App.scss";
 import "./assets/index.scss";
 
 import Router from "./routes/Router";
-import { useEffect, createContext, useState, useLayoutEffect } from "react";
+import { useEffect, createContext, useLayoutEffect } from "react";
 import { SWRConfig } from "swr";
 import {
   MsalProvider,
   AuthenticatedTemplate,
   UnauthenticatedTemplate,
 } from "@azure/msal-react";
-import { loginRequest, protectedResources } from "./authConfig";
+import {  protectedResources } from "./authConfig";
 import { LicenseInfo } from "@mui/x-data-grid-pro";
 import { useFetchWithMsal } from "../src/hooks/useFetchWithMsal";
-import { useReportsData } from "../src/hooks/swr-hooks/useReports";
 import ErrorPage from "./pages/error/ErrorPage";
 import {
   getFromLocalStorage,
   saveToLocalStorage,
 } from "./services/storageInterection";
-import iconTimelines from "./icons/timelines/NavNotificationLine.svg";
+
 
 type UserDataContextType = {
   pages?: Array<any>;
@@ -38,7 +37,7 @@ const MainContent = () => {
       try {
         await execute(
           "GET",
-          `https://csci-api-7psl2cwk2q-ew.a.run.app/authorize`,
+          `${process.env.REACT_APP_API_PYTHON_API}/authorize`,
           null
         );
       } catch (e) {

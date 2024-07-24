@@ -15,7 +15,7 @@ export const reportingPerfomanceChartLegendConfig = [
   },
   {
     color: chartColors.dueDate,
-    label: "Due Date",
+    label: "Due Day",
     shape: "rectangle",
   },
 ];

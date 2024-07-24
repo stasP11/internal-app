@@ -47,7 +47,7 @@ const dataTest1 = [
       notificationRules: {
         afterReportingDueDate: [1, 3, 5],
         beforeReportingDueDate: [
-          { label: "on due Date", selected: false, value: 0, id: "02092" },
+          { label: "on Due Day", selected: false, value: 0, id: "02092" },
           { label: "1 day before", selected: true, value: 1, id: "02093" },
         ],
       },
@@ -61,7 +61,7 @@ const dataTest1 = [
       notificationRules: {
         afterReportingDueDate: [1, 3, 5],
         beforeReportingDueDate: [
-          { label: "on due Date", selected: false, value: 0, id: "323f2" },
+          { label: "on Due Day", selected: false, value: 0, id: "323f2" },
           { label: "1 day before", selected: true, value: 1, id: "0233293" },
         ],
         beforeReportingStartDate: [
@@ -78,7 +78,7 @@ const dataTest1 = [
       notificationRules: {
         afterReportingDueDate: [1, 2, 4, 5],
         beforeReportingDueDate: [
-          { label: "on due Date", selected: false, value: 0, id: "323fee2" },
+          { label: "on Due Day", selected: false, value: 0, id: "323fee2" },
           { label: "1 day before", selected: true, value: 1, id: "0233293" },
         ],
         beforeReportingStartDate: [
@@ -108,7 +108,7 @@ const dataTest1 = [
       notificationRules: {
         afterReportingDueDate: [1, 2, 4, 5],
         beforeReportingDueDate: [
-          { label: "on due Date", selected: false, value: 0, id: "323fee2" },
+          { label: "on Due Day", selected: false, value: 0, id: "323fee2" },
           { label: "1 day before", selected: true, value: 1, id: "0233293" },
         ],
         beforeReportingStartDate: [

@@ -177,7 +177,7 @@ function Dashboard() {
         {realReportsData?.data?.length > 0 &&
           realDistributorData?.data?.length > 0 &&
           !isEMEA && (
-            <div>
+            <>
               <div className="inform-cards">
                 <div className="inform-cards__inform-card">
                   <Card
@@ -274,7 +274,7 @@ function Dashboard() {
                   />
                 </div>
               </div>
-            </div>
+            </>
           )}
       </>
     </>

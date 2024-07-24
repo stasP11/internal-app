@@ -18,11 +18,12 @@ import {
   Period,
   NotificationPeriodsProps,
 } from "../../types/notificationsTypes";
-import { DateValidationError } from '@mui/x-date-pickers/models';
-import RemoveIcon from "../../icons/bucket-icon/bucketIcon.svg"
-import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/Delete';
-
+import { DateValidationError } from "@mui/x-date-pickers/models";
+import RemoveIcon from "../../icons/bucket-icon-light/bucketIconLight.svg";
+import IconButton from "@mui/material/IconButton";
+import TextField from "@mui/material/TextField";
+var customParseFormat = require("dayjs/plugin/customParseFormat");
+dayjs.extend(customParseFormat);
 
 const WeeklyPeriods: React.FC<any> = ({ data, onUpdate }: any): JSX.Element => {
   return (
@@ -38,7 +39,7 @@ const WeeklyPeriods: React.FC<any> = ({ data, onUpdate }: any): JSX.Element => {
           isDisabled={true}
         />
         <span className="selector-container__desciption">
-          Start Day of the Next Period
+          Day of the Next Period
         </span>
       </div>
       <div className="selector-container">
@@ -52,7 +53,7 @@ const WeeklyPeriods: React.FC<any> = ({ data, onUpdate }: any): JSX.Element => {
           isDisabled={false}
         />
         <span className="selector-container__desciption">
-          Due Day of the Next Period
+          Day of the Next Period
         </span>
       </div>
     </div>
@@ -74,7 +75,7 @@ const MonthlyPeriods: React.FC<any> = ({
           isDisabled={true}
         />
         <span className="selector-container__desciption">
-          Start Day of the Next Period
+          Day of the Next Period
         </span>
       </div>
       <div className="selector-container">
@@ -86,7 +87,7 @@ const MonthlyPeriods: React.FC<any> = ({
           isDisabled={false}
         />
         <span className="selector-container__desciption">
-          Due Day of the Next Period
+          Day of the Next Period
         </span>
       </div>
     </div>
@@ -97,7 +98,6 @@ const QuarterlyPeriods: React.FC<any> = ({
   data,
   onUpdate,
 }: any): JSX.Element => {
-  console.log(data, "data-test");
   return (
     <div className="monthly-periods">
       <div className="selector-container">
@@ -109,7 +109,7 @@ const QuarterlyPeriods: React.FC<any> = ({
           isDisabled={true}
         />
         <span className="selector-container__desciption">
-          Start Day of the Next Period
+          Day of the Next Period
         </span>
       </div>
       <div className="selector-container">
@@ -121,7 +121,7 @@ const QuarterlyPeriods: React.FC<any> = ({
           isDisabled={false}
         />
         <span className="selector-container__desciption">
-          Due Day of the Next Period
+          Day of the Next Period
         </span>
       </div>
     </div>
@@ -136,37 +136,39 @@ const CustomPeriod: React.FC<any> = ({
   dueDay,
   onUpdate,
   prevEndPeriod,
-  onRemove,
-  index
+  index,
 }: any): JSX.Element => {
   const [error, setError] = React.useState<DateValidationError | any>(null);
+  const dateFormatForBackEnd = "YYYY-MM-DD";
+  const dateFormatForFrontEnd = "DD/MM/YYYY";
 
   const errorMessage = React.useMemo(() => {
-    const errorCase = error? error[0] : null;
-    console.log(errorCase, error,  'errorCase')
-    if(errorCase === 'minDate') {
-      return 'Please select a date that does not overlap with the previous value'
+    const errorCase = error ? error[0] : null;
+    if (errorCase === "minDate") {
+      return "Please select a date that does not overlap with the previous value";
     }
     switch (errorCase) {
-      case 'maxDate':
-      case 'minDate': {
-        return 'Please select a date that does not overlap with the previous value';
+      case "maxDate":
+      case "minDate": {
+        return "Please select a date that does not overlap with the previous value";
       }
 
-      case 'invalidDate': {
-        return 'Your date is not valid';
+      case "invalidDate": {
+        return "Your date is not valid";
       }
 
       default: {
-        return '';
+        return "";
       }
     }
   }, [error]);
-  
+
   function handleDatePikerData(value: any) {
     const [start, end] = value;
     if (start) {
-      const startPeriod = dayjs(start).format(dateFormat);
+      const startPeriod = dayjs(start, dateFormatForFrontEnd).format(
+        dateFormatForBackEnd
+      );
       onUpdate({
         id,
         startPeriod,
@@ -176,7 +178,9 @@ const CustomPeriod: React.FC<any> = ({
       });
     }
     if (end) {
-      const endPeriod = dayjs(end).format(dateFormat);
+      const endPeriod = dayjs(end, dateFormatForFrontEnd).format(
+        dateFormatForBackEnd
+      );
       onUpdate({
         id,
         startPeriod,
@@ -187,23 +191,34 @@ const CustomPeriod: React.FC<any> = ({
     }
   }
 
-
-  // const tomorrow = dayjs().add(1, 'day');
-  // minDate={tomorrow}
-  const result = dayjs(`${startPeriod}`, dateFormat);
-  const result2 = dayjs(`${endPeriod}`, dateFormat);
-  const handledPrevEndPeriod = prevEndPeriod? dayjs(`${prevEndPeriod}`, dateFormat) : undefined;
-  const isDisabled = (prevEndPeriod || index ===0 )? false :true;
+  const result = dayjs(startPeriod, dateFormatForBackEnd).format(
+    dateFormatForFrontEnd
+  );
+  const result2 = dayjs(endPeriod, dateFormatForBackEnd).format(
+    dateFormatForFrontEnd
+  );
+  const handledPrevEndPeriod = prevEndPeriod
+    ? dayjs(
+        dayjs(`${prevEndPeriod}`, dateFormatForBackEnd).format(
+          dateFormatForFrontEnd
+        ),
+        dateFormatForFrontEnd
+      )
+    : undefined;
+  const isDisabled = prevEndPeriod || index === 0 ? false : true;
 
   return (
     <div className="custom-period">
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DemoContainer components={["SingleInputDateRangeField"]}>
           <DateRangePicker
-            sx={{maxWidth: '300px'}}
-            defaultValue={[result, result2]}
+            sx={{ maxWidth: "300px" }}
+            defaultValue={[
+              dayjs(result, dateFormatForFrontEnd),
+              dayjs(result2, dateFormatForFrontEnd),
+            ]}
             onChange={(e) => handleDatePikerData(e)}
-            format={dateFormat}
+            format={dateFormatForFrontEnd}
             slots={{ field: SingleInputDateRangeField }}
             minDate={handledPrevEndPeriod}
             onError={(newError) => setError(newError)}
@@ -219,10 +234,10 @@ const CustomPeriod: React.FC<any> = ({
 
       <div className="selector-container">
         <FormControl fullWidth>
-          <InputLabel>{"Due date"}</InputLabel>
-          <Select
+          <TextField
+            variant="outlined"
             value={startDay}
-            label={"Due date"}
+            label={"Start Day"}
             fullWidth
             disabled
             onChange={(e) =>
@@ -240,18 +255,18 @@ const CustomPeriod: React.FC<any> = ({
                 {period}
               </MenuItem>
             ))}
-          </Select>
+          </TextField>
         </FormControl>
         <span className="selector-container__desciption">
-          Start Day of the Next Period
+          Day of the Next Period
         </span>
       </div>
       <div className="selector-container">
         <FormControl fullWidth>
-          <InputLabel>{"Due date"}</InputLabel>
+          <InputLabel>{"Due Day"}</InputLabel>
           <Select
             value={dueDay}
-            label={"Due date"}
+            label={"Due Day"}
             fullWidth
             onChange={(e) =>
               onUpdate({
@@ -271,19 +286,26 @@ const CustomPeriod: React.FC<any> = ({
           </Select>
         </FormControl>
         <span className="selector-container__desciption">
-          Due Day of the Next Period
+          Day of the Next Period
         </span>
       </div>
       <div className="remove-button">
-      <IconButton aria-label="delete" onClick={()=>onUpdate({id, isRemoved: true})}>
-        <DeleteIcon />
-      </IconButton>
+        <IconButton
+          aria-label="delete"
+          onClick={() => onUpdate({ id, isRemoved: true })}
+        >
+          <img src={RemoveIcon} />
+        </IconButton>
       </div>
     </div>
   );
 };
 
-const CustomPeriods: React.FC<any> = ({ data, onUpdate, onRemove }: any): JSX.Element => {
+const CustomPeriods: React.FC<any> = ({
+  data,
+  onUpdate,
+  onRemove,
+}: any): JSX.Element => {
   function addNewPeriod() {
     onUpdate({
       startPeriod: null,
@@ -305,7 +327,7 @@ const CustomPeriods: React.FC<any> = ({ data, onUpdate, onRemove }: any): JSX.El
             endPeriod={value?.endPeriod}
             startDay={value?.startDay}
             dueDay={value?.dueDay}
-            prevEndPeriod={data[index-1]?.endPeriod}
+            prevEndPeriod={data[index - 1]?.endPeriod}
             onUpdate={onUpdate}
             onRemove={onRemove}
             index={index}

@@ -1,11 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  lazy,
-  memo,
-  useTransition,
-  useMemo,
-} from "react";
+import React, { useState, useEffect, useTransition } from "react";
 import "./NotificationPage.scss";
 
 import NotificationComponent from "components/NotificationSettings/Notification";
@@ -13,19 +6,180 @@ import { updateReportingPeriods } from "../../api/requests";
 import useReportingPeriodsData from "../../hooks/swr-hooks/useReportingPeriods";
 import { getFromLocalStorage } from "../../services/storageInterection";
 import CircularProgress from "@mui/material/CircularProgress";
-import {
-  SuccessAlert,
-  ErrorAlert,
-  TimelinesAlert,
-} from "components/Alerts/Alerts";
+import { TimelinesAlert } from "components/Alerts/Alerts";
 
-import Button from "@mui/material/Button";
-import CustomizedSwitches from "../../customized-mui-elements/SwitcherButton/SwitcherButton";
+import useNotificationsState from "../../hooks/notifications-hook/useNotificationsState";
 
-import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
-import { Message } from "@mui/icons-material";
+// utils
 
-const MemoizedNotificationComponent = memo(NotificationComponent);
+function isArrayOfNumbers(arr: any[]): boolean {
+  return (
+    Array.isArray(arr) && arr.every((element) => typeof element === "number")
+  );
+}
+
+// Function to remove duplicates from an array
+function removeDuplicates<T>(arr: T[]): T[] {
+  return Array.from(new Set(arr));
+}
+
+// utils
+function transformDataForFrontEnd(data: any) {
+  const rowData = [
+    {
+      name: "daily",
+      periodsSettings: {},
+      notificationRules: {
+        afterReportingDueDate: [],
+      },
+    },
+    {
+      name: "weekly",
+      periodsSettings: {
+        startDay: 0,
+        dueDay: 5,
+      },
+      notificationRules: {
+        afterReportingDueDate: [],
+        beforeReportingDueDate: [],
+      },
+    },
+    {
+      name: "monthly",
+      periodsSettings: {
+        startDay: 1,
+        dueDay: 30,
+      },
+      notificationRules: {
+        afterReportingDueDate: [],
+        beforeReportingDueDate: [],
+        beforeReportingStartDate: [],
+      },
+    },
+    {
+      name: "quarterly",
+      periodsSettings: {
+        startDay: 1,
+        dueDay: 30,
+      },
+      notificationRules: {
+        afterReportingDueDate: [],
+        beforeReportingDueDate: [],
+        beforeReportingStartDate: [],
+      },
+    },
+    {
+      name: "custom",
+      periodsSettings: [],
+      notificationRules: {
+        afterReportingDueDate: [],
+        beforeReportingDueDate: [],
+        beforeReportingStartDate: [],
+      },
+    },
+  ];
+
+  function generateRandomId() {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+  }
+
+  function addID(arr: any) {
+    const result = arr.map((element: any) => {
+      return { ...element, id: generateRandomId() };
+    });
+
+    return result;
+  }
+
+  function formatDataforCheckButtons(array: any, label: string) {
+    let result: any = [];
+    array.forEach((element: number) => {
+      result.push({
+        label: `${element} ${label}`,
+        selected: true,
+        value: element,
+        id: element,
+      });
+    });
+
+    const soretedResult = result.sort(
+      (prev: any, next: any) => prev.value - next.value
+    );
+    return soretedResult;
+  }
+
+  const reportingFrequency = (data?.reporting_frequency).toLowerCase();
+  if (reportingFrequency === "daily") {
+    rowData.forEach((obj) => {
+      if (obj.name === "daily") {
+        obj.notificationRules.afterReportingDueDate =
+          data?.after_due_date || [];
+      }
+    });
+  }
+
+  if (reportingFrequency === "weekly") {
+    rowData.forEach((obj: any) => {
+      if (obj.name === "weekly") {
+        obj.periodsSettings.startDay = 0;
+        obj.periodsSettings.dueDay = data?.reporting_due_date || 0;
+        obj.notificationRules.afterReportingDueDate =
+          data?.after_due_date || [];
+        obj.notificationRules.beforeReportingDueDate =
+          formatDataforCheckButtons(data?.before_due_date, "day before") || [];
+      }
+    });
+  }
+
+  if (reportingFrequency === "monthly") {
+    rowData.forEach((obj: any) => {
+      if (obj.name === "monthly") {
+        obj.periodsSettings.startDay = data?.reporting_start_date || 0;
+        obj.periodsSettings.dueDay = data?.reporting_due_date || 0;
+        obj.notificationRules.afterReportingDueDate =
+          data?.after_due_date || [];
+        obj.notificationRules.beforeReportingDueDate =
+          formatDataforCheckButtons(data?.before_due_date, "day before") || [];
+        obj.notificationRules.beforeReportingStartDate =
+          formatDataforCheckButtons(data?.before_start_date, "day before") ||
+          [];
+      }
+    });
+  }
+
+  if (reportingFrequency === "quarterly") {
+    rowData.forEach((obj: any) => {
+      if (obj.name === "quarterly") {
+        obj.periodsSettings.startDay = data?.reporting_start_date || 0;
+        obj.periodsSettings.dueDay = data?.reporting_due_date || 0;
+        obj.notificationRules.afterReportingDueDate =
+          data?.after_due_date || [];
+        obj.notificationRules.beforeReportingDueDate =
+          formatDataforCheckButtons(data?.before_due_date, "day before") || [];
+        obj.notificationRules.beforeReportingStartDate =
+          formatDataforCheckButtons(data?.before_start_date, "day before") ||
+          [];
+      }
+    });
+  }
+
+  if (reportingFrequency === "custom") {
+    rowData.forEach((obj: any) => {
+      if (obj.name === "custom") {
+        obj.periodsSettings = addID(data?.custom_periods);
+        obj.notificationRules.afterReportingDueDate =
+          data?.after_due_date || [];
+        obj.notificationRules.beforeReportingDueDate =
+          formatDataforCheckButtons(data?.before_due_date, "day before") || [];
+        obj.notificationRules.beforeReportingStartDate =
+          formatDataforCheckButtons(data?.before_start_date, "day before") ||
+          [];
+      }
+    });
+  }
+
+  return rowData;
+}
 
 interface ReportingData {
   after_due_date: number[];
@@ -54,30 +208,39 @@ const analogyDictionary: any = {
   periodsSettings: "custom_periods",
 };
 
-function formatDataForBackEnd(data: any) {
+function formatDataForBackEnd(data: any): any {
   const newObj: any = {};
 
+  // Iterate over each key in the data object
   for (let key in data) {
-    newObj[key] = data[key];
-    newObj[`${key}_old`] = data[key];
+    if (data.hasOwnProperty(key)) {
+      newObj[key] = Array.isArray(data[key])
+        ? removeDuplicates(data[key])
+        : data[key];
+      newObj[`${key}_old`] = data[key];
+    }
   }
 
   return newObj;
 }
 
 // utils
+
+//move to  utils
 function extractUpdateForTimelines(data: any) {
   const handledDataObject: any = {};
   const arrayOfKeys = Object.keys(data);
+
   function extractSelectedValueFromArray(arr: any): any[] {
     if (arr.length === 0) return arr;
-    if (typeof arr[0] === "number") {
+    if (isArrayOfNumbers(arr)) {
       return arr;
     }
     return (arr as { selected: boolean; value: any }[])
       .filter((item) => item.selected)
       .map((item) => item.value);
   }
+
   arrayOfKeys.forEach((key: string) => {
     const keyValue = data[key];
     const keyValueIsArray = Array.isArray(keyValue);
@@ -85,11 +248,11 @@ function extractUpdateForTimelines(data: any) {
     //potential error!!!
     const actualNameForBackEnd =
       key in analogyDictionary ? analogyDictionary[key] : key;
-    console.log(actualNameForBackEnd, "actualNameForBackEnd");
 
     if (keyValueIsArray && key !== "periodsSettings") {
-      handledDataObject[actualNameForBackEnd] =
-        extractSelectedValueFromArray(keyValue);
+      handledDataObject[actualNameForBackEnd] = removeDuplicates(
+        extractSelectedValueFromArray(keyValue)
+      );
     } else if (keyValueIsArray && key == "periodsSettings") {
       handledDataObject[actualNameForBackEnd] = keyValue.map(
         ({ startPeriod, endPeriod, startDay, dueDay }: any) => {
@@ -100,10 +263,11 @@ function extractUpdateForTimelines(data: any) {
       handledDataObject[actualNameForBackEnd] = String(keyValue);
     }
   });
+
   return handledDataObject;
 }
 
-// utils
+//move to  utils
 function updateObj(original: any, updates: any) {
   for (let key in updates) {
     if (key in original) {
@@ -116,22 +280,87 @@ function updateObj(original: any, updates: any) {
 
 const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
   const [reportType, setReportType] = useState("inventory");
-  const [isDefaulrReport, setDefaultReportStatus] = useState(false);
   const selectedCountry = getFromLocalStorage("selectedCountry");
+  const [isDefaultReport, setDefaultReport] = useState(false);
   const { data, isLoading, error, mutate } = useReportingPeriodsData(
     selectedCountry,
     reportType,
-    isDefaulrReport
+    isDefaultReport
   );
-  const notificationPeriodsData: ReportingData = data?.data? data?.data[0]: undefined;
-  const [formatedNotificationData, setFormatedNotificationData] = useState(
-    notificationPeriodsData
-  );
+  const notificationPeriodsData: ReportingData = data?.data
+    ? data?.data[0]
+    : undefined;
+  const [formatedNotificationData, setFormatedNotificationData] =
+    useState<any>();
   const [updateStatus, setUpdateStatus] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [alertStatus, setAlertStatus] = useState<any>(null);
   const [editStatus, setEditStatus] = useState(true);
+  const [isDefaulrReport, setDefaultReportStatus] = useState(false);
+  const [isDefaultToggleOn, setDefaultToggleOn] = useState(false);
+  const [isInEditMode, setEditMode] = useState(false);
 
+  const {
+    baseState,
+    updateState,
+    getSavedData,
+    applyPeriodAndNotificationSettings,
+  } = useNotificationsState(
+    handleTurnOnEditMode,
+    selectedCountry,
+    notificationPeriodsData?.reporting_frequency
+  );
+
+  useEffect(() => {
+    if (notificationPeriodsData) {
+      const hendledData = transformDataForFrontEnd(notificationPeriodsData);
+      const selectedPeriod = notificationPeriodsData?.reporting_frequency;
+      if (hendledData) {
+        setFormatedNotificationData(hendledData);
+      }
+      if (selectedPeriod) {
+        updateState.selectPeriod(selectedPeriod);
+      }
+    }
+  }, [notificationPeriodsData]);
+
+  useEffect(() => {
+    if (formatedNotificationData) {
+      applyPeriodAndNotificationSettings(formatedNotificationData);
+    }
+  }, [formatedNotificationData]);
+
+  function handleCancelDataEdit() {
+    setDefaultToggleOn(false);
+    setDefaultReport(false);
+    setEditMode(false);
+
+    if (formatedNotificationData) {
+      applyPeriodAndNotificationSettings(formatedNotificationData);
+    }
+  }
+
+  function handleTurnOnEditMode() {
+    // for any changes, the default switch must be deactivated
+    setEditMode(true);
+    setDefaultToggleOn(false);
+  }
+
+  function handleDefaultToggleChange(value: boolean) {
+    if (value) {
+      setDefaultToggleOn(true);
+      setDefaultReport(true);
+      setEditMode(true);
+
+      if (formatedNotificationData) {
+        applyPeriodAndNotificationSettings(formatedNotificationData);
+        updateState.selectPeriod(notificationPeriodsData?.reporting_frequency);
+      }
+    } else {
+      setDefaultToggleOn(false);
+      setDefaultReport(false);
+    }
+  }
 
   function handleReportTypeSwitch(reportType: "inventory" | "sellout") {
     startTransition(() => {
@@ -139,11 +368,12 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
     });
   }
 
-  function handleSave(data: any) {
+  function handleSaveUpdates() {
+    const savedData = getSavedData();
     const formatedDataForBackEnd = formatDataForBackEnd(
       notificationPeriodsData
     );
-    const updatedData = extractUpdateForTimelines(data);
+    const updatedData = extractUpdateForTimelines(savedData);
     const dataForSave = updateObj(formatedDataForBackEnd, updatedData);
     setUpdateStatus(true);
 
@@ -156,26 +386,23 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
           message: "The request was completed successfully",
         });
         setDefaultReportStatus(false);
-        setEditStatus(false)
+        setEditMode(false);
 
         // temporary
-        setTimeout(()=>{
+        setTimeout(() => {
           mutate(
             `${process.env.REACT_APP_API_PYTHON_API}/get_reporting_periods?country=${selectedCountry}&report_type=${reportType}`
           );
-        }, 2000)
+        }, 2000);
       } else {
-        setAlertStatus({ type: "error", message: "Some mistake happened" });
+        setAlertStatus({ type: "error", message: "Some issues happened" });
+        setUpdateStatus(false);
+        setDefaultReportStatus(false);
+        setEditMode(false);
       }
     }
     updateReportingPeriods({ data: [dataForSave] }, getSaveRequestStatus);
   }
-
-  useEffect(() => {
-    if (notificationPeriodsData) {
-      setFormatedNotificationData(notificationPeriodsData);
-    }
-  }, [notificationPeriodsData]);
 
   return (
     <div className="notification-page">
@@ -198,29 +425,43 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
           Sell-out report
         </div>
       </div>
-      {reportType === "inventory" && formatedNotificationData && (
-        <MemoizedNotificationComponent
+      {reportType === "inventory" && formatedNotificationData && baseState && (
+        <NotificationComponent
           data={formatedNotificationData}
-          onSave={handleSave}
+          onSave={handleSaveUpdates}
           onDefault={setDefaultReportStatus}
           isDefault={isDefaulrReport}
           editStatus={editStatus}
           onEdit={setEditStatus}
+          baseState={baseState}
+          updateState={updateState}
+          isInEditMode={isInEditMode}
+          isDefaultToggleOn={isDefaultToggleOn}
+          onDefaultToggleChange={handleDefaultToggleChange}
+          onTurnOnEditMode={handleTurnOnEditMode}
+          onCancelDataEdit={handleCancelDataEdit}
         />
       )}
 
-      {reportType === "sellout" && formatedNotificationData && (
-        <MemoizedNotificationComponent
+      {reportType === "sellout" && formatedNotificationData && baseState && (
+        <NotificationComponent
           data={formatedNotificationData}
-          onSave={handleSave}
+          onSave={handleSaveUpdates}
           onDefault={setDefaultReportStatus}
           isDefault={isDefaulrReport}
           editStatus={editStatus}
           onEdit={setEditStatus}
+          baseState={baseState}
+          updateState={updateState}
+          isInEditMode={isInEditMode}
+          isDefaultToggleOn={isDefaultToggleOn}
+          onDefaultToggleChange={handleDefaultToggleChange}
+          onTurnOnEditMode={handleTurnOnEditMode}
+          onCancelDataEdit={handleCancelDataEdit}
         />
       )}
 
-      {updateStatus && (
+      {updateStatus || isLoading ? (
         <CircularProgress
           sx={{
             position: "fixed",
@@ -229,7 +470,7 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
             transform: "translate(-50%, -50%)",
           }}
         />
-      )}
+      ) : null}
     </div>
   );
 };

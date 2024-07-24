@@ -2,15 +2,12 @@ import React, { useState } from "react";
 import "./NotificationRules.scss";
 
 //components
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
 import Checkbox from "@mui/material/Checkbox";
 import Button from "@mui/material/Button";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import { Box, TextField } from "@mui/material";
+import { Box } from "@mui/material";
 import CustomizedMUISelector from "../../customized-mui-elements/CustomizedMUISelector/CustomizedMUISelector";
-
 
 //utils
 import generateRandomId from "../../utils/genereteRandomId.js";
@@ -20,6 +17,7 @@ const DynamicDaysCheckbox = ({
   value,
   id,
   onNewElementChecked,
+  label,
 }: any) => {
   const [daysBefore, setDaysBefore] = useState(value);
   const [isChecked, setIsChecked] = useState(false);
@@ -35,7 +33,7 @@ const DynamicDaysCheckbox = ({
 
   const handleDaysChange = (event: any) => {
     const value = parseInt(event.target.value, 10);
-    if (!isNaN(value) && value > 0) {
+    if (!isNaN(value) && value > -1) {
       setDaysBefore(value);
       onNewElementChecked(id, value, selected);
     }
@@ -56,13 +54,46 @@ const DynamicDaysCheckbox = ({
         }
         label={``}
       />
-      <input className="number-input" type="number" value={daysBefore} onChange={handleDaysChange}></input>
-      <span>{` day${daysBefore > 1 ? "s" : ""} before`}</span>
+      <input
+        className="number-input"
+        type="number"
+        value={daysBefore}
+        onChange={handleDaysChange}
+      ></input>
+      <span>
+        {daysBefore === 0
+          ? `${label}`
+          : ` day${daysBefore > 1 ? "s" : ""} before`}
+      </span>
+    </Box>
+  );
+};
+
+const CustomizedMUIDaysCheckbox = ({
+  onChange,
+  isChecked,
+  id,
+  value,
+  label,
+}: any) => {
+  return (
+    <Box display="flex" alignItems="center">
+      <FormControlLabel
+        control={<Checkbox defaultChecked={isChecked} onChange={onChange} />}
+        label={
+          value === 0
+            ? `${label}`
+            : value > 1
+            ? `${value} days`
+            : `${value} day`
+        }
+      />
     </Box>
   );
 };
 
 type FrequencyType = "Daily" | "Weekly";
+
 type WeekDayType = {
   value:
     | "monday"
@@ -76,18 +107,6 @@ type WeekDayType = {
   name: string;
   editable: boolean;
 };
-
-interface FrequencySelectorProps {
-  selectedFrequency: FrequencyType;
-  frequencyOptions?: Array<FrequencyType>;
-  label?: "string";
-  onChange?: Function;
-}
-
-interface DaySelectorSelectorProps {
-  selectedDaysState: Array<WeekDayType>;
-  onSelectedDaysState: Function;
-}
 
 const DaySelector: React.FC<any> = ({
   selectedDays,
@@ -153,20 +172,18 @@ const AfterReportingDueDate: React.FC<any> = ({
   return (
     <div className="after-due-date">
       <h3 className="after-due-date__title">After reporting Due Date</h3>
-
+      <div className="after-due-date__day-of-week-selector">
+        <DaySelector
+          selectedDays={selectedDailyFrequency}
+          onUpdate={onFrequencyChange}
+        />
+      </div>
       <div className="after-due-date__selector selector-container">
         <CustomizedMUISelector
           value={frequency}
           data={["Daily", "Weekly"]}
           onUpdate={(e: any) => handleFrequency(e.target.value)}
           label={"Frequency"}
-        />
-      </div>
-
-      <div className="after-due-date__day-of-week-selector">
-        <DaySelector
-          selectedDays={selectedDailyFrequency}
-          onUpdate={onFrequencyChange}
         />
       </div>
     </div>
@@ -176,9 +193,8 @@ const AfterReportingDueDate: React.FC<any> = ({
 const BeforeReportingDueDate: React.FC<any> = ({
   data,
   onUpdate,
+  label = "On Due Day",
 }): JSX.Element => {
-  //[{label: 'on start Date', selected: false, value: 0, isEditable: false}, {label: '1 day before', selected: true, value: 1, isEditable: false}]
-
   function handleSelect(id: any, isSelected: any) {
     const updatedData = data;
 
@@ -198,7 +214,7 @@ const BeforeReportingDueDate: React.FC<any> = ({
         ...data,
         {
           id,
-          label: "bla bla bla",
+          label: label,
           selected: false,
           value: 0,
           isEditable: true,
@@ -223,7 +239,7 @@ const BeforeReportingDueDate: React.FC<any> = ({
       <h3 className="before-due-date__title">Before reporting Due Day</h3>
       <div className="before-due-date__checkboxes">
         <FormGroup>
-          {data.map(({ label, selected, value, id, isEditable }: any) =>
+          {data.map(({ selected, value, id, isEditable }: any) =>
             isEditable ? (
               <DynamicDaysCheckbox
                 key={id}
@@ -231,17 +247,16 @@ const BeforeReportingDueDate: React.FC<any> = ({
                 value={value}
                 selected={selected}
                 onNewElementChecked={handleDaysCheckboxEdit}
+                label={label}
               />
             ) : (
-              <FormControlLabel
+              <CustomizedMUIDaysCheckbox
                 key={id}
-                control={
-                  <Checkbox
-                    defaultChecked={selected}
-                    onChange={(e) => handleSelect(id, e.target.checked)}
-                  />
-                }
+                id={id}
+                isChecked={selected}
+                value={value}
                 label={label}
+                onChange={(e: any) => handleSelect(id, e.target.checked)}
               />
             )
           )}
@@ -268,6 +283,7 @@ const BeforeReportingDueDate: React.FC<any> = ({
 const BeforeReportingStartDate: React.FC<any> = ({
   data,
   onUpdate,
+  label = "On Start Day",
 }): JSX.Element => {
   function handleSelect(id: any, isSelected: any) {
     const updatedData = data;
@@ -282,13 +298,12 @@ const BeforeReportingStartDate: React.FC<any> = ({
   }
 
   function handleAddNewDaysCheckbox() {
-    const id = generateRandomId();
     onUpdate({
       beforeReportingStartDate: [
         ...data,
         {
-          id,
-          label: "bla bla bla",
+          id: generateRandomId(),
+          label: label,
           selected: false,
           value: 0,
           isEditable: true,
@@ -313,7 +328,7 @@ const BeforeReportingStartDate: React.FC<any> = ({
       <h3 className="before-start-date__title">Before reporting Start Day</h3>
       <div className="before-due-date__checkboxes">
         <FormGroup>
-          {data.map(({ label, selected, value, id, isEditable }: any) =>
+          {data.map(({ selected, value, id, isEditable }: any) =>
             isEditable ? (
               <DynamicDaysCheckbox
                 key={id}
@@ -321,17 +336,16 @@ const BeforeReportingStartDate: React.FC<any> = ({
                 value={value}
                 selected={selected}
                 onNewElementChecked={handleDaysCheckboxEdit}
+                label={label}
               />
             ) : (
-              <FormControlLabel
+              <CustomizedMUIDaysCheckbox
                 key={id}
-                control={
-                  <Checkbox
-                    defaultChecked={selected}
-                    onChange={(e) => handleSelect(id, e.target.checked)}
-                  />
-                }
+                id={id}
+                isChecked={selected}
+                value={value}
                 label={label}
+                onChange={(e: any) => handleSelect(id, e.target.checked)}
               />
             )
           )}
@@ -369,8 +383,6 @@ const NotificationRules: React.FC<any> = ({
   onQuarterlyNotifications,
   onCustomNotifications,
 }): JSX.Element => {
-  console.log(monthlyNotifications, "monthlyNotifications");
-
   return (
     <div className="notification-rules">
       <h2 className="notification-rules__title">Notification Rules</h2>

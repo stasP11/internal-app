@@ -20,5 +20,13 @@
     width: auto;
     padding: 24px 47px 30px 47px;
     position: relative;
+    background-color: var(--page-background);
+  }
+  
+
+  .page-content {
+    background-color: rgb(255, 255, 255);
+    border-radius: 4px;
+    box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
   }
   
