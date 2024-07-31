@@ -1,16 +1,10 @@
 import "./Header.scss";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useLocation, useParams  } from "react-router-dom";
-import BasePopUp from "components/pop-up/PopUp";
+import BasePopUp from "components/PopUp/PopUp";
 import { useMsal } from "@azure/msal-react";
 
-function formatRoute(route: any) {
-  // Remove leading slash and capitalize first letter
-  const formattedRoute =
-    route.replace(/^\//, "").charAt(0).toUpperCase() + route.slice(2);
-  return formattedRoute;
-}
-
+import { PageInfoContextWrapper, PageInfoContext} from '../../contexts/PageInfoContext';
 
 function UserProfileDropdown({ userName }: any){
   return <div className="user-profile-dropdown">
@@ -31,19 +25,29 @@ function Header({ headerValue, userProfile }: any) {
     instance.logoutRedirect().catch((error) => console.log(error));
   };
   const user = accounts? accounts[0] : {name: 'default'};
+  const { pageInfo, setPageInfo} = useContext(PageInfoContext);
+  const [ headerContent, setHeaderContent] = useState<string>();
+
+  console.log(pageInfo, 'pageInfo');
+
+  useEffect(()=>{
+   if(pageInfo?.headerContent){
+    setHeaderContent(pageInfo?.headerContent)
+   }
+  }, [pageInfo])
 
   useEffect(() => {
-    console.log(location, params, 'location')
-    const parts = location.pathname.split('/');
-    console.log(parts, 'parts')
-    const page = parts[parts.length - 1];
-    const pageName = page.split('&');
-    setActualPage(pageName[0]);
+   // console.log(location, params, 'location')
+   // const parts = location.pathname.split('/');
+  //  console.log(parts, 'parts')
+  //  const page = parts[parts.length - 1];
+  //  const pageName = page.split('&');
+  //  setActualPage(pageName[0]);
   }, [location]);
 
   return (
     <div className="header">
-      <h1 className="page-name">{actualPage}</h1>
+      <h1 className="page-name">{headerContent}</h1>
 
       <div className="user-profile-tab" onClick={() => setActualPop(true)}>
         <UserProfileDropdown userName={user?.name}/>

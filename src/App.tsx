@@ -17,6 +17,7 @@ import {
   getFromLocalStorage,
   saveToLocalStorage,
 } from "./services/storageInterection";
+import { PageInfoContextWrapper } from "./contexts/PageInfoContext"
 
 
 type UserDataContextType = {
@@ -25,7 +26,15 @@ type UserDataContextType = {
   roleName?: string | [];
   isEMEA?: boolean;
 };
+
+type PageInfoContextType = {
+    headerContent?: string,
+    selectedPage?: string
+    selectedTab?: string
+};
+
 export const UserDataContext = createContext<UserDataContextType>({});
+export const PageInfoContext = createContext<PageInfoContextType>({});
 
 const MainContent = () => {
   const { isLoading, error, data, execute } = useFetchWithMsal({
@@ -82,9 +91,11 @@ const MainContent = () => {
   return (
     <div className="App">
       <AuthenticatedTemplate>
+      <PageInfoContextWrapper>
         <UserDataContext.Provider value={{ ...data?.userData }}>
           <Router status={data?.status} userProfile={data?.userData} />
         </UserDataContext.Provider>
+        </PageInfoContextWrapper>
       </AuthenticatedTemplate>
       <UnauthenticatedTemplate>
       </UnauthenticatedTemplate>

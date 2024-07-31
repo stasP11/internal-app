@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useTransition } from "react";
-import "./NotificationPage.scss";
+import React, { useState, useEffect, useTransition, useContext } from "react";
+import "./TimelinesPage.scss";
 
 import NotificationComponent from "components/NotificationSettings/Notification";
 import { updateReportingPeriods } from "../../api/requests";
@@ -8,7 +8,8 @@ import { getFromLocalStorage } from "../../services/storageInterection";
 import CircularProgress from "@mui/material/CircularProgress";
 import { TimelinesAlert } from "components/Alerts/Alerts";
 
-import useNotificationsState from "../../hooks/notifications-hook/useNotificationsState";
+import useNotificationsState from "../../fetch/fetch-hooks/notifications-hook/useNotificationsState";
+import { PageInfoContext} from '../../contexts/PageInfoContext';
 
 // utils
 
@@ -279,6 +280,7 @@ function updateObj(original: any, updates: any) {
 }
 
 const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
+  const { setPageInfo } = useContext(PageInfoContext);
   const [reportType, setReportType] = useState("inventory");
   const selectedCountry = getFromLocalStorage("selectedCountry");
   const [isDefaultReport, setDefaultReport] = useState(false);
@@ -310,6 +312,12 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
     selectedCountry,
     notificationPeriodsData?.reporting_frequency
   );
+
+  useEffect(()=>{
+    setPageInfo({
+      headerContent: "Timelines",
+    })
+  }, [])
 
   useEffect(() => {
     if (notificationPeriodsData) {

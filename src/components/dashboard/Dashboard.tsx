@@ -1,14 +1,14 @@
 import "./Dashboard.scss";
-import { Card } from "components/card/Card";
+import { Card } from "components/Card/Card";
 import { Link } from "react-router-dom";
-import PieChart from "components/charts/Chart";
+import PieChart from "components/Charts/Chart";
 import { useReportsData } from "../../hooks/swr-hooks/useReports";
 import { useContext } from "react";
 import DashboardReportsTable from "./DashboardReportsTable";
 import DashboardDistributorsTable from "./DashboardDistributorsTable";
 import { getFromLocalStorage } from "../../services/storageInterection";
 import { protectedResources } from "../../authConfig";
-import { useFetchWithMsal2 } from "../../../src/hooks/useFetchWithMsal";
+import { useFetchWithMsal2 } from "../../hooks/useFetchWithMsal";
 import CircularProgress from "@mui/material/CircularProgress";
 import { UserDataContext } from "../../App";
 
@@ -177,7 +177,7 @@ function Dashboard() {
         {realReportsData?.data?.length > 0 &&
           realDistributorData?.data?.length > 0 &&
           !isEMEA && (
-            <>
+            <div>
               <div className="inform-cards">
                 <div className="inform-cards__inform-card">
                   <Card
@@ -212,7 +212,7 @@ function Dashboard() {
                     isDangerStatus
                   >
                     {" "}
-                    <Link to={"/reports?status=exception"} relative="path">
+                    <Link to={"/reports"} relative="path">
                       See all
                     </Link>
                   </Card>
@@ -229,7 +229,7 @@ function Dashboard() {
                     status={"."}
                   >
                     {" "}
-                    <Link to={"/reports?status=success"} relative="path">
+                    <Link to={"/reports"} relative="path">
                       See all
                     </Link>
                   </Card>
@@ -274,7 +274,7 @@ function Dashboard() {
                   />
                 </div>
               </div>
-            </>
+            </div>
           )}
       </>
     </>

@@ -1,13 +1,10 @@
 //base
-import React, { useMemo } from "react";
+import React, { useMemo, useContext, useEffect } from "react";
 
 //styles
 import './ReportsListPage.scss'
 
 //utils
-import { useReportsData } from "../../hooks/swr-hooks/useReports";
-import { useFetchWithMsal2 } from "../../../src/hooks/useFetchWithMsal";
-import { loginRequest, protectedResources } from "../../authConfig";
 import {
   getFromLocalStorage,
   saveToLocalStorage,
@@ -21,6 +18,19 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 
+import useFetchReportsData from "../../fetch/fetch-hooks/reports-hooks/useFetchReportsData";
+import { PageInfoContext} from '../../contexts/PageInfoContext';
+import getBaseUrl from "../../utils/getBaseUrl.js";
+
+type ReportStatus =
+  | "MISSING"
+  | "REWORK"
+  | "APPROVED"
+  | "RECEIVED"
+  | "REVIEW"
+  | "PROCESSING"
+  | "SUCCESS";
+
 function formatDataForGrid(data: any) {
   if (data && data.length) {
     return data.map((currentValue: any) => ({
@@ -30,29 +40,6 @@ function formatDataForGrid(data: any) {
     }));
   }
   return [];
-}
-
-function useAuthRequest() {
-  const { error: authError, result: authResult }: any = useFetchWithMsal2({
-    scopes: protectedResources.apiTodoList.scopes.read,
-  });
-
-  const selectedCountry = getFromLocalStorage("selectedCountry");
-
-  // reportslist === get_file_details_with_status
-
-  const {
-    data: reportsData,
-    error: reportsError,
-    isLoading,
-  } = useReportsData([
-    authResult,
-    "POST",
-    `${process.env.REACT_APP_API_PYTHON_API}/get_file_details_with_status`,
-    { selectedCountry },
-  ]);
-
-  return { reportsError, authError, reportsData, isLoading };
 }
 
 interface TabPanelProps {
@@ -100,9 +87,18 @@ const getFormattedReportsByType = (data: any, type: string) => {
 };
 
 export const ReportsListPage: React.FC<any> = (): JSX.Element => {
-  const { reportsError, authError, reportsData, isLoading } = useAuthRequest();
-
+  const selectedCountry = getFromLocalStorage("selectedCountry");
+  const { data: reportsData, error: reportsError, isLoading}: any = useFetchReportsData(selectedCountry);
   const [value, setValue] = React.useState(0);
+  const { setPageInfo } = useContext(PageInfoContext);
+  const fullUrl = window.location.href; // Get the full URL of the current page
+  const baseUrl = getBaseUrl(fullUrl);
+
+  useEffect(()=>{
+    setPageInfo({
+      headerContent: "Reports",
+    })
+  }, [])
 
   const deduplicatedReports = useMemo(() => {
     if (reportsData) {
@@ -123,6 +119,20 @@ export const ReportsListPage: React.FC<any> = (): JSX.Element => {
     () => getFormattedReportsByType(deduplicatedReports, "sellout"),
     [deduplicatedReports]
   );
+
+  function handleRowClick(clickedRow: any, e: any){
+    const { distributor_id, filename, status, country
+    } = clickedRow?.row;
+        console.log(clickedRow , e?.target,'clickedRow')
+    
+    if(status === 'REVIEW' || status === 'SUCCESS' || status === 'APPROVED'){
+        window.open(
+          `${baseUrl}/report?name=${filename}&distributor=${distributor_id}&country=${country}`,
+          "_blank"
+        );
+    }
+    
+  }
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -157,8 +167,7 @@ export const ReportsListPage: React.FC<any> = (): JSX.Element => {
   }
 
   return (
-    <div className="reports-list">
-      <Box sx={{ width: "100%", background: "#fff" }}>
+    <div className="reports-page">
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <Tabs
             value={value}
@@ -171,15 +180,14 @@ export const ReportsListPage: React.FC<any> = (): JSX.Element => {
           </Tabs>
         </Box>
         <CustomTabPanel value={value} index={0}>
-          <ReportsListTable reportsListData={allReports} />
+          <ReportsListTable reportsListData={allReports} onRowClick={handleRowClick}/>
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
-          <ReportsListTable reportsListData={inventoryReports} />
+          <ReportsListTable reportsListData={inventoryReports} onRowClick={handleRowClick}/>
         </CustomTabPanel>
         <CustomTabPanel value={value} index={2}>
-          <ReportsListTable reportsListData={selloutReports} />
+          <ReportsListTable reportsListData={selloutReports} onRowClick={handleRowClick} />
         </CustomTabPanel>
-      </Box>
     </div>
   );
 };

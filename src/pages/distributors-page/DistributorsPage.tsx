@@ -4,11 +4,12 @@ import { useFetchWithMsal2 } from "../../../src/hooks/useFetchWithMsal";
 import { protectedResources } from "../../authConfig";
 import { getFromLocalStorage } from "../../services/storageInterection";
 import { CircularProgress } from "@mui/material";
-import { useMemo } from "react";
+import { useMemo, useEffect, useContext } from "react";
 import {
   DistributorDetails,
   DistributorRowData,
 } from "components/DistributorsTable/types";
+import { PageInfoContext} from '../../contexts/PageInfoContext';
 
 function getDistributorsRowData(
   data: DistributorDetails[]
@@ -24,6 +25,7 @@ function getDistributorsRowData(
 }
 
 export default function DistributorsPage() {
+  const { setPageInfo } = useContext(PageInfoContext);
   const { error: authError, result: authResult }: any = useFetchWithMsal2({
     scopes: protectedResources.apiTodoList.scopes.read,
   });
@@ -41,6 +43,13 @@ export default function DistributorsPage() {
     }
     return [];
   }, [distributorsData]);
+
+
+  useEffect(()=>{
+    setPageInfo({
+      headerContent: "Distributors",
+    })
+  }, [])
 
   return (
     <>

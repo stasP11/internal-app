@@ -1,73 +1,144 @@
 //base
-import React from "react";
-import { useLocation } from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
 import "./ReportDetailsPage.scss";
-
-//utils
-import { useReportsData } from "../../hooks/swr-hooks/useReports";
-import { useFetchWithMsal2 } from "../../../src/hooks/useFetchWithMsal";
-import { loginRequest, protectedResources } from "../../authConfig";
-import {
-  getFromLocalStorage,
-  saveToLocalStorage,
-} from "../../services/storageInterection";
-import { useExceptionsData } from "../../hooks/swr-hooks/useReports";
-
+import { PageInfoContext} from '../../contexts/PageInfoContext';
 // requests
-import { aproveReportRequest, rejectReportRequest} from "../../api/files-requests";
-
+import {
+  aproveReportRequest,
+  rejectReportRequest,
+} from "../../api/files-requests";
 //components
 import ReportDetails from "components/ReportDetails/ReportDetails";
-import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
+import { useSearchParams } from "react-router-dom";
+import useFetchReportsData from "../../fetch/fetch-hooks/reports-hooks/useFetchReportsData";
+import useFetchReportContent from "../../fetch/fetch-hooks/reports-hooks/useFetchReportContent";
+import { aproveReport, rejectReport} from "../../fetch/fetch-requests/reportsRequests"
 
-function extractDataFromUrl(url: string): any {
-  const params = new URLSearchParams(url.split("?")[1] || "");
-  console.log(params, "params-01");
-  const filename = url.match(/\/reports-list\/([^&?]+)/)?.[1] || "";
-  const distributor = params.get("distributor") || null;
-  const country = params.get("country") || null;
+import Alert from '@mui/material/Alert';
 
-  return {
-    filename,
-    distributor,
-    country,
-  };
+function SuccessAlert(alertStatus: any){
+  if(alertStatus.alertStatus == true){
+    return <div className="alert-2"><Alert severity="success">This is a success Alert.</Alert></div>
+  } else return <div></div>
 }
 
+function ErrorAlert(){
+  return <div className="alert-2"><Alert severity="error">This is an error Alert.</Alert></div>
+}
+
+type ReportDataType = {
+  data: Array<ReportDataObjType>;
+};
+
+type ReportDataObjType = {
+  Distributor_Name: string;
+  country: string;
+  distributor_id: number;
+  filename: string;
+  status: ReportStatus;
+  widget_status: string;
+};
+
+type ReportStatus =
+  | "MISSING"
+  | "REWORK"
+  | "APPROVED"
+  | "RECEIVED"
+  | "REVIEW"
+  | "PROCESSING"
+  | "SUCCESS";
+
+type ProductData = {
+  alternatives: any[];
+  id: number;
+  matched: number;
+  material_number: number;
+  product_name: string;
+  uom: string;
+  volume: number;
+};
+
+type ReportContentType = Array<ProductData>;
+
 const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
-  const { pathname } = useLocation();
-  const { filename, distributor, country } = extractDataFromUrl(pathname);
-  console.log(filename, distributor, country, "params");
+  const [alertStatus, setAlert]= useState(false)
+  const { setPageInfo } = useContext(PageInfoContext);
+  const [searchParams] = useSearchParams();
+  const filename = searchParams.get("name");
+  const distributor = searchParams.get("distributor");
+  const country = searchParams.get("country");
   const {
-    data: reportDetailsData,
+    data: reportsData,
+    error: reportsError,
+    isLoading: isLoadingReportsData,
+  } = useFetchReportsData(country);
+  const [fileStatus, setFileStatus] = useState<ReportStatus>();
+  const {
+    data: reportContent,
     error,
-    isLoading,
-  } = useExceptionsData(`${filename}.csv`);
-  const [isAppreoveReportLoaded, setAppreoveReportLoaded] =
+    isLoading: isReportContentLoading,
+  } = useFetchReportContent(filename, fileStatus);
+  const [isApproveReportLoaded, setApproveReportLoaded] =
     React.useState<boolean>(false);
 
-  function handleResult(result: any) {
-    alert(result);
-    setAppreoveReportLoaded(false);
+  function handleResult(result: any, message: string) {
+    alert(message);
+    setApproveReportLoaded(false);
   }
 
-  function approveReport() {
-    setAppreoveReportLoaded(true);
-    aproveReportRequest(filename, handleResult);
+  function handleApproveReport() {
+    setApproveReportLoaded(true);
+    aproveReport(filename, handleResult);
   }
 
-  function rejectReport() {
-    setAppreoveReportLoaded(true);
-    rejectReportRequest(filename, handleResult);
+  function handleRejectReport() {
+    setApproveReportLoaded(true);
+    rejectReport(filename, handleResult);
   }
 
 
-  console.log(reportDetailsData, "ReportDetailsData-11");
+  useEffect(()=>{
+   if(filename && distributor){
+    setPageInfo({
+      headerContent: `${filename} (${distributor})`,
+      selectedPage: 'report',
+      selectedTab: 'reports'
+    })
+   }
+  }, [filename, distributor])
+
+  useEffect(() => {
+    if (reportsData?.data) {
+      const { status }: ReportDataObjType = reportsData?.data.find(
+        (reportData: ReportDataObjType) =>
+          reportData?.filename === filename &&
+          reportData?.distributor_id === Number(distributor)
+      );
+      setFileStatus(status);
+    }
+  }, [reportsData]);
+
+
+  function handleAlternativeChoose(){
+    
+  }
 
   return (
-    <div>
-      {isAppreoveReportLoaded ? (
+    <div className="report-content-page">
+      <SuccessAlert alertStatus={alertStatus}/>
+      {reportContent && (
+        <ReportDetails
+          data={reportContent}
+          filename={filename}
+          fileStatus={fileStatus}
+          isReportStatusUpdated={isApproveReportLoaded}
+          onRejectReport={handleRejectReport}
+          onApproveReport={handleApproveReport}
+          onAlternativeChoose={handleAlternativeChoose}
+        />
+      )}
+      {(isApproveReportLoaded || isLoadingReportsData || isReportContentLoading) && (
         <CircularProgress
           sx={{
             position: "absolute",
@@ -76,31 +147,6 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
             transform: "translate(-50%, -50%)",
           }}
         />
-      ) : null}
-      {isLoading ? (
-        <CircularProgress
-          sx={{
-            position: "absolute",
-            top: "45%",
-            left: "45%",
-            transform: "translate(-50%, -50%)",
-          }}
-        />
-      ) : (
-        <>
-          <div className="buttons-section">
-            <Button variant="outlined" color="error" onClick={rejectReport}>
-              Reject
-            </Button>
-            <Button variant="outlined" color="success" onClick={approveReport}>
-              Approve
-            </Button>
-          </div>
-          <ReportDetails
-            reportDetailsData={reportDetailsData}
-            reportRequestDetails={{ filename, distributor, country }}
-          />
-        </>
       )}
     </div>
   );

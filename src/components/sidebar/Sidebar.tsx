@@ -37,15 +37,14 @@ function Sidebar({ onPageChoose, activePage, userProfile }: any) {
   const currentCountry = getFromLocalStorage("selectedCountry");
   const userData: any = useContext(UserDataContext);
   const { pages, isEMEA } = useContext(UserDataContext);
-  console.log(userData, userData.isEMEA, pages, "user-auth-context");
 
   function chooseCountry(country: string) {
     saveToLocalStorage("selectedCountry", country);
     window.location.reload();
   }
 
-  const isActive = (boardName: string) => {
-    return boardName === activePage ? "--active-board" : "--inactive-board";
+  const isActive = (tabName: string) => {
+    return tabName === activePage;
   };
   return (
     <div className="sidebar">
@@ -91,7 +90,11 @@ function Sidebar({ onPageChoose, activePage, userProfile }: any) {
           {isIncludePermission(pages, "dashboard", "read") && (
             <div
               className={`board-name
-                    ${isActive("dashboard")}`}
+                    ${
+                      isActive("dashboard")
+                        ? "--active-board"
+                        : "--inactive-board"
+                    }`}
             >
               <img className="icon" src={iconDashboard} alt="icon" />
               <Link
@@ -109,13 +112,17 @@ function Sidebar({ onPageChoose, activePage, userProfile }: any) {
           {isIncludePermission(pages, "reports", "read") && (
             <div
               className={`board-name
-          ${isActive("reports-list")}`}
+          ${
+            isActive("reports") || isActive("report")
+              ? "--active-board"
+              : "--inactive-board"
+          }`}
             >
               <img className="icon" src={iconReports} alt="icon" />
               <Link
-                onClick={() => onPageChoose("reports-list")}
+                onClick={() => onPageChoose("reports")}
                 className="nav-link"
-                to="/reports-list"
+                to="/reports"
               >
                 <span>Reports</span>
               </Link>
@@ -127,7 +134,7 @@ function Sidebar({ onPageChoose, activePage, userProfile }: any) {
           {isIncludePermission(pages, "distributors", "read") && (
             <div
               className={`board-name
-        ${isActive("distributors")}`}
+        ${isActive("distributors") ? "--active-board" : "--inactive-board"}`}
             >
               <img className="icon" src={iconDistributors} alt="icon" />
               <Link
@@ -145,7 +152,7 @@ function Sidebar({ onPageChoose, activePage, userProfile }: any) {
           {isIncludePermission(pages, "timelines", "read") && (
             <div
               className={`board-name
-        ${isActive("timelines")}`}
+        ${isActive("timelines") ? "--active-board" : "--inactive-board"}`}
             >
               <img className="icon" src={iconTimelines} alt="icon" />
               <Link
@@ -163,7 +170,7 @@ function Sidebar({ onPageChoose, activePage, userProfile }: any) {
           {isIncludePermission(pages, "templates", "read") && (
             <div
               className={`board-name
-          ${isActive("templates")}`}
+          ${isActive("templates") ? "--active-board" : "--inactive-board"}`}
             >
               <img className="icon" src={iconTemplates} alt="icon" />
               <Link
@@ -181,7 +188,7 @@ function Sidebar({ onPageChoose, activePage, userProfile }: any) {
           {isIncludePermission(pages, "products", "read") && (
             <div
               className={`board-name
-          ${isActive("products")}`}
+          ${isActive("products") ? "--active-board" : "--inactive-board"}`}
             >
               <img className="icon" src={iconProducts} alt="icon" />
               <Link
@@ -199,7 +206,7 @@ function Sidebar({ onPageChoose, activePage, userProfile }: any) {
           {isIncludePermission(pages, "stewards", "read") && (
             <div
               className={`board-name
-          ${isActive("stewards")}`}
+          ${isActive("stewards") ? "--active-board" : "--inactive-board"}`}
             >
               <img className="icon" src={iconStewards} alt="icon" />
               <Link
@@ -217,7 +224,7 @@ function Sidebar({ onPageChoose, activePage, userProfile }: any) {
           {false && (
             <div
               className={`board-name
-        ${isActive("settings")}`}
+        ${isActive("settings") ? "--active-board" : "--inactive-board"}`}
             >
               <img className="icon" src={iconDashboard} alt="icon" />
               <Link
@@ -237,7 +244,7 @@ function Sidebar({ onPageChoose, activePage, userProfile }: any) {
           {isIncludePermission(pages, "onboarding", "read") && (
             <div
               className={`board-name
-        ${isActive("onboarding")}`}
+        ${isActive("onboarding") ? "--active-board" : "--inactive-board"}`}
             >
               <img className="icon" src={iconOnboarding} alt="icon" />
               <Link

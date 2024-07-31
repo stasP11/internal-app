@@ -1,7 +1,7 @@
 import "./DefaultLayout.scss";
 import React, { useState, useEffect } from 'react';
-import Header from "components/header/Header";
-import Sidebar from "components/sidebar/Sidebar";
+import Header from "components/Header/Header";
+import Sidebar from "components/Sidebar/Sidebar";
 import { useLocation } from 'react-router-dom';
 import iconTimelines from "../../icons/timelines/NavNotificationLine.svg";
 // import {SuccessAlert, ErrorAlert} from "./"

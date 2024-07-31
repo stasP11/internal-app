@@ -1,10 +1,14 @@
 .card {
---card-status-color: #DFA100;
+  background-color: rgb(255, 255, 255);
+  border-radius: 4px;
+  box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2),
+    0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
 
-&.--danger-status {
-  --card-status-color: #DE0043;
-}
+  --card-status-color: #dfa100;
 
+  &.--danger-status {
+    --card-status-color: #de0043;
+  }
 
   width: auto;
   min-height: 191px;
@@ -22,7 +26,7 @@
     font-style: normal;
     font-weight: 500;
     line-height: normal;
-    color: #10384F;
+    color: #10384f;
   }
 
   &__update {

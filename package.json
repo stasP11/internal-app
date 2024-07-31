@@ -12,7 +12,7 @@
     "@mui/material": "^5.15.15",
     "@mui/x-charts": "^7.8.0",
     "@mui/x-data-grid": "^7.1.0",
-    "@mui/x-data-grid-pro": "^7.2.0",
+    "@mui/x-data-grid-pro": "^7.11.0",
     "@mui/x-date-pickers": "^6.19.9",
     "@mui/x-date-pickers-pro": "^7.3.2",
     "@testing-library/jest-dom": "^5.17.0",

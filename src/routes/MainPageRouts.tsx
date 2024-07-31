@@ -1,14 +1,13 @@
+import { UserDataContext } from "../App";
+import isIncludePermission from "../utils/isIncludePermission";
 import { useContext, Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import DistributorsPage from "../pages/distributors-page/DistributorsPage";
 import DashboardPage from "../pages/dashboard-page/DashboardPage";
 import DefaultLayout from "../layouts/default/DefaultLayout";
-import ReportsListPage from "../pages/reports-list-page/ReportsListPage";
+import ReportsListPage from "../pages/reports-page/ReportsListPage";
 import ReportDetailsPage from "../pages/report-details-page/ReportDetailsPage";
-import NotificationsPage from "../pages/notifications-page/NotificationsPage";
-import SettingsPage from "../pages/settings-page/SettingsPage";
-import { UserDataContext } from "../App";
-import isIncludePermission from "../utils/isIncludePermission";
+import TimelinesPage from "../pages/timelines-page/TimelinesPage";
 
 function MainPageRouts({ userProfile }: any) {
   const { pages } = useContext(UserDataContext);
@@ -17,7 +16,7 @@ function MainPageRouts({ userProfile }: any) {
     <DefaultLayout userProfile={userProfile}>
       <Routes>
         <Route
-          path="/reports-list"
+          path="/reports"
           element={
             <Suspense fallback={<div>Loaded</div>}>
               {isIncludePermission(pages, "reports", "read") ? (
@@ -33,7 +32,7 @@ function MainPageRouts({ userProfile }: any) {
         />
 
         <Route
-          path="/reports-list/*"
+          path="/report/*"
           element={
             isIncludePermission(pages, "reports", "read") ? (
               <ReportDetailsPage />
@@ -82,21 +81,7 @@ function MainPageRouts({ userProfile }: any) {
           path="/timelines"
           element={
             isIncludePermission(pages, "timelines", "read") ? (
-              <NotificationsPage />
-            ) : (
-              <span>
-                Sorry you dont have access to this page, ask your admin to
-                provide it
-              </span>
-            )
-          }
-        ></Route>
-
-        <Route
-          path="/settings"
-          element={
-            process.env.REACT_APP_API_PYTHON_API === "loc" ? (
-              <SettingsPage />
+              <TimelinesPage />
             ) : (
               <span>
                 Sorry you dont have access to this page, ask your admin to
@@ -130,7 +115,7 @@ function MainPageRouts({ userProfile }: any) {
           }
         ></Route>
 
-<Route
+        <Route
           path="/products"
           element={
             <Suspense fallback={<div>Loaded</div>}>
@@ -154,8 +139,7 @@ function MainPageRouts({ userProfile }: any) {
           }
         ></Route>
 
-
-<Route
+        <Route
           path="/stewards"
           element={
             <Suspense fallback={<div>Loaded</div>}>
