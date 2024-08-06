@@ -1,43 +1,41 @@
 import { DateTime } from "luxon";
 import AggregationPerProductChart from "./AggregationPerProductChart";
-import {
-  filterReports,
-  getDueDates,
-  getStatArray,
-  getWeeklyStats,
-} from "./chartUtils";
+import { getDailyStats, getStatArray, isInDateRange } from "./chartUtils";
 import { useMemo } from "react";
-import { aggregationPerProductLegendConfig } from "./chartConfigs";
 import ChartContainer from "../shared/ChartContainer";
-import ChartDetailsContainer from "../shared/ChartDetailsContainer";
-import CustomLegend from "../shared/CustomLegend";
-import { Box } from "@mui/material";
+import useAggregationPerProduct from "hooks/swr-hooks/useAggregationPerProduct";
 import DownloadButton from "../shared/DownloadButton";
+import { Box } from "@mui/material";
+import { ProductData } from "./types";
 
-function AggregationPerProduct() {
+function AggregationPerProduct({ country }: { country: string }) {
+  const { aggregationPerProduct, isLoading, isError } =
+    useAggregationPerProduct(country);
   const now = DateTime.now();
+
   const currentMonthStart = now.startOf("month");
-  const monthsAgo3 = currentMonthStart.minus({ months: 3 });
+  const startOfPastFourMonths = currentMonthStart.minus({ months: 4 });
+  const endOfPastFourMonths = currentMonthStart.minus({ days: 1 });
 
-  const lastThreeMonthsData = filterReports(monthsAgo3, currentMonthStart);
+  const dailyStats = useMemo(() => {
+    const data =
+      aggregationPerProduct?.data.filter((product: ProductData) =>
+        isInDateRange(product.date, startOfPastFourMonths, endOfPastFourMonths)
+      ) || [];
 
-  const weeklyStats = useMemo(
-    () => getWeeklyStats(lastThreeMonthsData, monthsAgo3),
-    [lastThreeMonthsData]
-  );
+    return getDailyStats(data, startOfPastFourMonths, endOfPastFourMonths);
+  }, [aggregationPerProduct, startOfPastFourMonths, endOfPastFourMonths]);
 
   return (
     <>
       <ChartContainer title="Aggregation per product (all countries)">
-        <ChartDetailsContainer>
-          <CustomLegend legendConfig={aggregationPerProductLegendConfig} />
-          <Box display={"flex"} alignItems={"center"}>
-            <DownloadButton />
-          </Box>
-        </ChartDetailsContainer>
+        <Box
+          sx={{ width: "fit-content", marginLeft: "auto", marginBottom: "8px" }}
+        >
+          <DownloadButton />
+        </Box>
         <AggregationPerProductChart
-          statArray={getStatArray(weeklyStats, monthsAgo3)}
-          dueDates={getDueDates(25)}
+          statArray={getStatArray(dailyStats, startOfPastFourMonths)}
         />
       </ChartContainer>
     </>

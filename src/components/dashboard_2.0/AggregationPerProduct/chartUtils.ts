@@ -1,78 +1,123 @@
 import { DateTime } from "luxon";
-import reports from "./weeklyProductSales.json";
-import { WeeklyProductSales } from "./types";
-import { chartColors } from "./chartConfigs";
+import {
+  AggregateDailyData,
+  DailyProductCounts,
+  DailyProductSales,
+  ProductData,
+  ProductMap,
+} from "./types";
 
-// Utility function to filter reports based on date
-export const filterReports = (start: DateTime, end: DateTime) => {
-  return reports.filter((report) => {
-    const reportSubmitDate = DateTime.fromISO(report.date);
-    return reportSubmitDate >= start && reportSubmitDate < end;
-  });
-};
+export function groupByProduct(productData: ProductData[]): ProductMap {
+  return productData.reduce((acc, item) => {
+    const key = item.material_number.toString();
+    if (!acc[key]) {
+      acc[key] = [item];
+    } else {
+      acc[key].push(item);
+    }
+    return acc;
+  }, {} as ProductMap);
+}
 
-// Utility function to aggregate the stats
-export const getWeeklyStats = (
-  filteredReports: typeof reports,
-  startingDate: DateTime
-) => {
-  return filteredReports.reduce(
-    (acc: { [key: string]: { [productId: string]: number } }, report) => {
-      let week = DateTime.fromISO(report.date)
-        .endOf("week")
-        .toFormat("yyyy-LL-dd");
+function getTopEightProducts(groupedProducts: ProductMap): ProductMap {
+  const entries = Object.entries(groupedProducts);
 
-      let startingDateString = startingDate.toFormat("yyyy-LL-dd");
+  entries.sort(([, a], [, b]) => b.length - a.length);
 
-      if (!acc[startingDateString]) {
-        acc[startingDateString] = {
-          ProductID1: 0,
-          ProductID2: 0,
-          ProductID3: 0,
-          ProductID4: 0,
-          ProductID5: 0,
-          ProductID6: 0,
-        };
-      }
-
-      if (!acc[week]) {
-        acc[week] = {};
-      }
-
-      if (!acc[week][report.productId]) {
-        acc[week][report.productId] = 0;
-      }
-
-      acc[week][report.productId] += report.units;
-
-      return acc;
-    },
-    {}
-  );
-};
-
-export const getDueDates = (dayOfMonth: number) => {
-  const dueDates = [];
-  for (let i = 3; i > 0; i--) {
-    let dueDate = DateTime.now().minus({ months: i }).set({ day: dayOfMonth });
-    dueDates.push(dueDate);
+  const sortedProductMap: ProductMap = {};
+  for (let [key, value] of entries) {
+    sortedProductMap[key] = value;
   }
-  return dueDates;
+
+  const selectedProductNumbers = Object.keys(sortedProductMap).slice(0, 8);
+  const selectedProducts: ProductMap = {};
+
+  selectedProductNumbers.forEach((productNumber) => {
+    selectedProducts[productNumber] = sortedProductMap[productNumber];
+  });
+
+  return selectedProducts;
+}
+
+export function isInDateRange(
+  dateStr: string,
+  startDate: DateTime,
+  endDate: DateTime
+): boolean {
+  let date = DateTime.fromFormat(dateStr, "dd-MM-yyyy");
+
+  return date >= startDate && date <= endDate;
+}
+
+function initializeDailyStats(
+  startDate: DateTime,
+  endDate: DateTime,
+  products: ProductMap
+): AggregateDailyData {
+  // Get material names of first eight products
+  const productNames = Object.keys(products).map(
+    (key) => products[key][0].material_name
+  );
+
+  let stats: AggregateDailyData = {};
+  let currentDate = startDate;
+
+  while (currentDate <= endDate) {
+    const day = currentDate.toFormat("yyyy-LL-dd");
+    // Initialize daily product data with zeros for each product
+    stats[day] = productNames.reduce((acc, product) => {
+      acc[product] = 0;
+      return acc;
+    }, {} as DailyProductCounts);
+
+    currentDate = currentDate.plus({ day: 1 });
+  }
+
+  return stats;
+}
+
+export const getDailyStats = (
+  productData: ProductData[],
+  startDate: DateTime,
+  endDate: DateTime
+): AggregateDailyData => {
+  const groupedProducts = groupByProduct(productData);
+  const topEightProducts = getTopEightProducts(groupedProducts);
+
+  const initialStats = initializeDailyStats(
+    startDate,
+    endDate,
+    topEightProducts
+  );
+
+  return productData.reduce((acc: AggregateDailyData, item) => {
+    const day = DateTime.fromFormat(item.date, "dd-MM-yyyy").toFormat(
+      "yyyy-LL-dd"
+    );
+    const materialName = item.material_name;
+
+    // Ensure the date and product exists in our stats
+    if (acc[day] && acc[day][materialName] !== undefined) {
+      acc[day][materialName] += item.total || 0;
+    }
+
+    return acc;
+  }, initialStats);
 };
 
 export const getStatArray = (
-  weeklyStats: { [key: string]: { [productId: string]: number } },
+  dailyStats: { [key: string]: { [materialName: string]: number } },
   startingDate: DateTime
-): WeeklyProductSales[] => {
-  return Object.keys(weeklyStats)
+): DailyProductSales[] => {
+  return Object.keys(dailyStats)
     .sort()
     .map(
-      (week): WeeklyProductSales => ({
-        week: DateTime.fromISO(week),
-        sales: weeklyStats[week],
+      (day): DailyProductSales => ({
+        day: DateTime.fromISO(day),
+        sales: dailyStats[day],
       })
     )
-    .filter((item) => item.week >= startingDate);
+    .filter((item) => item.day >= startingDate);
 };
 
 //Create config for Line Chart
@@ -83,10 +128,10 @@ const commonTickLabelStyles = {
   fontFamily: "Helvetica Neue",
 };
 
-export const createXAxis = (statArray: WeeklyProductSales[]) => [
+export const createXAxis = (statArray: DailyProductSales[]) => [
   {
     scaleType: "time" as const,
-    data: statArray.map((item) => item.week),
+    data: statArray.map((item) => item.day),
     tickNumber: 4,
     tickLabelStyle: { ...commonTickLabelStyles },
     disableTicks: true,
@@ -102,25 +147,38 @@ export const createYAxis = () => [
   },
 ];
 
-export const createSeries = (statArray: WeeklyProductSales[]) => {
-  // Obtain unique productId's from statArray
-  let productIds: string[] = statArray.reduce((unique, item) => {
-    Object.keys(item.sales).forEach((productId) => {
-      if (!unique.includes(productId)) {
-        unique.push(productId);
+export const createSeries = (statArray: DailyProductSales[]) => {
+  // Obtain unique material names from statArray
+  let materialNames: string[] = statArray.reduce((unique, item) => {
+    Object.keys(item.sales).forEach((materialName) => {
+      if (!unique.includes(materialName)) {
+        unique.push(materialName);
       }
     });
     return unique;
   }, [] as string[]);
 
-  // For each productId, create a series object
-  let series = productIds.map((productId) => ({
-    data: statArray.map((item) => item.sales[productId] ?? 0),
-    showMark: false,
-    curve: "linear" as const,
-    label: productId,
-    color: (chartColors as Record<string, string>)[productId],
-  }));
+  // For each material name, create a series object
+  let series = materialNames.map((materialName) =>
+    createSeriesObject(materialName, statArray)
+  );
 
   return series;
 };
+
+const createSeriesObject = (
+  materialName: string,
+  statArray: DailyProductSales[]
+) => ({
+  data: statArray.map((item) => item.sales[materialName] ?? 0),
+  showMark: false,
+  curve: "linear" as const,
+  label: (location: string) => {
+    if (location === "legend") {
+      // Take the first word for the legend label
+      return materialName.split(" ")[0];
+    }
+    // the original label for other locations
+    return materialName;
+  },
+});

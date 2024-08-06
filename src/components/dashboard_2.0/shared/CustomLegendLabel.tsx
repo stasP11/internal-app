@@ -17,7 +17,7 @@ function CustomLegendLabel({
   };
   const rectangleStyles = {
     width: "8px",
-    height: "1px",
+    height: "2px",
     bgcolor: bgColor,
     mr: 1,
     alignSelf: "center",

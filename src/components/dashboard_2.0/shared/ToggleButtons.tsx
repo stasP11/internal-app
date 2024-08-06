@@ -1,5 +1,5 @@
 import { ToggleButton, ToggleButtonGroup } from "@mui/material";
-import { ReportType } from "./types";
+import { ReportType } from "../ReportingPerformance/types";
 type ToggleButtonsProps = {
   reportType: ReportType;
   setReportType: React.Dispatch<React.SetStateAction<ReportType>>;
@@ -34,8 +34,8 @@ function ToggleButtons({ reportType, setReportType }: ToggleButtonsProps) {
   };
 
   const BUTTONS = {
-    sellout: "Sell-out",
-    inventory: "Inventory",
+    SelloutReport: "Sell-out",
+    InventoryReport: "Inventory",
   };
 
   return (

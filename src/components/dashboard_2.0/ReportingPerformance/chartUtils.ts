@@ -1,67 +1,32 @@
 import { DateTime } from "luxon";
-import reports from "./mockReports.json";
-import { chartColors } from "./chartConfigs";
-import { AggregateWeeklyData, MonthlyStatistics, WeeklyCounts } from "./types";
+import { chartColors, reportTypeMapping } from "./chartConfigs";
+import {
+  AggregateDailyData,
+  DailyStatistics,
+  DueDate,
+  ReportPerformance,
+  ReportType,
+} from "./types";
 
-// Utility function to filter reports based on date
-export const filterReports = (start: DateTime, end: DateTime) => {
-  return reports.filter((report) => {
-    const reportSubmitDate = DateTime.fromISO(report.submitDate);
-    return reportSubmitDate >= start && reportSubmitDate < end;
-  });
-};
+export const getFormattedDueDates = (
+  dueDates: DueDate[],
+  reportType: ReportType,
+  startOfPastThreeMonths: DateTime,
+  endOfPastThreeMonths: DateTime
+): DateTime[] => {
+  const mappedReportType = reportTypeMapping[reportType];
 
-// Utility function to aggregate the stats
-export const getWeeklyStats = (filteredReports: typeof reports) => {
-  return filteredReports.reduce(
-    (acc: { [key: string]: WeeklyCounts }, report) => {
-      let week = DateTime.fromISO(report.submitDate)
-        .endOf("week")
-        .toFormat("yyyy-LL-dd");
-
-      if (!acc[week]) {
-        acc[week] = { total: 0, success: 0, manuallyMapped: 0 };
-      }
-
-      acc[week].total += 1;
-      if (report.status.toUpperCase() === "SUCCESS") acc[week].success += 1;
-      if (report.status.toUpperCase() === "REVIEW")
-        acc[week].manuallyMapped += 1;
-
-      return acc;
-    },
-    {}
-  );
-};
-
-export const getDueDates = (dayOfMonth: number) => {
-  const dueDates = [];
-  for (let i = 3; i > 0; i--) {
-    let dueDate = DateTime.now().minus({ months: i }).set({ day: dayOfMonth });
-    dueDates.push(dueDate);
-  }
-  return dueDates;
-};
-
-export const getStatArray = (
-  weeklyStats: AggregateWeeklyData,
-  startingDate: DateTime
-) => {
-  const initStatData = {
-    submitDate: startingDate.toJSDate(),
-    total: 0,
-    success: 0,
-    manuallyMapped: 0,
-  };
-  return [
-    initStatData,
-    ...Object.keys(weeklyStats)
-      .sort()
-      .map((week) => ({
-        submitDate: DateTime.fromFormat(week, "yyyy-LL-dd").toJSDate(),
-        ...weeklyStats[week],
-      })),
-  ];
+  return dueDates.reduce((result: DateTime[], date) => {
+    const dueDate = DateTime.fromISO(date.due_date);
+    if (
+      date.report_type === mappedReportType &&
+      dueDate >= startOfPastThreeMonths &&
+      dueDate <= endOfPastThreeMonths
+    ) {
+      return [...result, dueDate];
+    }
+    return result;
+  }, []);
 };
 
 //Create config for Line Chart
@@ -72,18 +37,6 @@ const commonTickLabelStyles = {
   fontFamily: "Helvetica Neue",
 };
 
-export const createXAxis = (statArray: MonthlyStatistics[]) => [
-  {
-    scaleType: "time" as const,
-    data: statArray.map((item) => item.submitDate),
-    tickNumber: 4,
-    tickLabelInterval: (value: any, index: number) => index !== 3,
-    tickLabelStyle: { ...commonTickLabelStyles },
-    disableTicks: true,
-    disableLine: true,
-  },
-];
-
 export const createYAxis = () => [
   {
     tickNumber: 3,
@@ -93,7 +46,58 @@ export const createYAxis = () => [
   },
 ];
 
-export const createSeries = (statArray: MonthlyStatistics[]) => [
+function initializeDailyStats(startDate: DateTime, endDate: DateTime) {
+  let stats: AggregateDailyData = {};
+  let currentDate = startDate;
+
+  while (currentDate <= endDate) {
+    const day = currentDate.toFormat("yyyy-LL-dd");
+    stats[day] = { total: 0, success: 0, manuallyMapped: 0, failed: 0 };
+    currentDate = currentDate.plus({ day: 1 });
+  }
+
+  return stats;
+}
+
+export const getDailyStats = (
+  reports: ReportPerformance[],
+  startDate: DateTime,
+  endDate: DateTime
+) => {
+  let initialStats = initializeDailyStats(startDate, endDate);
+
+  return reports.reduce((acc: AggregateDailyData, report) => {
+    let day = DateTime.fromISO(report.received_date).toFormat("yyyy-LL-dd");
+
+    acc[day].total += report.total;
+    acc[day].success += report.success_count;
+    acc[day].manuallyMapped += report.approve_count;
+    acc[day].failed += report.failed_count;
+
+    return acc;
+  }, initialStats);
+};
+
+export const getStatArray = (stats: AggregateDailyData) => {
+  return Object.keys(stats).map((item) => ({
+    date: DateTime.fromFormat(item, "yyyy-LL-dd"),
+    ...stats[item],
+  }));
+};
+
+export const createXAxis = (statArray: DailyStatistics[]) => [
+  {
+    scaleType: "time" as const,
+    data: statArray.map((item) => item.date),
+    tickNumber: 4,
+    tickLabelInterval: (value: any, index: number) => index !== 3,
+    tickLabelStyle: { ...commonTickLabelStyles },
+    disableTicks: true,
+    disableLine: true,
+  },
+];
+
+export const createSeries = (statArray: DailyStatistics[]) => [
   {
     data: statArray.map((item) => item.total),
     curve: "linear" as const,
@@ -111,5 +115,11 @@ export const createSeries = (statArray: MonthlyStatistics[]) => [
     curve: "linear" as const,
     label: "Manual mapping",
     color: chartColors.manualMapping,
+  },
+  {
+    data: statArray.map((item) => item.failed),
+    curve: "linear" as const,
+    label: "Failed",
+    color: chartColors.failed,
   },
 ];

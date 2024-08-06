@@ -1,5 +1,3 @@
-export type ReportType = "sellout" | "inventory";
-
 export type ChartLegend = {
   color: string;
   label: string;

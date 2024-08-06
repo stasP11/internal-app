@@ -281,7 +281,6 @@ const ReportsListTable: React.FC<ReportsListTableProps> = ({
       ),
       flex: 0.2,
     },
-
   ];
 
   return (

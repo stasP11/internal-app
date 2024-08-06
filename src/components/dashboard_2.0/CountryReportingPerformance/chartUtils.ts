@@ -11,7 +11,7 @@ export const calculatePercentage = (
 };
 
 export const formatter = (value: number | null) =>
-  value ? `${value.toFixed(2)}%` : "0%";
+  value ? `${value.toFixed(1)}%` : "0%";
 
 const makeSeriesItem = (
   performanceData: CountryReportingPerformanceStats[],
@@ -58,7 +58,7 @@ export const createYAxis = (
 ) => [
   {
     scaleType: "band" as const,
-    data: performanceData.map((item) => item.country),
+    data: performanceData.map((item) => item.country_code),
     disableTicks: true,
     disableLine: true,
     tickLabelStyle: {

@@ -1,39 +1,65 @@
 import { DateTime } from "luxon";
 import ReportingPerformanceChart from "./ReportingPerformanceChart";
 import {
-  filterReports,
-  getDueDates,
+  getDailyStats,
+  getFormattedDueDates,
   getStatArray,
-  getWeeklyStats,
 } from "./chartUtils";
 import { useMemo, useState } from "react";
 import { reportingPerfomanceChartLegendConfig } from "./chartConfigs";
-import { ReportType } from "../shared/types";
 import ChartContainer from "../shared/ChartContainer";
 import { Box } from "@mui/material";
 import CustomLegend from "../shared/CustomLegend";
 import ToggleButtons from "../shared/ToggleButtons";
 import DownloadButton from "../shared/DownloadButton";
 import ChartDetailsContainer from "../shared/ChartDetailsContainer";
+import useReportingPerformance from "hooks/swr-hooks/useReportingPerformance";
+import { ReportPerformance, ReportType } from "./types";
 
-function ReportingPerformance() {
-  const [reportType, setReportType] = useState<ReportType>("sellout");
+function ReportingPerformance({ country }: { country: string }) {
+  const [reportType, setReportType] = useState<ReportType>("SelloutReport");
   const now = DateTime.now();
   const currentMonthStart = now.startOf("month");
-  const monthsAgo3 = currentMonthStart.minus({ months: 3 });
+  const startOfPastThreeMonths = currentMonthStart.minus({ months: 3 });
+  const endOfPastThreeMonths = currentMonthStart.minus({ days: 1 });
+  const { reportingPerformance, isLoading, isError } =
+    useReportingPerformance(country);
 
-  const filteredReportsBySelectedType = useMemo(
+  const data = reportingPerformance?.data || [];
+  const dueDatesFromApi = reportingPerformance?.due_dates || [];
+
+  const filteredReportsBySelectedType = useMemo(() => {
+    return data.filter(
+      (report: ReportPerformance) =>
+        report.report_type === reportType &&
+        DateTime.fromISO(report.received_date) >= startOfPastThreeMonths &&
+        DateTime.fromISO(report.received_date) <= endOfPastThreeMonths
+    );
+  }, [data, reportType, startOfPastThreeMonths, endOfPastThreeMonths]);
+
+  const dailyStats = useMemo(
     () =>
-      filterReports(monthsAgo3, currentMonthStart).filter(
-        (report) => report.type === reportType
+      getDailyStats(
+        filteredReportsBySelectedType,
+        startOfPastThreeMonths,
+        endOfPastThreeMonths
       ),
-    [monthsAgo3, currentMonthStart, reportType]
-  );
-
-  const weeklyStats = useMemo(
-    () => getWeeklyStats(filteredReportsBySelectedType),
     [filteredReportsBySelectedType]
   );
+
+  const dueDates = useMemo(() => {
+    return getFormattedDueDates(
+      dueDatesFromApi,
+      reportType,
+      startOfPastThreeMonths,
+      endOfPastThreeMonths
+    );
+  }, [
+    dueDatesFromApi,
+    reportType,
+    startOfPastThreeMonths,
+    endOfPastThreeMonths,
+  ]);
 
   return (
     <ChartContainer title="Reporting performance">
@@ -49,8 +75,8 @@ function ReportingPerformance() {
         </Box>
       </ChartDetailsContainer>
       <ReportingPerformanceChart
-        statArray={getStatArray(weeklyStats, monthsAgo3)}
-        dueDates={getDueDates(25)}
+        statArray={getStatArray(dailyStats)}
+        dueDates={dueDates}
       />
     </ChartContainer>
   );

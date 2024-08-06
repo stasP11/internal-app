@@ -1,23 +1,18 @@
 import { DateTime } from "luxon";
 
-export type WeeklyCounts = {
+export interface ProductData {
+  material_number: number;
+  date: string;
   total: number;
-  success: number;
-  manuallyMapped: number;
-};
+  uom: string;
+  material_name: string;
+  count: number;
+}
+export type ProductMap = Record<string, ProductData[]>;
 
-export type AggregateWeeklyData = {
-  [key: string]: WeeklyCounts;
-};
+export type MaterialName = string;
+export type DailyProductCounts = { [product in MaterialName]: number };
+export type AggregateDailyData = { [date: string]: DailyProductCounts };
 
-export type MonthlyStatistics = {
-  submitDate: Date;
-  total: number;
-  success: number;
-  manuallyMapped: number;
-};
-
-export type WeeklyProductSales = {
-  week: DateTime;
-  sales: { [productId: string]: number };
-};
+export type DailyProductData = { [materialName: string]: number };
+export type DailyProductSales = { day: DateTime; sales: DailyProductCounts };

@@ -3,6 +3,7 @@ export const chartColors = {
   success: "var(--bright-blue)",
   manualMapping: "var(--blue)",
   dueDate: "var(--raspberry-10)",
+  failed: "var(--red)",
 };
 
 export const reportingPerfomanceChartLegendConfig = [
@@ -14,8 +15,18 @@ export const reportingPerfomanceChartLegendConfig = [
     shape: "circle",
   },
   {
+    color: chartColors.failed,
+    label: "Failed",
+    shape: "circle",
+  },
+  {
     color: chartColors.dueDate,
     label: "Due Day",
     shape: "rectangle",
   },
 ];
+
+export const reportTypeMapping = {
+  SelloutReport: "sellout",
+  InventoryReport: "inventory",
+};

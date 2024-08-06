@@ -2,6 +2,7 @@ import { BarChart } from "@mui/x-charts";
 import { createSeries, createXAxis, createYAxis } from "./chartUtils";
 
 export interface CountryReportingPerformanceStats {
+  country_code: string;
   country: string;
   totalExpectedReports: number;
   inTime: number;
@@ -22,7 +23,7 @@ function CountryReportingPerformanceChart({ stats }: Props) {
       series={createSeries(stats)}
       height={250}
       width={550}
-      margin={{ top: 5, left: 50, right: 20, bottom: 30 }}
+      margin={{ top: 5, left: 40, right: 20, bottom: 30 }}
       slotProps={{ legend: { hidden: true } }}
       grid={{ vertical: true }}
     />
