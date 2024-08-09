@@ -26,7 +26,6 @@ type ReportStatus =
   | "MISSING"
   | "REWORK"
   | "APPROVED"
-  | "RECEIVED"
   | "REVIEW"
   | "PROCESSING"
   | "SUCCESS";

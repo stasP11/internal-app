@@ -22,6 +22,7 @@ import { DateValidationError } from "@mui/x-date-pickers/models";
 import RemoveIcon from "../../icons/bucket-icon-light/bucketIconLight.svg";
 import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
+import textData from "text-constants/text-constants";
 var customParseFormat = require("dayjs/plugin/customParseFormat");
 dayjs.extend(customParseFormat);
 
@@ -29,22 +30,21 @@ const WeeklyPeriods: React.FC<any> = ({ data, onUpdate }: any): JSX.Element => {
   return (
     <div className="weekly-container">
       <div className="selector-container">
-        <CustomizedMUISelector
-          label={"Start Day"}
-          data={dayNumbers}
+        <TextField
+          variant="outlined"
           value={1 + Number(data?.startDay)}
-          onUpdate={(e: any) =>
-            onUpdate({ dueDay: Number(e.target.value) - 1 })
-          }
-          isDisabled={true}
+          label={textData.Notifications.Inputs.StartDay}
+          fullWidth
+          disabled
         />
+
         <span className="selector-container__desciption">
-          Day of the Next Period
+          {textData.Notifications.Inputs.NextPeriod}
         </span>
       </div>
       <div className="selector-container">
         <CustomizedMUISelector
-          label={"Due Day"}
+          label={textData.Notifications.Inputs.DueDay}
           value={Number(data?.dueDay) + 1}
           data={[1, 2, 3, 4, 5]}
           onUpdate={(e: any) =>
@@ -53,7 +53,7 @@ const WeeklyPeriods: React.FC<any> = ({ data, onUpdate }: any): JSX.Element => {
           isDisabled={false}
         />
         <span className="selector-container__desciption">
-          Day of the Next Period
+          {textData.Notifications.Inputs.NextPeriod}
         </span>
       </div>
     </div>
@@ -67,27 +67,27 @@ const MonthlyPeriods: React.FC<any> = ({
   return (
     <div className="monthly-periods">
       <div className="selector-container">
-        <CustomizedMUISelector
-          label={"Start Day"}
-          data={dayNumbers}
+        <TextField
+          variant="outlined"
           value={data?.startDay}
-          onUpdate={(e: any) => onUpdate({ startDay: e.target.value })}
-          isDisabled={true}
+          label={textData.Notifications.Inputs.StartDay}
+          fullWidth
+          disabled
         />
         <span className="selector-container__desciption">
-          Day of the Next Period
+          {textData.Notifications.Inputs.NextPeriod}
         </span>
       </div>
       <div className="selector-container">
         <CustomizedMUISelector
-          label={"Due Day"}
+          label={textData.Notifications.Inputs.DueDay}
           value={data?.dueDay}
           data={dayNumbers}
           onUpdate={(e: any) => onUpdate({ dueDay: e.target.value })}
           isDisabled={false}
         />
         <span className="selector-container__desciption">
-          Day of the Next Period
+          {textData.Notifications.Inputs.NextPeriod}
         </span>
       </div>
     </div>
@@ -101,27 +101,28 @@ const QuarterlyPeriods: React.FC<any> = ({
   return (
     <div className="monthly-periods">
       <div className="selector-container">
-        <CustomizedMUISelector
-          label={"Start Day"}
-          data={dayNumbers}
+        <TextField
+          variant="outlined"
           value={data?.startDay}
-          onUpdate={(e: any) => onUpdate({ startDay: e.target.value })}
-          isDisabled={true}
+          label={textData.Notifications.Inputs.StartDay}
+          fullWidth
+          disabled
         />
+
         <span className="selector-container__desciption">
-          Day of the Next Period
+          {textData.Notifications.Inputs.NextPeriod}
         </span>
       </div>
       <div className="selector-container">
         <CustomizedMUISelector
-          label={"Due Day"}
+          label={textData.Notifications.Inputs.DueDay}
           data={dayNumbers}
           value={data?.dueDay}
           onUpdate={(e: any) => onUpdate({ dueDay: e.target.value })}
           isDisabled={false}
         />
         <span className="selector-container__desciption">
-          Day of the Next Period
+          {textData.Notifications.Inputs.NextPeriod}
         </span>
       </div>
     </div>
@@ -178,6 +179,9 @@ const CustomPeriod: React.FC<any> = ({
       });
     }
     if (end) {
+      const startPeriod = dayjs(start, dateFormatForFrontEnd).format(
+        dateFormatForBackEnd
+      );
       const endPeriod = dayjs(end, dateFormatForFrontEnd).format(
         dateFormatForBackEnd
       );
@@ -237,7 +241,7 @@ const CustomPeriod: React.FC<any> = ({
           <TextField
             variant="outlined"
             value={startDay}
-            label={"Start Day"}
+            label={textData.Notifications.Inputs.StartDay}
             fullWidth
             disabled
             onChange={(e) =>
@@ -258,15 +262,16 @@ const CustomPeriod: React.FC<any> = ({
           </TextField>
         </FormControl>
         <span className="selector-container__desciption">
-          Day of the Next Period
+          {textData.Notifications.Inputs.NextPeriod}
         </span>
       </div>
       <div className="selector-container">
         <FormControl fullWidth>
           <InputLabel>{"Due Day"}</InputLabel>
           <Select
+            sx={{ textAlign: "start" }}
             value={dueDay}
-            label={"Due Day"}
+            label={textData.Notifications.Inputs.DueDay}
             fullWidth
             onChange={(e) =>
               onUpdate({
@@ -286,7 +291,7 @@ const CustomPeriod: React.FC<any> = ({
           </Select>
         </FormControl>
         <span className="selector-container__desciption">
-          Day of the Next Period
+          {textData.Notifications.Inputs.NextPeriod}
         </span>
       </div>
       <div className="remove-button">
@@ -335,13 +340,16 @@ const CustomPeriods: React.FC<any> = ({
         ))}
 
       <Button
-        variant="contained"
+        variant="outlined"
         sx={{
-          color: "grey",
+          fontFamily: "Helvetica Neue",
+          color: "#10384F",
           width: "125px",
-          backgroundColor: "inherit",
+          backgroundColor: "#EEEEEE",
+          border: "none",
           "&:hover": {
-            backgroundColor: "rgba(0, 0, 0, 0.04)",
+            backgroundColor: "rgba(0, 0, 0, 0.13)",
+            border: "none",
           },
         }}
         onClick={addNewPeriod}
@@ -367,14 +375,16 @@ const NotificationPeriods: React.FC<NotificationPeriodsProps> = ({
 }): JSX.Element => {
   return (
     <div className="notification-periods">
-      <h2 className="notification-periods__title">Reporting period</h2>
+      <h2 className="notification-periods__title">
+        {textData.Notifications.Title.ReportingPeriod}
+      </h2>
 
       <div className="notification-periods__periods">
         <CustomizedMUISelector
           data={notificationPeriods}
           value={selectedPeriod}
           onUpdate={onPeriodChange}
-          label={"Frequency"}
+          label={"Period type"}
         />
       </div>
 

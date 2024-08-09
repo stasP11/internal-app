@@ -10,9 +10,10 @@
     font-size: 18px;
     line-height: 24px;
     font-weight: 500;
-    color: rgba(16, 56, 79, 1);
+    color: #10384f;
     margin-top: 0;
     padding-top: 24px;
+    margin-bottom: 24px;
   }
 }
 
@@ -34,14 +35,15 @@
     margin: 0;
     width: 95%;
     text-align: start;
-    padding-top: 8px;
-    padding-bottom: 8px;
+    padding-top: 14px;
+    padding-bottom: 14px;
     padding-left: 16px;
     background-color: rgba(235, 237, 245, 1);
     font-size: 16px;
     line-height: 24px;
     font-weight: 400;
     border-radius: 4px;
+    color: #10384f;
   }
 
   &__selector {
@@ -67,14 +69,15 @@
     margin: 0;
     width: 95%;
     text-align: start;
-    padding-top: 8px;
-    padding-bottom: 8px;
+    padding-top: 14px;
+    padding-bottom: 14px;
     padding-left: 16px;
     background-color: rgba(235, 248, 255, 1);
     font-size: 16px;
     line-height: 24px;
     font-weight: 400;
     border-radius: 4px;
+    color: #10384f;
   }
 
   &__checkboxes {
@@ -95,14 +98,15 @@
     margin: 0;
     width: 95%;
     text-align: start;
-    padding-top: 8px;
-    padding-bottom: 8px;
+    padding-top: 14px;
+    padding-bottom: 14px;
     padding-left: 16px;
     background-color: rgba(199, 235, 255, 1);
     font-size: 16px;
     line-height: 24px;
     font-weight: 400;
     border-radius: 4px;
+    color: #10384f;
   }
 
   &__checkboxes {

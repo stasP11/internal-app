@@ -23,6 +23,7 @@ const CustomizedMUISelector: React.FC<CustomizedMUISelectorProps> = ({
     <FormControl fullWidth>
       <InputLabel>{label}</InputLabel>
       <Select
+        sx={{ textAlign: "left" }}
         value={value}
         label={label}
         fullWidth

@@ -4,16 +4,7 @@ import Header from "components/Header/Header";
 import Sidebar from "components/Sidebar/Sidebar";
 import { useLocation } from 'react-router-dom';
 import iconTimelines from "../../icons/timelines/NavNotificationLine.svg";
-// import {SuccessAlert, ErrorAlert} from "./"
-
-import Box from '@mui/material/Box';
-import Alert from '@mui/material/Alert';
-import IconButton from '@mui/material/IconButton';
-import Collapse from '@mui/material/Collapse';
-import Button from '@mui/material/Button';
-import CloseIcon from '@mui/icons-material/Close';
-
-
+import Alerts from "components/Alerts/Alerts";
 
 function DefaultLayout({ children, userProfile }: any) {
     const location = useLocation();    
@@ -31,6 +22,7 @@ function DefaultLayout({ children, userProfile }: any) {
         <Header headerValue={page} userProfile={userProfile}  />
         <Sidebar onPageChoose={(boardName: any)=>setPage(boardName)} userProfile={userProfile}  activePage={page}/>
       <main>
+        <Alerts/>
         <>{children}</>
         </main>
     </div>

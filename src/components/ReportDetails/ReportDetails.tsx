@@ -1,5 +1,5 @@
 //base
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
@@ -19,23 +19,25 @@ import RightIcon from "../../icons/right-arrow/ArrowForwardFilled.svg";
 import RemoveIcon from "../../icons/bucket-icon-light/bucketIconLight.svg";
 import "./ReportDetails.scss";
 import Button from "@mui/material/Button";
+import { fetchDataForMappingChoice } from "../../fetch/fetch-requests/reportsRequests";
+import successIcon from "../../icons/success-icon/successIcon.svg";
+import errorIcon from "../../icons/error-icon/errorIcon.svg"
 
 type ReportStatusType =
   | "MISSING"
   | "REWORK"
   | "APPROVED"
-  | "RECEIVED"
   | "REVIEW"
   | "PROCESSING"
   | "SUCCESS";
 
-type Alternativites = {
+type AlternativitesType = {
   material_number: number;
   material_name: string;
 };
 
 type ReportDetailsData = {
-  alternatives: Array<Alternativites> | [];
+  alternatives: Array<AlternativitesType> | [];
   id: number;
   matched: number;
   material_number: number;
@@ -46,6 +48,8 @@ type ReportDetailsData = {
 
 interface ReportDetailsProps {
   data: Array<ReportDetailsData>;
+  country: string;
+  onUpdateTemporaryData: any,
   filename: any;
   fileStatus: any;
   onRejectReport: any;
@@ -71,10 +75,18 @@ const CustomToolbar = ({
 
       {fileStatus === "REVIEW" && (
         <Box sx={{ display: "flex", alignItems: "center", gap: 1, ml: "auto" }}>
-          <Button variant="outlined" onClick={onRejectReport} disabled={isReportStatusUpdated}>
+          <Button
+            variant="outlined"
+            onClick={onRejectReport}
+            disabled={isReportStatusUpdated}
+          >
             Reject
           </Button>
-          <Button variant="contained" onClick={onApproveReport} disabled={isReportStatusUpdated}>
+          <Button
+            variant="contained"
+            onClick={onApproveReport}
+            disabled={isReportStatusUpdated}
+          >
             Approve
           </Button>
         </Box>
@@ -86,6 +98,8 @@ const CustomToolbar = ({
 const ReportDetails: React.FC<ReportDetailsProps> = ({
   data,
   filename,
+  country,
+  onUpdateTemporaryData,
   fileStatus,
   onRejectReport,
   onApproveReport,
@@ -93,44 +107,71 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
 }): JSX.Element => {
   const [isLoaded, setLoaded] = React.useState<boolean>(false);
 
-  function handleResult(value: any) {
-    alert(value);
-    setLoaded(false);
-  }
+  async function handleDataForMappingChoose(
+    result: any,
+    setRequestStatus: any
+  ) {
+    const data = {
+      id: result.params.id,
+      matched_material_id: result?.value,
+      country: country,
+      product_name: result.params.product_name,
+    }
 
-  function handleAlternativeChoose(result: any) {
     const requestBody: any = {
       filename: `${filename}.csv`,
-      data: [
-        {
-          id: result.params.id,
-          matched_material_id: result?.value,
-          country: "South Africa",
-          product_name: result.params.product_name,
-        },
-      ],
+      data: [ data ],
     };
 
-    setLoaded(true);
-    approveAlternative(requestBody, handleResult);
+    onUpdateTemporaryData(data, 'loading');
+    const responce = await fetchDataForMappingChoice(requestBody);
+
+    if (responce?.ok) {
+      setRequestStatus('success');
+      onUpdateTemporaryData(data, 'success');
+    } else {
+      onUpdateTemporaryData(data, 'error');
+      setRequestStatus('error');
+    }
   }
 
   const MappingAlternativesCell: React.FC<any> = ({
     params,
     onAlternativeChoose,
   }): JSX.Element => {
-    const { alternatives, matched, material_number, product_name } = params;
-    const [selectedValue, selectValue] = React.useState<any>();
-    const userData = useContext(UserDataContext);
+    const { alternatives, matched, material_number, product_name, statusUpdate } = params;
+    const [ updateStatus, setUpdateStatus] = useState(statusUpdate);
 
-    const [isLoaded, setIsloaded] = useState(false);
 
-    function handleChange(e: any) {
-      onAlternativeChoose({ ...e.target, params }, setIsloaded);
-      //setIsloaded(true);
+    useEffect(()=>{
+      if(matched && alternatives.length>0 && statusUpdate !== 'loading'){
+        setUpdateStatus('success');
+      }
+    }, [])
+
+    async function handleChange(e: any) {
+      setUpdateStatus(null);
+      await onAlternativeChoose(
+        { ...e.target, params },
+        setUpdateStatus
+      );
     }
 
     const ItemMapping = ({ alternatives, onChange }: any) => {
+      console.log(alternatives, "alternatives");
+
+      const defineValue = (value: string | number) => {
+        if (typeof value === "string") {
+          return value;
+        } else if (value) {
+          const result = alternatives.find(
+            ({ material_number }: AlternativitesType) =>
+              material_number == value
+          );
+          return result?.material_name;
+        }
+      };
+
       if (alternatives.length > 0) {
         const selectedOption = alternatives.filter(
           (obj: any) => obj?.material_number === matched
@@ -147,6 +188,31 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
             variant="outlined"
             onChange={onChange}
             fullWidth
+            renderValue={(value) => {
+              return (
+                <Box
+                  sx={{
+                    display: "flex",
+                    width: "98%",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <span
+                    style={{
+                      width: "87%",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {defineValue(value)}
+                  </span>
+                  {updateStatus === 'loading' && <CircularProgress size={20} />}
+                  {updateStatus === 'success' && <img src={successIcon} alt="success"/>}
+                  {updateStatus === 'error' && <img src={errorIcon} alt="error"/>}
+                </Box>
+              );
+            }}
           >
             <MenuItem
               value={`Founded ${alternatives.length} alternatives`}
@@ -233,7 +299,7 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
     renderCell: (params: any) => (
       <MappingAlternativesCell
         params={params?.row}
-        onAlternativeChoose={handleAlternativeChoose}
+        onAlternativeChoose={handleDataForMappingChoose}
       />
     ),
     flex: 1.5,
@@ -247,7 +313,7 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
 
   return (
     <>
-      <Box sx={{ height: 600, width: "100%" }}>
+      <Box sx={{ height: "calc(100vh - 132px)", width: "100%" }}>
         <DataGridPro
           sx={{
             padding: 0,

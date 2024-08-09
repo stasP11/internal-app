@@ -6,14 +6,13 @@ const textData = {
       NextPeriod: "Day of the Next Period",
     },
     Title: {
-        ReportingPeriod: "Reporting period",
-        NotificationRules: "Notification Rules",
-        BeforeReportingStartDay: "Before reporting Start Day",
-        BeforeReportingDueDay: "Before reporting Due Day",
-        AfterReportingDueDay: "After reporting Due Day"
+      ReportingPeriod: "Reporting period",
+      NotificationRules: "Notification Rules",
+      BeforeReportingStartDay: "Before reporting Start Day",
+      BeforeReportingDueDay: "Before reporting Due Day",
+      AfterReportingDueDay: "After reporting Due Day",
     },
   },
 };
-
 
 export default textData;

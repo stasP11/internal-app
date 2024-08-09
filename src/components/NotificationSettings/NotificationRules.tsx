@@ -11,6 +11,7 @@ import CustomizedMUISelector from "../../customized-mui-elements/CustomizedMUISe
 
 //utils
 import generateRandomId from "../../utils/genereteRandomId.js";
+import textData from "text-constants/text-constants";
 
 const DynamicDaysCheckbox = ({
   selected,
@@ -171,7 +172,9 @@ const AfterReportingDueDate: React.FC<any> = ({
 
   return (
     <div className="after-due-date">
-      <h3 className="after-due-date__title">After reporting Due Date</h3>
+      <h3 className="after-due-date__title">
+        {textData.Notifications.Title.AfterReportingDueDay}
+      </h3>
       <div className="after-due-date__day-of-week-selector">
         <DaySelector
           selectedDays={selectedDailyFrequency}
@@ -236,7 +239,9 @@ const BeforeReportingDueDate: React.FC<any> = ({
 
   return (
     <div className="before-due-date">
-      <h3 className="before-due-date__title">Before reporting Due Day</h3>
+      <h3 className="before-due-date__title">
+        {textData.Notifications.Title.BeforeReportingDueDay}
+      </h3>
       <div className="before-due-date__checkboxes">
         <FormGroup>
           {data.map(({ selected, value, id, isEditable }: any) =>
@@ -264,12 +269,15 @@ const BeforeReportingDueDate: React.FC<any> = ({
       </div>
 
       <Button
-        variant="contained"
+        variant="outlined"
         sx={{
-          color: "grey",
-          backgroundColor: "inherit",
+          fontFamily: "Helvetica Neue",
+          color: "#10384F",
+          backgroundColor: "#EEEEEE",
+          border: "none",
           "&:hover": {
-            backgroundColor: "rgba(0, 0, 0, 0.04)",
+            backgroundColor: "rgba(0, 0, 0, 0.13)",
+            border: "none",
           },
         }}
         onClick={handleAddNewDaysCheckbox}
@@ -325,7 +333,9 @@ const BeforeReportingStartDate: React.FC<any> = ({
 
   return (
     <div className="before-start-date">
-      <h3 className="before-start-date__title">Before reporting Start Day</h3>
+      <h3 className="before-start-date__title">
+        {textData.Notifications.Title.BeforeReportingStartDay}
+      </h3>
       <div className="before-due-date__checkboxes">
         <FormGroup>
           {data.map(({ selected, value, id, isEditable }: any) =>
@@ -353,12 +363,15 @@ const BeforeReportingStartDate: React.FC<any> = ({
       </div>
 
       <Button
-        variant="contained"
+        variant="outlined"
         sx={{
-          color: "grey",
-          backgroundColor: "inherit",
+          fontFamily: "Helvetica Neue",
+          color: "#10384F",
+          backgroundColor: "#EEEEEE",
+          border: "none",
           "&:hover": {
-            backgroundColor: "rgba(0, 0, 0, 0.04)",
+            backgroundColor: "rgba(0, 0, 0, 0.13)",
+            border: "none",
           },
         }}
         onClick={handleAddNewDaysCheckbox}
@@ -385,7 +398,9 @@ const NotificationRules: React.FC<any> = ({
 }): JSX.Element => {
   return (
     <div className="notification-rules">
-      <h2 className="notification-rules__title">Notification Rules</h2>
+      <h2 className="notification-rules__title">
+        {textData.Notifications.Title.NotificationRules}
+      </h2>
 
       <div className="content">
         {selectedPeriod === "Daily" && dailyNotifications && (

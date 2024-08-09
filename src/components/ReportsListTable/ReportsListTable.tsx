@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   DataGridPro,
   GridToolbarContainer,
@@ -20,11 +20,13 @@ import {
   aproveReportRequest,
   rejectReportRequest,
 } from "../../api/files-requests";
+import Box from "@mui/material/Box";
 import dayjs from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import CircularProgress from "@mui/material/CircularProgress";
+import { AlertsContext } from "contexts/AlertsContext";
 
 
 import { aproveReport, rejectReport} from "../../fetch/fetch-requests/reportsRequests"
@@ -97,6 +99,7 @@ const DistributorCell: React.FC<any> = ({ params }) => {
 };
 
 const ActionsCell: React.FC<any> = ({ params, onSelect }) => {
+  const { setNewAlert } = useContext(AlertsContext);
   const fullUrl = window.location.href; 
   const baseUrl = getBaseUrl(fullUrl);
   const [ isLoaded, setIsLoaded] = useState<boolean>(false);
@@ -104,10 +107,10 @@ const ActionsCell: React.FC<any> = ({ params, onSelect }) => {
   const handleFetchResult = (responceResult: any, message: string) =>{
     if(responceResult?.ok){
       setIsLoaded(false);
-      alert(message);
+      setNewAlert({ alertType: 'success', text: message});
      } else {
       setIsLoaded(false);
-      alert(message);
+      setNewAlert({ alertType: 'error', text: message});
      }
   }
 
@@ -196,20 +199,6 @@ const ReportsListTable: React.FC<ReportsListTableProps> = ({
     SUCCESS: "var(--green)",
   };
 
-
-  function temporerDateCell(filename: any){
-    console.log()
-    if (filename) {
-      const match = filename.replace(/^[A-Za-z]+_\d+_/, "");
-      const [month, year] = match.split("_");
-  
-      if (month && year) {
-        return `${month}/${year}`;
-      }
-    }
-    return '';
-  }
-
   const columns: any = [
     {
       field: "#",
@@ -238,7 +227,6 @@ const ReportsListTable: React.FC<ReportsListTableProps> = ({
         "MISSING",
         "REWORK",
         "APPROVED",
-        "RECEIVED",
         "REVIEW",
         "PROCESSING",
         "SUCCESS",
@@ -284,7 +272,7 @@ const ReportsListTable: React.FC<ReportsListTableProps> = ({
   ];
 
   return (
-    <div style={{ height: 500, width: "100%" }}>
+    <Box sx={{ height: "calc(100vh - 180px)", width: "100%" }}>
       <DataGridPro
         onRowClick={onRowClick}
         sx={{
@@ -308,7 +296,7 @@ const ReportsListTable: React.FC<ReportsListTableProps> = ({
           exportIcon: ArrowUpwardIcon,
         }}
       />
-    </div>
+    </Box>
   );
 };
 

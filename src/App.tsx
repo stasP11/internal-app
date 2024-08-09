@@ -17,7 +17,8 @@ import {
   getFromLocalStorage,
   saveToLocalStorage,
 } from "./services/storageInterection";
-import { PageInfoContextWrapper } from "./contexts/PageInfoContext"
+import { PageInfoContextWrapper } from "./contexts/PageInfoContext";
+import { AlertsContextWrapper } from "./contexts/AlertsContext";
 
 
 type UserDataContextType = {
@@ -74,7 +75,7 @@ const MainContent = () => {
   }, [data]);
 
 
-  if (data?.status === '404') {
+  if (data?.status === '404' || data?.status === '500') {
     return <ErrorPage errorText={data?.description} />;
   }
 
@@ -93,7 +94,9 @@ const MainContent = () => {
       <AuthenticatedTemplate>
       <PageInfoContextWrapper>
         <UserDataContext.Provider value={{ ...data?.userData }}>
+          <AlertsContextWrapper>
           <Router status={data?.status} userProfile={data?.userData} />
+          </AlertsContextWrapper>
         </UserDataContext.Provider>
         </PageInfoContextWrapper>
       </AuthenticatedTemplate>

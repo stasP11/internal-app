@@ -26,7 +26,6 @@ const NotificationComponent: React.FC<any> = ({
   onDefaultToggleChange,
   onCancelDataEdit,
 }: any): JSX.Element => {
-  const selectedCountry = getFromLocalStorage("selectedCountry");
 
   return (
     <div className="notification-page">
