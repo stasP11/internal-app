@@ -3,7 +3,11 @@ import { axisClasses } from "@mui/x-charts/ChartsAxis";
 import { BarSeriesType } from "@mui/x-charts";
 import { chartColors } from "./ReportSubmissionAttempts";
 import { FormattedDataForChart, IncomingData } from "./types";
-import { trimLabelString } from "./chartUtils";
+import {
+  findMaxValue,
+  roundUpToNiceNumber,
+  trimLabelString,
+} from "./chartUtils";
 
 interface ReportSubmissionAttempsChartProps {
   dataset: FormattedDataForChart[];
@@ -12,11 +16,14 @@ interface ReportSubmissionAttempsChartProps {
 export default function ReportSubmissionAttempsChart({
   dataset,
 }: ReportSubmissionAttempsChartProps) {
+  const maxDataValue = findMaxValue(dataset);
+  const roundedUpMax = roundUpToNiceNumber(maxDataValue);
+
   const chartSettings: Partial<BarChartProps> = {
     dataset,
     height: 250,
     width: 550,
-    margin: { top: 20, left: 130, right: 20, bottom: 20 },
+    margin: { top: 20, left: 140, right: 20, bottom: 20 },
     grid: { vertical: true },
     yAxis: [
       {
@@ -31,12 +38,17 @@ export default function ReportSubmissionAttempsChart({
     ],
     xAxis: [
       {
-        tickNumber: 6,
+        min: -roundedUpMax,
+        max: roundedUpMax,
+        tickNumber: 3,
         disableTicks: true,
         valueFormatter: (value) => `${Math.abs(value)}`,
       },
     ],
     sx: {
+      "& .MuiChartsAxis-tickLabel": {
+        fontFamily: "Helvetica Neue",
+      },
       [`& .${axisClasses.line}`]: {
         stroke: "var(--grey-300)",
       },

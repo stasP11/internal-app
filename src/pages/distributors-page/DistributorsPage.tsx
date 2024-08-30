@@ -9,18 +9,19 @@ import {
   DistributorDetails,
   DistributorRowData,
 } from "components/DistributorsTable/types";
-import { PageInfoContext} from '../../contexts/PageInfoContext';
+import { PageInfoContext } from "../../contexts/PageInfoContext";
 
 function getDistributorsRowData(
   data: DistributorDetails[]
 ): DistributorRowData[] {
   return data.map((distributor, index) => ({
-    id: index + 1,
+    idx: index + 1,
+    distributorId: distributor.distributor_id,
     distributorName: [distributor.distributor_name, distributor.distributor_id],
     email: distributor.emails.join(", "),
     phone: distributor.phone,
     injectionChannels: distributor.injection_channels,
-    active: Boolean(distributor.active),
+    active: distributor.active,
   }));
 }
 
@@ -37,6 +38,12 @@ export default function DistributorsPage() {
   );
   const distributorsData = data?.data;
 
+  useEffect(() => {
+    setPageInfo({
+      headerContent: "Distributors",
+    });
+  }, []);
+
   const rowData = useMemo(() => {
     if (Array.isArray(distributorsData)) {
       return getDistributorsRowData(distributorsData);
@@ -44,16 +51,9 @@ export default function DistributorsPage() {
     return [];
   }, [distributorsData]);
 
-
-  useEffect(()=>{
-    setPageInfo({
-      headerContent: "Distributors",
-    })
-  }, [])
-
   return (
     <>
-      {isLoading && (
+      {isLoading ? (
         <CircularProgress
           sx={{
             position: "absolute",
@@ -62,11 +62,12 @@ export default function DistributorsPage() {
             transform: "translate(-50%, -50%)",
           }}
         />
-      )}
-      {distributorsData?.length > 0 ? (
-        <DistributorsTable rowData={rowData} />
       ) : (
-        <DistributorsTable rowData={[]} />
+        <DistributorsTable
+          country={selectedCountry}
+          authResult={authResult}
+          rowData={distributorsData?.length > 0 ? rowData : []}
+        />
       )}
     </>
   );

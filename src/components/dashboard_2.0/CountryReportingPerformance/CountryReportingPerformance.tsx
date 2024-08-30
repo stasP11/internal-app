@@ -1,5 +1,5 @@
 import CountryReportingPerformanceChart from "./CountryReportingPerformanceChart";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { countryPerformanceChartLegendConfig } from "./chartConfigs";
 import ChartContainer from "../shared/ChartContainer";
 import ChartDetailsContainer from "../shared/ChartDetailsContainer";
@@ -9,20 +9,41 @@ import ToggleButtons from "../shared/ToggleButtons";
 import DownloadButton from "../shared/DownloadButton";
 import { ReportType } from "../ReportingPerformance/types";
 import useCountryReportingPerformance from "hooks/swr-hooks/useCountryReportingPerformance";
+import { CountryReportData, ReportKey } from "./types";
+import { groupByCountry } from "./chartUtils";
+
+interface ReportData {
+  InventoryReport: CountryReportData[];
+  SelloutReport: CountryReportData[];
+}
 
 function CountryReportingPerformance() {
   const [reportType, setReportType] = useState<ReportType>("SelloutReport");
   const { countryReportingPerformance, isLoading, isError } =
     useCountryReportingPerformance();
+  const [reportData, setReportData] = useState<ReportData>({
+    InventoryReport: [],
+    SelloutReport: [],
+  });
 
-  const data = countryReportingPerformance?.data || [];
+  useEffect(() => {
+    if (countryReportingPerformance?.data) {
+      const groupedData = groupByCountry(countryReportingPerformance.data);
 
-  const countryPerformanceByReportType = data.filter(
-    (item: any) => item.report_type === reportType
-  );
-  const countryPerformanceChartStats = countryPerformanceByReportType
-    .slice(0, 8)
-    .map((item: any) => ({
+      const processReportData = (reportKey: ReportType) =>
+        Object.values(groupedData)
+          .map((country) => country[reportKey])
+          .sort((a, b) => a.country_code.localeCompare(b.country_code))
+          .slice(0, 8);
+
+      setReportData({
+        InventoryReport: processReportData("InventoryReport"),
+        SelloutReport: processReportData("SelloutReport"),
+      });
+    }
+  }, [countryReportingPerformance]);
+
+  const sortedData = reportData[reportType].map((item: any) => ({
       country_code: item.country_code,
       country: item.country,
       totalExpectedReports:
@@ -47,7 +68,7 @@ function CountryReportingPerformance() {
           <DownloadButton />
         </Box>
       </ChartDetailsContainer>
-      <CountryReportingPerformanceChart stats={countryPerformanceChartStats} />
+      <CountryReportingPerformanceChart stats={sortedData} />
     </ChartContainer>
   );
 }

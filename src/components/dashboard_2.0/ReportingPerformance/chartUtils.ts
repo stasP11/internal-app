@@ -88,12 +88,18 @@ export const getStatArray = (stats: AggregateDailyData) => {
 export const createXAxis = (statArray: DailyStatistics[]) => [
   {
     scaleType: "time" as const,
-    data: statArray.map((item) => item.date),
+    data: statArray.map((item) => item.date?.toJSDate()),
     tickNumber: 4,
     tickLabelInterval: (value: any, index: number) => index !== 3,
     tickLabelStyle: { ...commonTickLabelStyles },
     disableTicks: true,
     disableLine: true,
+    valueFormatter: (date: Date, context: any) => {
+      if (context.location === "tooltip") {
+        return date?.toLocaleDateString();
+      }
+      return date.toLocaleDateString("en-US", { month: "short" });
+    },
   },
 ];
 

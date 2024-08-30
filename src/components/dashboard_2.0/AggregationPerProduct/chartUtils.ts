@@ -21,22 +21,16 @@ export function groupByProduct(productData: ProductData[]): ProductMap {
 
 function getTopEightProducts(groupedProducts: ProductMap): ProductMap {
   const entries = Object.entries(groupedProducts);
-
-  entries.sort(([, a], [, b]) => b.length - a.length);
+  const firstEightEntriesSortedByNrOfSales = entries
+    .sort(([, a], [, b]) => b.length - a.length)
+    .slice(0, 8);
 
   const sortedProductMap: ProductMap = {};
-  for (let [key, value] of entries) {
+  for (let [key, value] of firstEightEntriesSortedByNrOfSales) {
     sortedProductMap[key] = value;
   }
 
-  const selectedProductNumbers = Object.keys(sortedProductMap).slice(0, 8);
-  const selectedProducts: ProductMap = {};
-
-  selectedProductNumbers.forEach((productNumber) => {
-    selectedProducts[productNumber] = sortedProductMap[productNumber];
-  });
-
-  return selectedProducts;
+  return sortedProductMap;
 }
 
 export function isInDateRange(
@@ -56,7 +50,8 @@ function initializeDailyStats(
 ): AggregateDailyData {
   // Get material names of first eight products
   const productNames = Object.keys(products).map(
-    (key) => products[key][0].material_name
+    (key) =>
+      `${products[key][0].material_number} ${products[key][0].material_name}`
   );
 
   let stats: AggregateDailyData = {};
@@ -94,7 +89,7 @@ export const getDailyStats = (
     const day = DateTime.fromFormat(item.date, "dd-MM-yyyy").toFormat(
       "yyyy-LL-dd"
     );
-    const materialName = item.material_name;
+    const materialName = `${item.material_number} ${item.material_name}`;
 
     // Ensure the date and product exists in our stats
     if (acc[day] && acc[day][materialName] !== undefined) {
@@ -131,10 +126,16 @@ const commonTickLabelStyles = {
 export const createXAxis = (statArray: DailyProductSales[]) => [
   {
     scaleType: "time" as const,
-    data: statArray.map((item) => item.day),
+    data: statArray.map((item) => item.day.toJSDate()),
     tickNumber: 4,
     tickLabelStyle: { ...commonTickLabelStyles },
     disableTicks: true,
+    valueFormatter: (date: Date, context: any) => {
+      if (context.location === "tooltip") {
+        return date?.toLocaleDateString();
+      }
+      return date.toLocaleDateString("en-US", { month: "short" });
+    },
   },
 ];
 
@@ -175,8 +176,8 @@ const createSeriesObject = (
   curve: "linear" as const,
   label: (location: string) => {
     if (location === "legend") {
-      // Take the first word for the legend label
-      return materialName.split(" ")[0];
+      // Take the first word of material name for the legend label
+      return materialName.split(" ")[1];
     }
     // the original label for other locations
     return materialName;

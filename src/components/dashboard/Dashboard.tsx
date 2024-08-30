@@ -4,8 +4,6 @@ import { Link } from "react-router-dom";
 import PieChart from "components/Charts/Chart";
 import { useReportsData } from "../../hooks/swr-hooks/useReports";
 import { useContext } from "react";
-import DashboardReportsTable from "./DashboardReportsTable";
-import DashboardDistributorsTable from "./DashboardDistributorsTable";
 import { getFromLocalStorage } from "../../services/storageInterection";
 import { protectedResources } from "../../authConfig";
 import { useFetchWithMsal2 } from "../../hooks/useFetchWithMsal";
@@ -13,6 +11,8 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { UserDataContext } from "../../App";
 
 import DashBoardProroImage from "./Frame 1707478304.png";
+import DashboardDistributorsTable from "./DashboardDistributorsTable";
+import DashboardReportsTable from "./DashboardReportsTable";
 
 // utils
 

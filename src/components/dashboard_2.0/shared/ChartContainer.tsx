@@ -22,6 +22,7 @@ function ChartContainer({ title, children }: ChartContainerProps) {
           mb={"12px"}
           variant="h5"
           textAlign={"left"}
+          fontFamily={"Helvetica Neue"}
         >
           {title}
         </Typography>

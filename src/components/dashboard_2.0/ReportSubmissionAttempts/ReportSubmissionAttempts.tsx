@@ -23,7 +23,7 @@ function ReportSubmissionAttempts({ country }: { country: string }) {
   const { reportSubmissionAttempts, isLoading, isError } =
     useReportSubmissionAttempts(country);
 
-  const data = reportSubmissionAttempts?.data.slice(0, 8) || [];
+  const data = reportSubmissionAttempts?.data || [];
 
   const dataset = formatBarChartData(data);
 

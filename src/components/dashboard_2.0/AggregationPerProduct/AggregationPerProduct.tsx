@@ -1,6 +1,11 @@
 import { DateTime } from "luxon";
 import AggregationPerProductChart from "./AggregationPerProductChart";
-import { getDailyStats, getStatArray, isInDateRange } from "./chartUtils";
+import {
+  getDailyStats,
+  getStatArray,
+  groupByProduct,
+  isInDateRange,
+} from "./chartUtils";
 import { useMemo } from "react";
 import ChartContainer from "../shared/ChartContainer";
 import useAggregationPerProduct from "hooks/swr-hooks/useAggregationPerProduct";
@@ -28,7 +33,7 @@ function AggregationPerProduct({ country }: { country: string }) {
 
   return (
     <>
-      <ChartContainer title="Aggregation per product (all countries)">
+      <ChartContainer title="Aggregation per product">
         <Box
           sx={{ width: "fit-content", marginLeft: "auto", marginBottom: "8px" }}
         >

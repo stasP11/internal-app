@@ -10,11 +10,13 @@ export interface CountryReportingPerformanceStats {
   notReported: number;
 }
 
-interface Props {
+interface CountryReportingPerformanceChartProps {
   stats: CountryReportingPerformanceStats[];
 }
 
-function CountryReportingPerformanceChart({ stats }: Props) {
+function CountryReportingPerformanceChart({
+  stats,
+}: CountryReportingPerformanceChartProps) {
   return (
     <BarChart
       xAxis={createXAxis()}

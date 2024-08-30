@@ -1,6 +1,7 @@
-import { ReportKey } from "./types";
+import { CountryReportData, GroupedCountryReports, ReportKey } from "./types";
 import { seriesConfig } from "./chartConfigs";
 import { CountryReportingPerformanceStats } from "./CountryReportingPerformanceChart";
+import { ReportType } from "../ReportingPerformance/types";
 
 export const calculatePercentage = (
   item: CountryReportingPerformanceStats,
@@ -68,3 +69,46 @@ export const createYAxis = (
     },
   },
 ];
+
+const defaultData = (
+  country: string,
+  reportType: ReportType,
+  countryCode: string
+) => ({
+  country,
+  report_type: reportType,
+  missing_report_count: 1,
+  in_time_report_count: 0,
+  on_time_report_count: 0,
+  country_code: countryCode,
+});
+
+export const groupByCountry = (
+  data: CountryReportData[]
+): GroupedCountryReports => {
+  const grouped = data.reduce<GroupedCountryReports>((acc, item) => {
+    if (item.country_code) {
+      if (!acc[item.country_code]) {
+        acc[item.country_code] = {
+          country: item.country,
+          country_code: item.country_code,
+          InventoryReport: defaultData(
+            item.country,
+            "InventoryReport",
+            item.country_code
+          ),
+          SelloutReport: defaultData(
+            item.country,
+            "SelloutReport",
+            item.country_code
+          ),
+        };
+      }
+
+      acc[item.country_code][item.report_type] = item;
+    }
+    return acc;
+  }, {});
+
+  return grouped;
+};

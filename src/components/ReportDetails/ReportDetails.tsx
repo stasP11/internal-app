@@ -320,7 +320,8 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
             background: "white",
             fontFamily: "Helvetica Neue",
             color: "#10384F",
-            "& .MuiDataGrid-columnHeader, .MuiDataGrid-scrollbarFiller": {
+            "& .MuiDataGrid-columnHeader, & .MuiDataGrid-filler, & .MuiDataGrid-scrollbarFiller.MuiDataGrid-scrollbarFiller--header.MuiDataGrid-scrollbarFiller--pinnedRight ":
+              {
               backgroundColor: "rgba(245, 245, 245, 1)",
             },
           }}

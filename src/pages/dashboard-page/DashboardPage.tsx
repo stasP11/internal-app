@@ -5,7 +5,6 @@ import { UserDataContext } from "../../App";
 import Dashboard from "components/Dashboard/Dashboard";
 
 export default function DashboardPage() {
-
   const { isEMEA } = useContext(UserDataContext);
   const { setPageInfo } = useContext(PageInfoContext);
   useEffect(() => {
@@ -14,11 +13,5 @@ export default function DashboardPage() {
     });
   }, []);
 
-  return (
-    <>
-    {
-      isEMEA? (<Dashboard2 />): (<Dashboard/>)
-    }
-    </>
-  );
+  return <>{isEMEA ? <Dashboard2 /> : <Dashboard />}</>;
 }

@@ -6,11 +6,29 @@ type PerformanceLineChartProps = {
   statArray: DailyProductSales[];
 };
 
+const colors = [
+  "#00BCFF",
+  "#0091DF",
+  "#89D329",
+  "#66B512",
+  "#FFAD31",
+  "#DF9300",
+  "#FF3162",
+  "#D30F4B",
+];
+
 function AggregationPerProductChart({ statArray }: PerformanceLineChartProps) {
   return (
     <>
+      {/* <pre>{JSON.stringify(statArray, null, 2)}</pre> */}
       <LineChart
         sx={{
+          "& .MuiChartsLegend-mark": {
+            ry: 10,
+          },
+          "& .MuiChartsLegend-series tspan": {
+            fontFamily: "Helvetica Neue",
+          },
           "& .MuiChartsAxis-bottom .MuiChartsAxis-tickLabel": {
             transform: "translate(13%, 2%)",
           },
@@ -37,6 +55,7 @@ function AggregationPerProductChart({ statArray }: PerformanceLineChartProps) {
         height={250}
         width={550}
         grid={{ vertical: true }}
+        colors={colors}
       ></LineChart>
     </>
   );
