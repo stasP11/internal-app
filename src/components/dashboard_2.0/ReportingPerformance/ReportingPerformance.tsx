@@ -11,7 +11,7 @@ import ChartContainer from "../shared/ChartContainer";
 import { Box } from "@mui/material";
 import CustomLegend from "../shared/CustomLegend";
 import ToggleButtons from "../shared/ToggleButtons";
-import DownloadButton from "../shared/DownloadButton";
+// import DownloadButton from "../shared/DownloadButton";
 import ChartDetailsContainer from "../shared/ChartDetailsContainer";
 import useReportingPerformance from "hooks/swr-hooks/useReportingPerformance";
 import { ReportPerformance, ReportType } from "./types";
@@ -71,7 +71,7 @@ function ReportingPerformance({ country }: { country: string }) {
             setReportType={setReportType}
           />
 
-          <DownloadButton />
+          {/* <DownloadButton /> */}
         </Box>
       </ChartDetailsContainer>
       <ReportingPerformanceChart

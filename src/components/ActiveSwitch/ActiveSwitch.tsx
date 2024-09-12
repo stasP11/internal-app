@@ -7,5 +7,22 @@ interface ActiveSwitchProps {
 }
 
 export default function ActiveSwitch({ value, onChange }: ActiveSwitchProps) {
-  return <Switch checked={value} onChange={onChange} size="small" />;
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    onChange(event);
+  };
+
+  const handleClick = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    event.stopPropagation();
+  };
+
+  return (
+    <Switch
+      checked={value}
+      onClick={handleClick}
+      onChange={handleChange}
+      size="small"
+    />
+  );
 }

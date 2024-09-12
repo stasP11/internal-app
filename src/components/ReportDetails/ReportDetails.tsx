@@ -21,7 +21,7 @@ import "./ReportDetails.scss";
 import Button from "@mui/material/Button";
 import { fetchDataForMappingChoice } from "../../fetch/fetch-requests/reportsRequests";
 import successIcon from "../../icons/success-icon/successIcon.svg";
-import errorIcon from "../../icons/error-icon/errorIcon.svg"
+import errorIcon from "../../icons/error-icon/errorIcon.svg";
 
 type ReportStatusType =
   | "MISSING"
@@ -49,7 +49,7 @@ type ReportDetailsData = {
 interface ReportDetailsProps {
   data: Array<ReportDetailsData>;
   country: string;
-  onUpdateTemporaryData: any,
+  onUpdateTemporaryData: any;
   filename: any;
   fileStatus: any;
   onRejectReport: any;
@@ -116,22 +116,22 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
       matched_material_id: result?.value,
       country: country,
       product_name: result.params.product_name,
-    }
+    };
 
     const requestBody: any = {
       filename: `${filename}.csv`,
-      data: [ data ],
+      data: [data],
     };
 
-    onUpdateTemporaryData(data, 'loading');
+    onUpdateTemporaryData(data, "loading");
     const responce = await fetchDataForMappingChoice(requestBody);
 
     if (responce?.ok) {
-      setRequestStatus('success');
-      onUpdateTemporaryData(data, 'success');
+      setRequestStatus("success");
+      onUpdateTemporaryData(data, "success");
     } else {
-      onUpdateTemporaryData(data, 'error');
-      setRequestStatus('error');
+      onUpdateTemporaryData(data, "error");
+      setRequestStatus("error");
     }
   }
 
@@ -139,22 +139,24 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
     params,
     onAlternativeChoose,
   }): JSX.Element => {
-    const { alternatives, matched, material_number, product_name, statusUpdate } = params;
-    const [ updateStatus, setUpdateStatus] = useState(statusUpdate);
+    const {
+      alternatives,
+      matched,
+      material_number,
+      product_name,
+      statusUpdate,
+    } = params;
+    const [updateStatus, setUpdateStatus] = useState(statusUpdate);
 
-
-    useEffect(()=>{
-      if(matched && alternatives.length>0 && statusUpdate !== 'loading'){
-        setUpdateStatus('success');
+    useEffect(() => {
+      if (matched && alternatives.length > 0 && statusUpdate !== "loading") {
+        setUpdateStatus("success");
       }
-    }, [])
+    }, []);
 
     async function handleChange(e: any) {
       setUpdateStatus(null);
-      await onAlternativeChoose(
-        { ...e.target, params },
-        setUpdateStatus
-      );
+      await onAlternativeChoose({ ...e.target, params }, setUpdateStatus);
     }
 
     const ItemMapping = ({ alternatives, onChange }: any) => {
@@ -183,7 +185,9 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
             value={
               selectedOption.length > 0
                 ? selectedOption[0]?.material_number
-                : `Founded ${alternatives.length} alternatives`
+                : `${alternatives.length} ${
+                    alternatives.length > 1 ? "alternatives" : "alternative"
+                  } found`
             }
             variant="outlined"
             onChange={onChange}
@@ -207,18 +211,26 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
                   >
                     {defineValue(value)}
                   </span>
-                  {updateStatus === 'loading' && <CircularProgress size={20} />}
-                  {updateStatus === 'success' && <img src={successIcon} alt="success"/>}
-                  {updateStatus === 'error' && <img src={errorIcon} alt="error"/>}
+                  {updateStatus === "loading" && <CircularProgress size={20} />}
+                  {updateStatus === "success" && (
+                    <img src={successIcon} alt="success" />
+                  )}
+                  {updateStatus === "error" && (
+                    <img src={errorIcon} alt="error" />
+                  )}
                 </Box>
               );
             }}
           >
             <MenuItem
-              value={`Founded ${alternatives.length} alternatives`}
+              value={`${alternatives.length} ${
+                alternatives.length > 1 ? "alternatives" : "alternative"
+              } found`}
               disabled
             >
-              Founded {alternatives.length} alternatives
+              {`${alternatives.length} ${
+                alternatives.length > 1 ? "alternatives" : "alternative"
+              } found`}
             </MenuItem>
             {alternatives.map(({ material_number, material_name }: any) => (
               <MenuItem key={material_number} value={material_number}>
@@ -322,8 +334,8 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
             color: "#10384F",
             "& .MuiDataGrid-columnHeader, & .MuiDataGrid-filler, & .MuiDataGrid-scrollbarFiller.MuiDataGrid-scrollbarFiller--header.MuiDataGrid-scrollbarFiller--pinnedRight ":
               {
-              backgroundColor: "rgba(245, 245, 245, 1)",
-            },
+                backgroundColor: "rgba(245, 245, 245, 1)",
+              },
           }}
           columns={suitableColums(fileStatus)}
           rows={data}

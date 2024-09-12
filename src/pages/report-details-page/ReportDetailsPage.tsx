@@ -4,6 +4,7 @@ import "./ReportDetailsPage.scss";
 import { PageInfoContext } from "../../contexts/PageInfoContext";
 
 //components
+import { getFromLocalStorage } from "../../services/storageInterection";
 import ReportDetails from "components/ReportDetails/ReportDetails";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useSearchParams } from "react-router-dom";
@@ -59,6 +60,7 @@ type ProductData = {
 };
 
 const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
+  const selectedCountry = getFromLocalStorage("selectedCountry");
   const { setPageInfo } = useContext(PageInfoContext);
   const [searchParams] = useSearchParams();
   const filename = searchParams.get("name");
@@ -74,7 +76,8 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
     data: reportContent,
     error,
     isLoading: isReportContentLoading,
-  } = useFetchReportContent(filename, fileStatus);
+  } = useFetchReportContent(filename, fileStatus, selectedCountry);
+  // const country
   const [isApproveReportLoaded, setApproveReportLoaded] =
     React.useState<boolean>(false);
   const { setNewAlert } = useContext(AlertsContext);

@@ -13,7 +13,7 @@ import TableMenuPopup from "../../customized-mui-elements/TableMenuPopup/TableMe
 import getBaseUrl from "../../utils/getBaseUrl.js";
 import { Chip } from "@mui/material";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
-import MailOutlineIcon from "@mui/icons-material/MailOutline";
+// import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import { CustomButton } from "components/DistributorsTable/components/CustomButton";
 import { ViewHeadlineOutlined } from "@mui/icons-material";
 import {
@@ -43,11 +43,11 @@ function ReportsListTableToolbar() {
         handleClick={() => console.log("View button clicked")}
       />
       <GridToolbarExport />
-      <CustomButton
+      {/* <CustomButton
         IconComponent={MailOutlineIcon}
         buttonText="Share"
         handleClick={() => console.log("Share button clicked")}
-      />
+      /> */}
     </GridToolbarContainer>
   );
 }

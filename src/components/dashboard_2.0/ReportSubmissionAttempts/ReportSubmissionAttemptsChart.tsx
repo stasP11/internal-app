@@ -8,6 +8,7 @@ import {
   roundUpToNiceNumber,
   trimLabelString,
 } from "./chartUtils";
+import "./ReportSubmissionAttemptsChart.scss";
 
 interface ReportSubmissionAttempsChartProps {
   dataset: FormattedDataForChart[];
@@ -95,8 +96,8 @@ export default function ReportSubmissionAttempsChart({
   ];
 
   return (
-    <>
+    <div className="chart-container">
       <BarChart series={series as BarSeriesType[]} {...chartSettings} />
-    </>
+    </div>
   );
 }

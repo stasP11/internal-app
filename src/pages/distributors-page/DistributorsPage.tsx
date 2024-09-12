@@ -4,15 +4,16 @@ import { useFetchWithMsal2 } from "../../../src/hooks/useFetchWithMsal";
 import { protectedResources } from "../../authConfig";
 import { getFromLocalStorage } from "../../services/storageInterection";
 import { CircularProgress } from "@mui/material";
-import { useMemo, useEffect, useContext } from "react";
+import { useMemo, useEffect, useContext, useState } from "react";
 import {
-  DistributorDetails,
+  DistributorDetailsType,
   DistributorRowData,
 } from "components/DistributorsTable/types";
 import { PageInfoContext } from "../../contexts/PageInfoContext";
+import DistributorDetailsPage from "pages/distributor-details-page/DistributorDetailsPage";
 
 function getDistributorsRowData(
-  data: DistributorDetails[]
+  data: DistributorDetailsType[]
 ): DistributorRowData[] {
   return data.map((distributor, index) => ({
     idx: index + 1,
@@ -26,6 +27,9 @@ function getDistributorsRowData(
 }
 
 export default function DistributorsPage() {
+  const [distributorToShowId, setDistributorToShowId] = useState<number | null>(
+    null
+  );
   const { setPageInfo } = useContext(PageInfoContext);
   const { error: authError, result: authResult }: any = useFetchWithMsal2({
     scopes: protectedResources.apiTodoList.scopes.read,
@@ -36,7 +40,7 @@ export default function DistributorsPage() {
     authResult,
     selectedCountry
   );
-  const distributorsData = data?.data;
+  const distributorsData: DistributorDetailsType[] = data?.data;
 
   useEffect(() => {
     setPageInfo({
@@ -51,6 +55,27 @@ export default function DistributorsPage() {
     return [];
   }, [distributorsData]);
 
+  const distributorToShow = distributorsData?.find(
+    (distributor) => distributor.distributor_id === distributorToShowId
+  );
+
+  const distributorToShowWithPhoneArray = distributorToShow && {
+    ...distributorToShow,
+    phone: distributorToShow.phone.split(", ").filter(Boolean),
+  };
+
+  function handleRowClick(id: number) {
+    setDistributorToShowId(id);
+  }
+
+  if (distributorToShowWithPhoneArray) {
+    return (
+      <DistributorDetailsPage
+        setDistributorToShowId={setDistributorToShowId}
+        distributor={distributorToShowWithPhoneArray}
+      />
+    );
+  }
   return (
     <>
       {isLoading ? (
@@ -64,6 +89,7 @@ export default function DistributorsPage() {
         />
       ) : (
         <DistributorsTable
+          handleRowClick={handleRowClick}
           country={selectedCountry}
           authResult={authResult}
           rowData={distributorsData?.length > 0 ? rowData : []}

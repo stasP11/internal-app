@@ -17,6 +17,7 @@ export default function DistributorsTable({
   rowData,
   authResult,
   country,
+  handleRowClick,
 }: DistributorsTableProps) {
   const [updatedDistributors, setUpdatedDistributors] =
     useState<DistributorRowData[]>(rowData);
@@ -51,7 +52,7 @@ export default function DistributorsTable({
   };
 
   const columns: GridColDef<any>[] = [
-    { field: "id", headerName: "#", flex: 0.1 },
+    { field: "idx", headerName: "#", flex: 0.1 },
     {
       field: "distributorName",
       headerName: "Distributor Name",
@@ -103,6 +104,7 @@ export default function DistributorsTable({
         sx={distributorsTableStyles}
         loading={isLoading}
         disableRowSelectionOnClick
+        onRowClick={(e) => handleRowClick(e.row.distributorId)}
         columns={columns}
         rows={updatedDistributors}
         rowHeight={rowHeight}

@@ -9,7 +9,7 @@ import {
 import { useMemo } from "react";
 import ChartContainer from "../shared/ChartContainer";
 import useAggregationPerProduct from "hooks/swr-hooks/useAggregationPerProduct";
-import DownloadButton from "../shared/DownloadButton";
+// import DownloadButton from "../shared/DownloadButton";
 import { Box } from "@mui/material";
 import { ProductData } from "./types";
 
@@ -37,7 +37,7 @@ function AggregationPerProduct({ country }: { country: string }) {
         <Box
           sx={{ width: "fit-content", marginLeft: "auto", marginBottom: "8px" }}
         >
-          <DownloadButton />
+          {/* <DownloadButton /> */}
         </Box>
         <AggregationPerProductChart
           statArray={getStatArray(dailyStats, startOfPastFourMonths)}

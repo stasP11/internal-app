@@ -23,31 +23,66 @@ interface MyTableProps {
 }
 
 const DashboardReportsTable: React.FC<MyTableProps> = ({ data }) => {
+  const columnHeaderStyles = {
+    fontFamily: "inherit",
+    color: "inherit",
+    fontSize: "11px",
+    fontWeight: 700,
+    padding: "12px",
+
+    lineHeight: "16px",
+    letterSpacing: "0.04em",
+    textTransform: "uppercase",
+  };
+
   return (
     <TableContainer
       component={Paper}
       style={{ maxHeight: 360, overflowY: "auto" }}
     >
-      <Table>
+      <Table
+        stickyHeader
+        sx={{
+          fontFamily: "Helvetica Neue",
+          color: "#10384f",
+          "& .MuiTableCell-root": {
+            verticalAlign: "top",
+          },
+        }}
+      >
         <TableHead>
           <TableRow>
-            <TableCell>Distributor</TableCell>
-            <TableCell>Status</TableCell>
-            <TableCell>Filename</TableCell>
+            <TableCell sx={columnHeaderStyles}>Distributor</TableCell>
+            <TableCell sx={columnHeaderStyles}>Report name</TableCell>
+            <TableCell sx={columnHeaderStyles}>Status</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {data.map((report, index) => (
             <TableRow key={index}>
               <TableCell>
-                <span className="distributor_name">
+                <span className="distributor-name">
                   {report?.Distributor_Name}
                 </span>
                 <br />
-                <span className="distributor_id">{report?.distributor_id}</span>
+                <span className="distributor-id">{report?.distributor_id}</span>
               </TableCell>
-              <TableCell><ReportStatus label={report?.status} small/></TableCell>
-              <TableCell>{report.filename}</TableCell>
+
+              <TableCell
+                sx={{
+                  fontFamily: "Helvetica Neue",
+                  fontSize: "14px",
+                  fontWeight: "400",
+                  lineHeight: "20px",
+                  textAlign: "left",
+                  color: "#10384f",
+                }}
+              >
+                {report.filename}
+              </TableCell>
+              <TableCell>
+                <ReportStatus label={report?.status} small />
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

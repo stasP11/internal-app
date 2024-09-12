@@ -4,8 +4,8 @@ import {
   GridToolbarExport,
   GridToolbarFilterButton,
 } from "@mui/x-data-grid";
-import { CustomButton } from "../DistributorsTable/components/CustomButton";
-import MailOutlineIcon from "@mui/icons-material/MailOutline";
+// import { CustomButton } from "../DistributorsTable/components/CustomButton";
+// import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import { ReactNode } from "react";
 
 interface DatagridTableToolbarProps {
@@ -22,11 +22,11 @@ export default function DatagridTableToolbar({
       <GridToolbarColumnsButton />
       <GridToolbarFilterButton />
       <GridToolbarExport />
-      <CustomButton
+      {/* <CustomButton
         IconComponent={MailOutlineIcon}
         buttonText="Share"
         handleClick={() => console.log("Share button clicked")}
-      />
+      /> */}
       {children}
     </GridToolbarContainer>
   );

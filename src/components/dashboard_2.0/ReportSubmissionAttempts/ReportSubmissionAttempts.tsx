@@ -10,8 +10,6 @@ export const chartColors = {
 };
 
 export const reportSubmissionAttemptsLegendConfig = [
-  { color: chartColors.inventory, label: "Inventory", shape: "circle" },
-  { color: chartColors.sellout, label: "Sellout", shape: "circle" },
   {
     color: "var(--red)",
     label: "No successful report submit",

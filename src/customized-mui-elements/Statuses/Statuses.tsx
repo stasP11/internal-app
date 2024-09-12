@@ -1,4 +1,5 @@
 import Chip from "@mui/material/Chip";
+import { capitalizeFirstLetter } from "utils/capitalizeFirstLetter";
 
 export function ReportStatus({ label, small }: any) {
   const ListOfStatusTypes: any = {
@@ -21,9 +22,18 @@ export function ReportStatus({ label, small }: any) {
         background: "rgb(255, 189, 205)",
       },
     },
-    MISSED: {
-      background: "grey",
-      color: "white",
+
+    REVIEW: {
+      background: "#FCF2E6",
+      color: "#AA5B00",
+    },
+    SUCCESS: {
+      background: "#E1FCEF",
+      color: "#14804A",
+    },
+    APPROVED: {
+      background: "#E1FCEF",
+      color: "#14804A",
     },
   };
 
@@ -32,10 +42,16 @@ export function ReportStatus({ label, small }: any) {
       sx={{
         ...ListOfStatusTypes[label],
         fontSize: small ? "12px" : "14px",
-        marginBottom: small ? "5px" : "0",
+        fontFamily: "Helvetica Neue",
+        lineHeight: "18px",
+        letterSpacing: "0.03em",
+        padding: "1px 10px",
+        "& .MuiChip-label": {
+          padding: "0px",
+        },
       }}
       size="small"
-      label={label}
+      label={capitalizeFirstLetter(label)}
     />
   );
 }

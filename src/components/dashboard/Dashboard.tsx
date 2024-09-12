@@ -13,54 +13,30 @@ import { UserDataContext } from "../../App";
 import DashBoardProroImage from "./Frame 1707478304.png";
 import DashboardDistributorsTable from "./DashboardDistributorsTable";
 import DashboardReportsTable from "./DashboardReportsTable";
+import { getPastThreeMonthsInterval } from "utils/getPastThreeMonthsInterval";
+import { hasOnlyMissings, hasOnlyNotMissings } from "utils/dashboardUtils";
+import { isReportInTimeInterval } from "utils/isReportInTimeInterval";
 
-// utils
-
-function hasOnlyMissings(arr: any) {
-  // Check if all elements in the array are "MISSING"
-  for (let i = 0; i < arr.length; i++) {
-    if (arr[i] !== "MISSING") {
-      return false; // Return false if any element is not "MISSING"
-    }
-  }
-  return true; // Return true if all elements are "MISSING"
+interface FileDetailsWithStatus {
+  distributor_id: number;
+  Distributor_Name: string;
+  status: string;
+  widget_status: string;
+  filename: string;
+  country: string;
+  reporting_period: string;
 }
 
-function hasOnlyNotMissings(arr: any) {
-  // Check if all elements in the array are "MISSING"
-  for (let i = 0; i < arr.length; i++) {
-    if (arr[i] !== "MISSING") {
-      return true; // Return false if any element is not "MISSING"
-    }
-  }
-  return false; // Return true if all elements are "MISSING"
+interface FileDetailsWithStatusArray {
+  distributor_id: number;
+  Distributor_Name: string;
+  status: string[];
+  widget_status: string[];
+  filename: string[];
+  country: string;
 }
 
-const transformData = (data: any) => {
-  const transformedData: any = data.reduce((result: any, item: any) => {
-    const existingEntry: any = result.find(
-      (entry: any) =>
-        entry.distributor_id === item.distributor_id &&
-        entry.Distributor_Name === item.Distributor_Name
-    );
-
-    if (existingEntry) {
-      existingEntry.filenames.push(item.filename);
-      existingEntry.statuses.push(item.status);
-    } else {
-      result.push({
-        distributor_id: item.distributor_id,
-        Distributor_Name: item.Distributor_Name,
-        filenames: [item.filename],
-        statuses: [item.status],
-      });
-    }
-
-    return result;
-  }, []);
-
-  return transformedData;
-};
+type DistributorData = (FileDetailsWithStatus | FileDetailsWithStatusArray)[];
 
 function useAuthRequestReports() {
   const { error: authError, result: authResult }: any = useFetchWithMsal2({
@@ -109,7 +85,6 @@ function Dashboard() {
     useAuthRequestDistributors();
 
   function handleDistributorssDataForChart(distributorsData: any) {
-    console.log(distributorsData, "distributorsData-01");
     return [
       { type: "Reported", typeNumber: 0, total: distributorsData.length },
       {
@@ -148,9 +123,54 @@ function Dashboard() {
     ];
   }
 
-  console.log(realReportsData?.data, realDistributorData?.data, "dashboard");
   const filterData = (array: any, selectedCountry: string) => {
     return array.filter((obj: any) => obj?.country === selectedCountry);
+  };
+
+  const filterDataForTables = (
+    array: DistributorData,
+    selectedCountry: string
+  ): DistributorData => {
+    const interval = getPastThreeMonthsInterval();
+
+    return array
+      .filter((distributor) => distributor.country === selectedCountry)
+      .map((distributor) => {
+        if (typeof distributor.filename === "string") {
+          return isReportInTimeInterval(distributor.filename, interval)
+            ? distributor
+            : null;
+        }
+
+        const reportsInTimeInterval = distributor.filename
+          .map((filename, index) =>
+            isReportInTimeInterval(filename, interval) ? index : -1
+          )
+          .filter((index) => index !== -1);
+
+        if (reportsInTimeInterval.length === 0) {
+          return null;
+        }
+
+        return {
+          ...distributor,
+          filename: reportsInTimeInterval.map(
+            (index) => distributor.filename[index]
+          ),
+          status: reportsInTimeInterval.map(
+            (index) => distributor.status[index]
+          ),
+          widget_status: reportsInTimeInterval.map(
+            (index) => distributor.widget_status[index]
+          ),
+        };
+      })
+      .filter(
+        (
+          distributor
+        ): distributor is FileDetailsWithStatus | FileDetailsWithStatusArray =>
+          distributor !== null
+      );
   };
 
   return (
@@ -249,10 +269,12 @@ function Dashboard() {
                 </div>
                 <div className="panel__table">
                   <DashboardDistributorsTable
-                    data={filterData(
-                      realDistributorData?.data,
-                      selectedCountry
-                    )}
+                    data={
+                      filterDataForTables(
+                        realDistributorData?.data,
+                        selectedCountry
+                      ) as FileDetailsWithStatusArray[]
+                    }
                   />
                 </div>
               </div>
@@ -270,7 +292,12 @@ function Dashboard() {
 
                 <div className="panel__table">
                   <DashboardReportsTable
-                    data={filterData(realReportsData?.data, selectedCountry)}
+                    data={
+                      filterDataForTables(
+                        realReportsData?.data,
+                        selectedCountry
+                      ) as FileDetailsWithStatus[]
+                    }
                   />
                 </div>
               </div>

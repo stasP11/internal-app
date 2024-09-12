@@ -2,7 +2,7 @@
 import React, { useMemo, useContext, useEffect } from "react";
 
 //styles
-import './ReportsListPage.scss'
+import "./ReportsListPage.scss";
 
 //utils
 import {
@@ -100,7 +100,7 @@ export const ReportsListPage: React.FC<any> = (): JSX.Element => {
   }, [])
 
   const deduplicatedReports = useMemo(() => {
-    if (reportsData) {
+    if (reportsData?.data) {
       return deduplicateData(reportsData.data);
     }
     return [];

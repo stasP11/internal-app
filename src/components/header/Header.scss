@@ -65,9 +65,9 @@
 
 .page-name {
   text-transform: capitalize;
+  display: flex;
+  align-items: center;
 }
-
-
 
 .user-profile-dropdown {
   width: 100%;

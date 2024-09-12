@@ -3,7 +3,7 @@ import { createObjectForRequestBody } from "../../../utils/createObjectForReques
 import fetchData from "utils/fetchData";
 import {
   DistributorActiveStatus,
-  DistributorDetails,
+  DistributorDetailsType,
   DistributorRowData,
 } from "../types";
 
@@ -41,7 +41,7 @@ const useDistributorsHandlers = ({
 }: HandlersProps) => {
   function convertDistributorRowDataToDistributorDetails(
     data: DistributorRowData
-  ): Omit<DistributorDetails, "emails"> {
+  ): Omit<DistributorDetailsType, "emails"> {
     return {
       distributor_id: data.distributorId,
       distributor_name: data.distributorName[0],

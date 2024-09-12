@@ -1,0 +1,26 @@
+.info-fields-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 32px;
+}
+.info-field {
+  display: grid;
+  grid-template-columns: 1fr 4fr;
+  justify-items: start;
+}
+
+.secondary-text-color {
+  color: #516e7f;
+}
+
+.info-container {
+  text-align: start;
+  margin-top: 16px;
+}
+
+.info-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
