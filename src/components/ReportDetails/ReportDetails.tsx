@@ -1,10 +1,5 @@
-//base
 import React, { useContext, useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import approveAlternative from "./request";
-import { UserDataContext } from "../../App";
 import Box from "@mui/material/Box";
 import {
   DataGridPro,
@@ -15,13 +10,11 @@ import {
   GridToolbarDensitySelector,
   GridToolbarExport,
 } from "@mui/x-data-grid-pro";
-import RightIcon from "../../icons/right-arrow/ArrowForwardFilled.svg";
-import RemoveIcon from "../../icons/bucket-icon-light/bucketIconLight.svg";
 import "./ReportDetails.scss";
 import Button from "@mui/material/Button";
-import { fetchDataForMappingChoice } from "../../fetch/fetch-requests/reportsRequests";
-import successIcon from "../../icons/success-icon/successIcon.svg";
-import errorIcon from "../../icons/error-icon/errorIcon.svg";
+import MultiSelectorSnackBar from "components/MultiSelectorSnackBar/MultiSelectorSnackBar";
+import MappingAlternativesCell from "components/ReportDetails/MappingAlternativesCell";
+import { findSameProducts } from "./services";
 
 type ReportStatusType =
   | "MISSING"
@@ -46,6 +39,16 @@ type ReportDetailsData = {
   volume: number;
 };
 
+type ProductDetailsData = {
+  alternatives: Array<AlternativitesType> | [];
+  id: number;
+  matched: number;
+  material_number: number;
+  product_name: string;
+  uom: string;
+  volume: number;
+};
+
 interface ReportDetailsProps {
   data: Array<ReportDetailsData>;
   country: string;
@@ -57,6 +60,13 @@ interface ReportDetailsProps {
   onAlternativeChoose: any;
   isReportStatusUpdated: boolean;
 }
+
+type SameProductsType = {
+  isOpenForUse: boolean;
+  material_number: number;
+  matchedMaterialNumber: number;
+  products: any[];
+};
 
 const CustomToolbar = ({
   onApproveReport,
@@ -104,175 +114,63 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
   onRejectReport,
   onApproveReport,
   isReportStatusUpdated,
+  onAlternativeChoose,
 }): JSX.Element => {
   const [isLoaded, setLoaded] = React.useState<boolean>(false);
+  const [sameProductsData, setSameProductsData] = useState<SameProductsType[]>(
+    []
+  );
+  const [sameProductsAlertStatus, setSameProductsAlertStatus] = useState(null);
+  const [numbersOfSimilarCases, setNumbersOfSimilarCases] = useState(null);
 
-  async function handleDataForMappingChoose(
-    result: any,
-    setRequestStatus: any
-  ) {
-    const data = {
-      id: result.params.id,
-      matched_material_id: result?.value,
-      country: country,
-      product_name: result.params.product_name,
-    };
+  function handleSameProductsSelectReject() {
+    setSameProductsAlertStatus(null);
+    setNumbersOfSimilarCases(null);
+  }
 
-    const requestBody: any = {
-      filename: `${filename}.csv`,
-      data: [data],
-    };
-
-    onUpdateTemporaryData(data, "loading");
-    const responce = await fetchDataForMappingChoice(requestBody);
-
-    if (responce?.ok) {
-      setRequestStatus("success");
-      onUpdateTemporaryData(data, "success");
-    } else {
-      onUpdateTemporaryData(data, "error");
-      setRequestStatus("error");
+  function handleAlternativeChoose(productData: any) {
+    onAlternativeChoose(productData);
+    const { material_number, product_name, uom, id } = productData?.params;
+    if (
+      !sameProductsData.some(
+        (obj: any) => obj?.material_number === material_number
+      )
+    ) {
+      const sameProducts = findSameProducts(
+        data,
+        sameProductsData,
+        material_number,
+        uom,
+        product_name,
+        id,
+        productData?.value
+      );
+      if (sameProducts?.products.length > 0) {
+        setSameProductsData((prev: any) => [...prev, sameProducts]);
+        setSameProductsAlertStatus(material_number);
+        setNumbersOfSimilarCases(sameProducts?.products.length);
+      }
     }
   }
 
-  const MappingAlternativesCell: React.FC<any> = ({
-    params,
-    onAlternativeChoose,
-  }): JSX.Element => {
-    const {
-      alternatives,
-      matched,
-      material_number,
-      product_name,
-      statusUpdate,
-    } = params;
-    const [updateStatus, setUpdateStatus] = useState(statusUpdate);
-
-    useEffect(() => {
-      if (matched && alternatives.length > 0 && statusUpdate !== "loading") {
-        setUpdateStatus("success");
-      }
-    }, []);
-
-    async function handleChange(e: any) {
-      setUpdateStatus(null);
-      await onAlternativeChoose({ ...e.target, params }, setUpdateStatus);
-    }
-
-    const ItemMapping = ({ alternatives, onChange }: any) => {
-      console.log(alternatives, "alternatives");
-
-      const defineValue = (value: string | number) => {
-        if (typeof value === "string") {
-          return value;
-        } else if (value) {
-          const result = alternatives.find(
-            ({ material_number }: AlternativitesType) =>
-              material_number == value
-          );
-          return result?.material_name;
-        }
-      };
-
-      if (alternatives.length > 0) {
-        const selectedOption = alternatives.filter(
-          (obj: any) => obj?.material_number === matched
-        );
-
-        return (
-          <Select
-            sx={{ height: 40, maxWidth: 340 }}
-            value={
-              selectedOption.length > 0
-                ? selectedOption[0]?.material_number
-                : `${alternatives.length} ${
-                    alternatives.length > 1 ? "alternatives" : "alternative"
-                  } found`
-            }
-            variant="outlined"
-            onChange={onChange}
-            fullWidth
-            renderValue={(value) => {
-              return (
-                <Box
-                  sx={{
-                    display: "flex",
-                    width: "98%",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <span
-                    style={{
-                      width: "87%",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {defineValue(value)}
-                  </span>
-                  {updateStatus === "loading" && <CircularProgress size={20} />}
-                  {updateStatus === "success" && (
-                    <img src={successIcon} alt="success" />
-                  )}
-                  {updateStatus === "error" && (
-                    <img src={errorIcon} alt="error" />
-                  )}
-                </Box>
-              );
-            }}
-          >
-            <MenuItem
-              value={`${alternatives.length} ${
-                alternatives.length > 1 ? "alternatives" : "alternative"
-              } found`}
-              disabled
-            >
-              {`${alternatives.length} ${
-                alternatives.length > 1 ? "alternatives" : "alternative"
-              } found`}
-            </MenuItem>
-            {alternatives.map(({ material_number, material_name }: any) => (
-              <MenuItem key={material_number} value={material_number}>
-                {material_name}
-              </MenuItem>
-            ))}
-          </Select>
-        );
-      }
-
-      return (
-        <Select
-          sx={{ height: 40, maxWidth: 340 }}
-          value={`Found ${alternatives.length} alternatives`}
-          variant="outlined"
-          fullWidth
-          disabled
-        >
-          <MenuItem value={`Found ${alternatives.length} alternatives`}>
-            {product_name}
-          </MenuItem>
-          {alternatives.map(({ material_number, material_name }: any) => (
-            <MenuItem key={material_number} value={material_number}>
-              {material_name}
-            </MenuItem>
-          ))}
-        </Select>
-      );
-    };
-
-    return (
-      <div className="alternatives-cell" style={{ position: "relative" }}>
-        {isLoaded ? (
-          <CircularProgress size={20} />
-        ) : (
-          <img src={RightIcon} alt="arrow" />
-        )}
-        <ItemMapping alternatives={alternatives} onChange={handleChange} />
-        <img src={RemoveIcon} alt="remove-bucket" />
-      </div>
+  function handleSameProductsApprove(materialNumber: any) {
+    const sameProductsObj = sameProductsData.find(
+      (obj: SameProductsType) => obj?.material_number === materialNumber
     );
-  };
+    const sameProductsArray = sameProductsObj?.products;
+    if (Array.isArray(sameProductsArray)) {
+      setSameProductsAlertStatus(null);
+      sameProductsArray.forEach((product: ProductDetailsData) => {
+        onAlternativeChoose({
+          value: sameProductsObj?.matchedMaterialNumber,
+          params: {
+            id: product?.id,
+            product_name: product?.product_name,
+          },
+        });
+      });
+    }
+  }
 
   const columns: any = [
     {
@@ -311,7 +209,7 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
     renderCell: (params: any) => (
       <MappingAlternativesCell
         params={params?.row}
-        onAlternativeChoose={handleDataForMappingChoose}
+        onAlternativeChoose={handleAlternativeChoose}
       />
     ),
     flex: 1.5,
@@ -355,6 +253,13 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
             pinnedColumns: { right: ["alternatives"] },
           }}
           pageSizeOptions={[15, 25, 50, 75, 100]}
+        />
+        <MultiSelectorSnackBar
+          isOpen={!!sameProductsAlertStatus}
+          materialNumber={sameProductsAlertStatus}
+          numbersOfSimilarCases={numbersOfSimilarCases}
+          onClose={handleSameProductsSelectReject}
+          onApprove={handleSameProductsApprove}
         />
       </Box>
       {isLoaded ? (

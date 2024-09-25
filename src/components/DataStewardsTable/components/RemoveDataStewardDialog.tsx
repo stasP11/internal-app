@@ -3,17 +3,17 @@ import CustomDialog from "customized-mui-elements/Dialog/CustomDialog";
 interface RemoveDataStewardDialogProps {
   open: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirmDelete: () => void;
 }
 
 function RemoveDataStewardDialog({
   open,
   onClose,
-  onConfirm,
+  onConfirmDelete,
 }: RemoveDataStewardDialogProps) {
   const actions = [
     { text: "Cancel", handler: onClose },
-    { text: "Delete", handler: onConfirm },
+    { text: "Delete", handler: onConfirmDelete },
   ];
 
   return (

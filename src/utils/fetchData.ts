@@ -22,7 +22,6 @@ const fetchData = async ([authResult, method, url, data]: any) => {
       }
   
       const response = await fetch(url, options);
-      console.log(response, 'response-01')
       return await response.json();
     }
 };

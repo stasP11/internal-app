@@ -37,11 +37,15 @@ function ReportsListTableToolbar() {
     <GridToolbarContainer sx={{ minHeight: "38px" }}>
       <GridToolbarColumnsButton />
       <GridToolbarFilterButton />
+      {
+      /*
       <CustomButton
         IconComponent={ViewHeadlineOutlined}
         buttonText="View"
         handleClick={() => console.log("View button clicked")}
       />
+      */
+      }
       <GridToolbarExport />
       {/* <CustomButton
         IconComponent={MailOutlineIcon}

@@ -19,7 +19,7 @@ import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 
 import useFetchReportsData from "../../fetch/fetch-hooks/reports-hooks/useFetchReportsData";
-import { PageInfoContext} from '../../contexts/PageInfoContext';
+import { PageInfoContext } from "../../contexts/PageInfoContext";
 import getBaseUrl from "../../utils/getBaseUrl.js";
 
 type ReportStatus =
@@ -87,17 +87,21 @@ const getFormattedReportsByType = (data: any, type: string) => {
 
 export const ReportsListPage: React.FC<any> = (): JSX.Element => {
   const selectedCountry = getFromLocalStorage("selectedCountry");
-  const { data: reportsData, error: reportsError, isLoading}: any = useFetchReportsData(selectedCountry);
+  const {
+    data: reportsData,
+    error: reportsError,
+    isLoading,
+  }: any = useFetchReportsData(selectedCountry);
   const [value, setValue] = React.useState(0);
   const { setPageInfo } = useContext(PageInfoContext);
   const fullUrl = window.location.href; // Get the full URL of the current page
   const baseUrl = getBaseUrl(fullUrl);
 
-  useEffect(()=>{
+  useEffect(() => {
     setPageInfo({
       headerContent: "Reports",
-    })
-  }, [])
+    });
+  }, []);
 
   const deduplicatedReports = useMemo(() => {
     if (reportsData?.data) {
@@ -119,18 +123,15 @@ export const ReportsListPage: React.FC<any> = (): JSX.Element => {
     [deduplicatedReports]
   );
 
-  function handleRowClick(clickedRow: any, e: any){
-    const { distributor_id, filename, status, country
-    } = clickedRow?.row;
-        console.log(clickedRow , e?.target,'clickedRow')
-    
-    if(status === 'REVIEW' || status === 'SUCCESS' || status === 'APPROVED'){
-        window.open(
-          `${baseUrl}/report?name=${filename}&distributor=${distributor_id}&country=${country}`,
-          "_blank"
-        );
+  function handleRowClick(clickedRow: any, e: any) {
+    const { distributor_id, filename, status, country } = clickedRow?.row;
+
+    if (status === "REVIEW" || status === "SUCCESS" || status === "APPROVED") {
+      window.open(
+        `${baseUrl}/report?name=${filename}&distributor=${distributor_id}&country=${country}`,
+        "_blank"
+      );
     }
-    
   }
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -166,7 +167,8 @@ export const ReportsListPage: React.FC<any> = (): JSX.Element => {
   }
 
   return (
-    <div className="reports-page">
+    <>
+      <div className="reports-page">
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <Tabs
             value={value}
@@ -179,15 +181,25 @@ export const ReportsListPage: React.FC<any> = (): JSX.Element => {
           </Tabs>
         </Box>
         <CustomTabPanel value={value} index={0}>
-          <ReportsListTable reportsListData={allReports} onRowClick={handleRowClick}/>
+          <ReportsListTable
+            reportsListData={allReports}
+            onRowClick={handleRowClick}
+          />
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
-          <ReportsListTable reportsListData={inventoryReports} onRowClick={handleRowClick}/>
+          <ReportsListTable
+            reportsListData={inventoryReports}
+            onRowClick={handleRowClick}
+          />
         </CustomTabPanel>
         <CustomTabPanel value={value} index={2}>
-          <ReportsListTable reportsListData={selloutReports} onRowClick={handleRowClick} />
+          <ReportsListTable
+            reportsListData={selloutReports}
+            onRowClick={handleRowClick}
+          />
         </CustomTabPanel>
-    </div>
+      </div>
+    </>
   );
 };
 

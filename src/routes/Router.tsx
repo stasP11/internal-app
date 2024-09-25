@@ -13,7 +13,7 @@ function ProxyPage() {
 
 function Router({ status, userProfile }: any) {
   return (
-    <div>
+    <>
       {status ? (
         <BrowserRouter>
           <Routes>
@@ -30,7 +30,7 @@ function Router({ status, userProfile }: any) {
       ) : (
         <div></div>
       )}
-    </div>
+    </>
   );
 }
 

@@ -1,29 +1,85 @@
 import { Box, Typography } from "@mui/material";
 import "./DistributorDetailsSidebar.scss";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import EditDistributorDetails from "./components/EditDistributorDetails/EditDistributorDetails";
 import UserControls from "./components/UserControls/UserControls";
 import DistributorDetails from "./components/DistributorDetails/DistributorDetails";
 import { DistributorWithPhoneArray } from "components/DistributorsTable/types";
+import { createObjectForRequestBody } from "utils/createObjectForRequestBody";
+import { joinArrayWithComma } from "utils/joinArrayWithComma";
+import fetchData from "utils/fetchData";
+import { AlertsContext } from "contexts/AlertsContext";
+import useDistributorsDetails from "hooks/swr-hooks/useDistributorsDetails";
+import { getFromLocalStorage } from "services/storageInterection";
 
 interface DistributorDetailsSidebarProps {
   distributor: DistributorWithPhoneArray;
+  authResult: any;
+  setIsLoading: (value: boolean) => void;
 }
 
 function DistributorDetailsSidebar({
   distributor,
+  authResult,
+  setIsLoading,
 }: DistributorDetailsSidebarProps) {
   const [isEditMode, setEditMode] = useState(false);
   const [editedDistributor, setEditedDistributor] = useState(distributor);
+  const { setNewAlert } = useContext(AlertsContext);
+  const country = getFromLocalStorage("selectedCountry");
+  const { mutate } = useDistributorsDetails(authResult, country);
 
   const handleEdit = () => {
     setEditMode(true);
   };
 
-  const handleSave = () => {
-    console.log(editedDistributor);
-    setEditedDistributor(editedDistributor);
-    setEditMode(false);
+  const handleSave = async () => {
+    const { emails, ...distributorWithoutEmails } = distributor;
+    const { emails: editedEmails, ...editedDistributorWithoutEmails } =
+      editedDistributor;
+
+    const objectForRequest = createObjectForRequestBody(
+      {
+        ...distributorWithoutEmails,
+        phone: joinArrayWithComma(distributor.phone),
+        email: joinArrayWithComma(distributor.emails),
+      },
+      {
+        ...editedDistributorWithoutEmails,
+        phone: joinArrayWithComma(editedDistributor.phone),
+        email: joinArrayWithComma(editedDistributor.emails),
+      }
+    );
+
+    const url = `${process.env.REACT_APP_API_PYTHON_API}/update_distributor_list_metadata`;
+
+    setIsLoading(true);
+    try {
+      const response = await fetchData([
+        authResult,
+        "POST",
+        url,
+        { data: [objectForRequest] },
+      ]);
+      if (response.post_data && response.post_data.length > 0) {
+        setTimeout(() => {
+          mutate();
+          setEditedDistributor(editedDistributor);
+          setEditMode(false);
+          setNewAlert({
+            alertType: "success",
+            text: "Distributor updated successfully",
+          });
+          setIsLoading(false);
+        }, 3000);
+      } else {
+        throw new Error("No data was updated");
+      }
+    } catch (error) {
+      console.error("Error updating distributor:", error);
+      setIsLoading(false);
+      setNewAlert({ alertType: "error", text: "Failed to update distributor" });
+    }
   };
 
   const handleCancel = () => {

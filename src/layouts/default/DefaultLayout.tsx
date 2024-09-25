@@ -4,10 +4,12 @@ import { useLocation } from "react-router-dom";
 import Alerts from "components/Alerts/Alerts";
 import Header from "components/Header/Header";
 import Sidebar from "components/Sidebar/Sidebar";
+import { StepperProvider } from "contexts/StepperContext";
 
 function DefaultLayout({ children, userProfile }: any) {
   const location = useLocation();
   const [page, setPage] = useState("dashboard");
+  const [isCountryOnboarding, setIsCountryOnboarding] = useState(false);
 
   useEffect(() => {
     const { pathname } = location;
@@ -16,18 +18,21 @@ function DefaultLayout({ children, userProfile }: any) {
   }, [location]);
 
   return (
-    <div className="default-layout">
-      <Header headerValue={page} userProfile={userProfile} />
-      <Sidebar
-        onPageChoose={(boardName: any) => setPage(boardName)}
-        userProfile={userProfile}
-        activePage={page}
-      />
-      <main>
-        <Alerts />
-        <>{children}</>
-      </main>
-    </div>
+    <StepperProvider>
+      <div className="default-layout">
+        <Header headerValue={page} userProfile={userProfile} />
+        <Sidebar
+          onPageChoose={(boardName: any) => setPage(boardName)}
+          userProfile={userProfile}
+          activePage={page}
+          isCountryOnboarding={isCountryOnboarding}
+        />
+        <main>
+          <Alerts />
+          <>{children}</>
+        </main>
+      </div>
+    </StepperProvider>
   );
 }
 

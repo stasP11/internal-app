@@ -5,8 +5,7 @@ import { updateReportingPeriods } from "../../api/requests";
 import useReportingPeriodsData from "../../hooks/swr-hooks/useReportingPeriods";
 import { getFromLocalStorage } from "../../services/storageInterection";
 import CircularProgress from "@mui/material/CircularProgress";
-import { TimelinesAlert } from "components/Alerts2/Alerts";
-import useNotificationsState from "../../fetch/fetch-hooks/notifications-hook/useNotificationsState";
+import useNotificationsState from "../../hooks/notifications-hook/useNotificationsState";
 import { PageInfoContext } from "../../contexts/PageInfoContext";
 import transformNotificationsDataForFrontEnd from "../../utils/transformNotificationsDataForFrontEnd";
 import extractUpdateForTimelines from "../../utils/extractUpdateForTimelines";
@@ -15,13 +14,10 @@ import formatDataForBackEnd from "../../utils/formatDataForBackEnd";
 import { AlertsContext } from "contexts/AlertsContext";
 
 const scrollToTop = () => {
+  document.documentElement.scrollTop = 0;
   setTimeout(() => {
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: "smooth",
-    });
-});
+    window.scrollTo(10, 200);
+}, 3000);
 };
 interface ReportingData {
   after_due_date: number[];
@@ -197,73 +193,76 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
   }
 
   return (
-    <div className="notification-page">
-      <TimelinesAlert
-        status={alertStatus}
-        onClose={() => setAlertStatus(null)}
-      />
+    <>
+      <div className="notification-page">
+        <div>
+          <div className="notification-switcher">
+            <div
+              className={reportType === "inventory" ? "selected" : ""}
+              onClick={() => handleReportTypeSwitch("inventory")}
+            >
+              Inventory report
+            </div>
+            <div
+              className={reportType === "sellout" ? "selected" : ""}
+              onClick={() => handleReportTypeSwitch("sellout")}
+            >
+              Sell-out report
+            </div>
+          </div>
+          {reportType === "inventory" &&
+            formatedNotificationData &&
+            baseState && (
+              <NotificationComponent
+                data={formatedNotificationData}
+                onSave={handleSaveUpdates}
+                onDefault={setDefaultReportStatus}
+                isDefault={isDefaultReport}
+                editStatus={editStatus}
+                onEdit={setEditStatus}
+                baseState={baseState}
+                updateState={updateState}
+                isInEditMode={isInEditMode}
+                isDefaultToggleOn={isDefaultToggleOn}
+                onDefaultToggleChange={handleDefaultToggleChange}
+                onTurnOnEditMode={handleTurnOnEditMode}
+                onCancelDataEdit={handleCancelDataEdit}
+              />
+            )}
 
-      <div className="notification-switcher">
-        <div
-          className={reportType === "inventory" ? "selected" : ""}
-          onClick={() => handleReportTypeSwitch("inventory")}
-        >
-          Inventory report
-        </div>
-        <div
-          className={reportType === "sellout" ? "selected" : ""}
-          onClick={() => handleReportTypeSwitch("sellout")}
-        >
-          Sell-out report
+          {reportType === "sellout" &&
+            formatedNotificationData &&
+            baseState && (
+              <NotificationComponent
+                data={formatedNotificationData}
+                onSave={handleSaveUpdates}
+                onDefault={setDefaultReportStatus}
+                isDefault={isDefaultReport}
+                editStatus={editStatus}
+                onEdit={setEditStatus}
+                baseState={baseState}
+                updateState={updateState}
+                isInEditMode={isInEditMode}
+                isDefaultToggleOn={isDefaultToggleOn}
+                onDefaultToggleChange={handleDefaultToggleChange}
+                onTurnOnEditMode={handleTurnOnEditMode}
+                onCancelDataEdit={handleCancelDataEdit}
+              />
+            )}
+
+          {updateStatus || isLoading ? (
+            <CircularProgress
+              sx={{
+                position: "fixed",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+              }}
+            />
+          ) : null}
         </div>
       </div>
-      {reportType === "inventory" && formatedNotificationData && baseState && (
-        <NotificationComponent
-          data={formatedNotificationData}
-          onSave={handleSaveUpdates}
-          onDefault={setDefaultReportStatus}
-          isDefault={isDefaultReport}
-          editStatus={editStatus}
-          onEdit={setEditStatus}
-          baseState={baseState}
-          updateState={updateState}
-          isInEditMode={isInEditMode}
-          isDefaultToggleOn={isDefaultToggleOn}
-          onDefaultToggleChange={handleDefaultToggleChange}
-          onTurnOnEditMode={handleTurnOnEditMode}
-          onCancelDataEdit={handleCancelDataEdit}
-        />
-      )}
-
-      {reportType === "sellout" && formatedNotificationData && baseState && (
-        <NotificationComponent
-          data={formatedNotificationData}
-          onSave={handleSaveUpdates}
-          onDefault={setDefaultReportStatus}
-          isDefault={isDefaultReport}
-          editStatus={editStatus}
-          onEdit={setEditStatus}
-          baseState={baseState}
-          updateState={updateState}
-          isInEditMode={isInEditMode}
-          isDefaultToggleOn={isDefaultToggleOn}
-          onDefaultToggleChange={handleDefaultToggleChange}
-          onTurnOnEditMode={handleTurnOnEditMode}
-          onCancelDataEdit={handleCancelDataEdit}
-        />
-      )}
-
-      {updateStatus || isLoading ? (
-        <CircularProgress
-          sx={{
-            position: "fixed",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-          }}
-        />
-      ) : null}
-    </div>
+    </>
   );
 };
 

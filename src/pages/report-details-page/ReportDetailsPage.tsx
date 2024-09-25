@@ -15,18 +15,7 @@ import {
   rejectReport,
 } from "../../fetch/fetch-requests/reportsRequests";
 import { AlertsContext } from "contexts/AlertsContext";
-
-import Alert from "@mui/material/Alert";
-
-function SuccessAlert(alertStatus: any) {
-  if (alertStatus.alertStatus == true) {
-    return (
-      <div className="alert-2">
-        <Alert severity="success">This is a success Alert.</Alert>
-      </div>
-    );
-  } else return <div></div>;
-}
+import { fetchDataForMappingChoice } from "../../fetch/fetch-requests/reportsRequests";
 
 type ReportDataType = {
   data: Array<ReportDataObjType>;
@@ -82,6 +71,7 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
     React.useState<boolean>(false);
   const { setNewAlert } = useContext(AlertsContext);
   const [temporaryData, setTemporaryData] = useState<any>();
+  const [sameProducts, setSameProducts] = useState();
 
   const handleFetchResult = (responceResult: any, message: string) => {
     if (responceResult?.ok) {
@@ -146,51 +136,84 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
       result.push(obj);
     });
 
-    console.log(result, "result");
     setTemporaryData(result);
   }
 
   useEffect(() => {
-    if (reportContent !== undefined) {
+    if (reportContent) {
       const reportTemporaryData: any = [];
       reportContent.forEach((element: any) => {
-        reportTemporaryData.push({ ...element, updateStatus: null });
+        if (
+          element?.matched &&
+          element?.alternatives.length > 0 &&
+          element?.statusUpdate !== "loading"
+        ) {
+          reportTemporaryData.push({ ...element, statusUpdate: "success" });
+        } else {
+          reportTemporaryData.push({ ...element, statusUpdate: null });
+        }
       });
-
       setTemporaryData(reportTemporaryData);
+    } else {
+      setTemporaryData([]);
     }
   }, [reportContent]);
 
-  function handleAlternativeChoose() {}
+  // save data
+  async function handleAlternativeChoose(result: any) {
+    console.log(result, "result-11");
+    const data = {
+      id: result.params.id,
+      matched_material_id: result?.value,
+      country: country,
+      product_name: result.params.product_name,
+    };
+
+    const requestBody: any = {
+      filename: `${filename}.csv`,
+      data: [data],
+    };
+
+    handleUpdateTemporaryData(data, "loading");
+    const responce = await fetchDataForMappingChoice(requestBody);
+
+    if (responce?.ok) {
+      handleUpdateTemporaryData(data, "success");
+    } else {
+      handleUpdateTemporaryData(data, "error");
+    }
+  }
 
   return (
-    <div className="report-content-page">
-      {reportContent && temporaryData && (
-        <ReportDetails
-          onUpdateTemporaryData={handleUpdateTemporaryData}
-          data={temporaryData}
-          filename={filename}
-          country={country}
-          fileStatus={fileStatus}
-          isReportStatusUpdated={isApproveReportLoaded}
-          onRejectReport={handleRejectReport}
-          onApproveReport={handleApproveReport}
-          onAlternativeChoose={handleAlternativeChoose}
-        />
-      )}
-      {(isApproveReportLoaded ||
-        isLoadingReportsData ||
-        isReportContentLoading) && (
-        <CircularProgress
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-          }}
-        />
-      )}
-    </div>
+    <>
+      <div className="report-content-page">
+        {reportContent && temporaryData && (
+          <ReportDetails
+            onUpdateTemporaryData={handleUpdateTemporaryData}
+            data={temporaryData}
+            filename={filename}
+            country={country}
+            fileStatus={fileStatus}
+            isReportStatusUpdated={isApproveReportLoaded}
+            onRejectReport={handleRejectReport}
+            onApproveReport={handleApproveReport}
+            onAlternativeChoose={handleAlternativeChoose}
+          />
+        )}
+        {(isApproveReportLoaded ||
+          isLoadingReportsData ||
+          isReportContentLoading) && (
+          <CircularProgress
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+            }}
+          />
+        )}
+      </div>
+    </>
   );
 };
 

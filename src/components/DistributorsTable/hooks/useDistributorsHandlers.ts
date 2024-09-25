@@ -94,7 +94,7 @@ const useDistributorsHandlers = ({
         url,
         { data: [distributorObjectForRequest] },
       ]);
-      if (response.post_date && response.post_date.length > 0) {
+      if (response.post_data && response.post_data.length > 0) {
         setUpdatedDistributors((prevDistributors) =>
           prevDistributors.map((distributor) =>
             distributor.distributorId === id ? newDistributor : distributor

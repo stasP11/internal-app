@@ -11,7 +11,7 @@ import {
 } from "@azure/msal-react";
 import {  protectedResources } from "./authConfig";
 import { LicenseInfo } from "@mui/x-data-grid-pro";
-import { useFetchWithMsal } from "../src/hooks/useFetchWithMsal";
+import { useFetchWithMsal } from "./hooks/useFetchWithMsal";
 import ErrorPage from "./pages/error/ErrorPage";
 import {
   getFromLocalStorage,

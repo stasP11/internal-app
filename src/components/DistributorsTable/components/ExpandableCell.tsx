@@ -7,7 +7,8 @@ export default function ExpandableCell({ items }: { items: string }) {
   const visibleItems = expanded ? itemsArray : itemsArray.slice(0, 2);
   const moreItemsCount = itemsArray.length - 2;
 
-  const toggleExpand = () => {
+  const toggleExpand = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
     setExpanded(!expanded);
   };
 

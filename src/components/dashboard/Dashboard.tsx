@@ -9,8 +9,6 @@ import { protectedResources } from "../../authConfig";
 import { useFetchWithMsal2 } from "../../hooks/useFetchWithMsal";
 import CircularProgress from "@mui/material/CircularProgress";
 import { UserDataContext } from "../../App";
-
-import DashBoardProroImage from "./Frame 1707478304.png";
 import DashboardDistributorsTable from "./DashboardDistributorsTable";
 import DashboardReportsTable from "./DashboardReportsTable";
 import { getPastThreeMonthsInterval } from "utils/getPastThreeMonthsInterval";
@@ -175,14 +173,6 @@ function Dashboard() {
 
   return (
     <>
-      <>
-        {isEMEA && (
-          <div>
-            <img src={DashBoardProroImage} alt="test"></img>
-          </div>
-        )}
-      </>
-      <>
         {!isEMEA && (isReportsDataLoading || isDistributorDataLoading) && (
           <CircularProgress
             sx={{
@@ -203,11 +193,11 @@ function Dashboard() {
                   <Card
                     name="Reports"
                     bodyInfo={`${
-                      filterData(realReportsData?.data, selectedCountry).filter(
-                        (obj: any) => obj.status === "PROCESSING"
+                         realReportsData?.data.filter(
+                        (obj: any) => obj.status !== "MISSING"
                       ).length
                     }/${
-                      filterData(realReportsData?.data, selectedCountry).length
+                      realReportsData?.data.length
                     }`}
                     bodyExplaining={"received/total"}
                     status={""}
@@ -232,9 +222,7 @@ function Dashboard() {
                     isDangerStatus
                   >
                     {" "}
-                    <Link to={"/reports"} relative="path">
-                      See all
-                    </Link>
+                    <Link to={"/reports"} relative="path"></Link>
                   </Card>
                 </div>
                 <div className="inform-cards__inform-card">
@@ -249,9 +237,7 @@ function Dashboard() {
                     status={"."}
                   >
                     {" "}
-                    <Link to={"/reports"} relative="path">
-                      See all
-                    </Link>
+                    <Link to={"/reports"} relative="path"></Link>
                   </Card>
                 </div>
               </div>
@@ -283,7 +269,7 @@ function Dashboard() {
                   <PieChart
                     name="Reports"
                     data={handleReportsDataForChart(
-                      filterData(realReportsData?.data, selectedCountry)
+                      realReportsData?.data
                     )}
                     width={200}
                     height={200}
@@ -304,7 +290,6 @@ function Dashboard() {
             </>
           )}
       </>
-    </>
   );
 }
 

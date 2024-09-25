@@ -8,7 +8,7 @@ import ExpandableCell from "./components/ExpandableCell";
 import { DistributorRowData, DistributorsTableProps } from "./types";
 import DatagridTableToolbar from "../datagrid-table-toolbar/DatagridTableToolbar";
 import { Box } from "@mui/material";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AlertsContext } from "contexts/AlertsContext";
 import useDistributorsHandlers from "./hooks/useDistributorsHandlers";
 import ActiveSwitch from "components/ActiveSwitch/ActiveSwitch";
@@ -31,6 +31,10 @@ export default function DistributorsTable({
     setNewAlert,
     country,
   });
+
+  useEffect(() => {
+    setUpdatedDistributors(rowData);
+  }, [rowData]);
 
   const rowHeight = 72;
 
@@ -67,17 +71,31 @@ export default function DistributorsTable({
           </div>
         );
       },
+      sortComparator: (distributorA, distributorB) => {
+        if (!distributorA || !distributorB) return 0;
+        const distributorNameA = distributorA[0];
+        const distributorNameB = distributorB[0];
+        return distributorNameA[0].localeCompare(distributorNameB[0]);
+      },
       flex: 1,
     },
     {
       field: "email",
       headerName: "Email",
-      width: 350,
+      flex: 1.2,
       renderCell: (params) => <ExpandableCell items={params.value} />,
-      flex: 0,
     },
-    { field: "phone", headerName: "Phone", flex: 1 },
-    { field: "injectionChannels", headerName: "Ingestion Channels", flex: 1 },
+    {
+      field: "phone",
+      headerName: "Phone",
+      flex: 1,
+      renderCell: (params) => <ExpandableCell items={params.value} />,
+    },
+    {
+      field: "injectionChannels",
+      headerName: "Ingestion Channels",
+      width: 150,
+    },
     {
       field: "active",
       headerName: "Active",

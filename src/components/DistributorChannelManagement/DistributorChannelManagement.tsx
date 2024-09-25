@@ -41,6 +41,7 @@ function DistributorChannelManagement() {
           fontFamily: "Helvetica Neue",
           color: "#10384F",
           padding: "16px 24px",
+          visibility: "hidden",
         }}
       >
         <Typography marginBottom={"24px"} fontFamily="inherit" variant="h6">

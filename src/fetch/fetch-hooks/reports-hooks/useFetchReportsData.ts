@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import useAuthFetchWithMsal from "../auth-hooks/authHook";
+import useAuthFetchWithMsal from "../../auth-hooks/authHook";
 import { protectedResources } from "../../../authConfig";
 import fetchData from "../../../utils/fetchData";
 

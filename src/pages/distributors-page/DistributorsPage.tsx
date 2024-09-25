@@ -1,6 +1,6 @@
 import DistributorsTable from "components/DistributorsTable/DistributorsTable";
 import useDistributorsDetails from "hooks/swr-hooks/useDistributorsDetails";
-import { useFetchWithMsal2 } from "../../../src/hooks/useFetchWithMsal";
+import { useFetchWithMsal2 } from "../../hooks/useFetchWithMsal";
 import { protectedResources } from "../../authConfig";
 import { getFromLocalStorage } from "../../services/storageInterection";
 import { CircularProgress } from "@mui/material";
@@ -11,6 +11,7 @@ import {
 } from "components/DistributorsTable/types";
 import { PageInfoContext } from "../../contexts/PageInfoContext";
 import DistributorDetailsPage from "pages/distributor-details-page/DistributorDetailsPage";
+import { getUniqueEmails } from "utils/getUniqueEmails";
 
 function getDistributorsRowData(
   data: DistributorDetailsType[]
@@ -40,7 +41,14 @@ export default function DistributorsPage() {
     authResult,
     selectedCountry
   );
-  const distributorsData: DistributorDetailsType[] = data?.data;
+  const distributorsData: DistributorDetailsType[] = data?.data.map(
+    (distributor: DistributorDetailsType) => {
+      return {
+        ...distributor,
+        emails: getUniqueEmails(distributor.emails),
+      };
+    }
+  );
 
   useEffect(() => {
     setPageInfo({

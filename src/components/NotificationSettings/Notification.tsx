@@ -8,11 +8,11 @@ import CustomizedSwitches from "../../customized-mui-elements/SwitcherButton/Swi
 
 type Period = "Daily" | "Weekly" | "Monthly" | "Quarterly" | "Custom";
 const notificationPeriods: Array<Period> = [
-  "Daily",
-  "Weekly",
+  //  "Daily",
+  //  "Weekly",
   "Monthly",
   "Quarterly",
-  "Custom",
+  //  "Custom",
 ];
 
 type NotificationRules = any; // Replace 'any' with the actual type if available
@@ -26,7 +26,6 @@ const NotificationComponent: React.FC<any> = ({
   onDefaultToggleChange,
   onCancelDataEdit,
 }: any): JSX.Element => {
-
   return (
     <div className="notification-page">
       {true && (

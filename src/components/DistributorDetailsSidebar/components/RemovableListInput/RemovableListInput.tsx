@@ -7,14 +7,18 @@ import {
 } from "@mui/material";
 import InfoLabel from "../InfoLabel/InfoLabel";
 import { DeleteOutline } from "@mui/icons-material";
+import { isValidEmail } from "utils/isValidEmail";
+import DeleteItemDialog from "components/DeleteItemDialog/DeleteItemDialog";
+import { useState } from "react";
 
 interface RemovableListInputProps {
   items: string[];
   handleDelete: (index: number) => void;
-  handleChange: (index: number, value: string) => void; // Define expected parameters correctly
+  handleChange: (index: number, value: string) => void;
   handleAdd: () => void;
   label: string;
   buttonText: string;
+  isEmailField?: boolean;
 }
 
 function RemovableListInput({
@@ -24,7 +28,27 @@ function RemovableListInput({
   handleAdd,
   label,
   buttonText,
+  isEmailField,
 }: RemovableListInputProps) {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
+
+  function openDeleteItemDialog(index: number) {
+    setDeleteIndex(index);
+    setIsDialogOpen(true);
+  }
+
+  function closeDeleteItemDialog() {
+    setIsDialogOpen(false);
+  }
+
+  function confirmDelete() {
+    if (deleteIndex !== null) {
+      handleDelete(deleteIndex);
+    }
+    closeDeleteItemDialog();
+  }
+
   return (
     <div className="info-container">
       <InfoLabel text={label} />
@@ -35,6 +59,14 @@ function RemovableListInput({
             sx={{ display: "flex", alignItems: "center", gap: 1 }}
           >
             <TextField
+              required
+              type={isEmailField ? "email" : undefined}
+              error={isEmailField && !isValidEmail(item) && item !== ""}
+              helperText={
+                isEmailField && !isValidEmail(item) && item !== ""
+                  ? "Invalid email address"
+                  : null
+              }
               fullWidth
               value={item}
               onChange={(e) => handleChange(index, e.target.value)}
@@ -42,7 +74,10 @@ function RemovableListInput({
                 style: { fontFamily: "Helvetica Neue" },
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton onClick={() => handleDelete(index)} edge="end">
+                    <IconButton
+                      onClick={() => openDeleteItemDialog(index)}
+                      edge="end"
+                    >
                       <DeleteOutline />
                     </IconButton>
                   </InputAdornment>
@@ -66,6 +101,11 @@ function RemovableListInput({
       >
         {buttonText}
       </Button>
+      <DeleteItemDialog
+        opened={isDialogOpen}
+        onCancel={closeDeleteItemDialog}
+        onDelete={confirmDelete}
+      />
     </div>
   );
 }

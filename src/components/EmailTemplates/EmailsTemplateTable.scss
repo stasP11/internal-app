@@ -1,0 +1,64 @@
+.templates-table-wrapper {
+}
+
+.template-control-panel {
+  background-color: white;
+  border-top: 1px solid rgba(224, 224, 224, 1);
+  border-right: 1px solid rgba(224, 224, 224, 1);
+  border-left: 1px solid rgba(224, 224, 224, 1);
+  border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.action-cell {
+  position: relative;
+}
+
+.popup {
+  position: absolute;
+  top: 0;
+}
+
+.MuiPopper-root.css-1h5nd1a-MuiPopper-root-ColorPickerPopper-root {
+  z-index: 10000 !important;
+}
+
+.dialog-header {
+  height: 64px;
+  display: flex;
+  justify-content: space-between;
+  align-items: enter;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  padding-left: 16px;
+
+  h2 {
+    font-size: 20px;
+    font-family: "Helvetica Neue";
+    color: rgba(16, 56, 79, 1);
+    font-weight: 500;
+    line-height: 30px;
+  }
+}
+
+.dialog-content {
+  display: flex;
+  flex-direction: column;
+  > * {
+    // margin-bottom: 16px;
+  }
+
+  > .editor-wrapper {
+    max-width: 100%;
+    max-height: 525px;
+    min-height: 225px;
+    overflow-y: scroll;
+    border: 1px solid;
+    border-radius: 3px rgba(0, 0, 0, 0.23);
+  }
+}
+
+.dialog-content__email-type {
+  width: 200px;
+}
+

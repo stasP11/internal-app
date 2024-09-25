@@ -30,13 +30,19 @@ function SftpTab() {
       <FormGroup sx={{ fontFamily: "Helvetica Neue" }}>
         <TextField
           sx={textFieldStyles}
-          label="IP address 1"
+          label="Username"
           variant="outlined"
           size="medium"
         />
         <TextField
           sx={textFieldStyles}
-          label="IP address 2"
+          label="IP address"
+          variant="outlined"
+          size="medium"
+        />
+        <TextField
+          sx={textFieldStyles}
+          label="Port"
           variant="outlined"
           size="medium"
         />

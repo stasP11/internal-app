@@ -6,6 +6,7 @@ function isExistinArray(array: Array<any>, key: any, value: any) {
 }
 
 type Period = "Daily" | "Weekly" | "Monthly" | "Quarterly" | "Custom";
+
 const notificationPeriods: Array<Period> = [
   "Daily",
   "Weekly",

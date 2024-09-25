@@ -35,6 +35,7 @@ function EditDistributorDetails({
         <InfoLabel text="Initial Info" />
         <div className="info-inputs">
           <TextField
+            disabled
             label="Name"
             variant="outlined"
             fullWidth
@@ -45,11 +46,11 @@ function EditDistributorDetails({
             }}
           />
           <TextField
+            disabled
             label="Code"
             variant="outlined"
             fullWidth
             value={distributor.distributor_id}
-            onChange={(e) => handleChange("distributor_id", e.target.value)}
             inputProps={{
               style: inputStyles,
             }}
@@ -75,6 +76,7 @@ function EditDistributorDetails({
         buttonText="Add number"
       />
       <RemovableListInput
+        isEmailField={true}
         items={distributor.emails}
         handleDelete={handleDeleteEmail}
         handleChange={(index, value) => {

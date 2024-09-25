@@ -1,0 +1,24 @@
+.toolbar-preview-section {
+  display: flex;
+  align-items: center;
+
+  &__naming-convention {
+    margin-right: 15px;
+  }
+}
+
+.naming-convention {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color:  #10384f;
+  font-family: "Helvetica Neue";
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px; /* 171.429% */
+
+  > img {
+    margin-right: 5px;
+  }
+}

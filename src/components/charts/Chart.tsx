@@ -7,8 +7,6 @@ import "./Chart.scss";
 const typesNumber = (d: any) => d.typeNumber;
 
 function ChartLegend({ data, getColor }: any) {
-
-
   return (
     <div className="legend">
       <ul>

@@ -1,35 +1,49 @@
 import { GridColDef, GridRowSelectionModel } from "@mui/x-data-grid";
-import {
-  DataSteward,
-  DataStewardActiveStatus,
-} from "pages/data-stewards-page/mockDataStewards";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import DatagridTableToolbar from "components/datagrid-table-toolbar/DatagridTableToolbar";
 import MenuList from "./components/MenuList";
 import { Box, Button, IconButton } from "@mui/material";
 import { DataGridPro } from "@mui/x-data-grid-pro";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import EditIcon from "@mui/icons-material/Edit";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import RemoveDataStewardDialog from "./components/RemoveDataStewardDialog";
 import AddDataStewardDialog from "./components/AddDataStewardDialog";
 import ActiveSwitch from "components/ActiveSwitch/ActiveSwitch";
+import {
+  DataSteward,
+  DataStewardActiveStatus,
+} from "pages/data-stewards-page/DataStewardsPage";
+import EditDataStewardDialog from "./components/EditDataStewardDialog";
+import useDialogControls from "hooks/useDialogControls";
+import { createObjectForRequestBody } from "utils/createObjectForRequestBody";
+import useDataStewardsApi from "./useDataStewardsApi";
 
-function DataStewardsTable({ dataStewards }: { dataStewards: DataSteward[] }) {
-  const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>(
-    []
+function DataStewardsTable({
+  dataStewards,
+  country,
+  authResult,
+}: {
+  dataStewards: DataSteward[];
+  country: string;
+  authResult: any;
+}) {
+  const [selectedDataStewards, setSelectedDataStewards] =
+    useState<GridRowSelectionModel>([]);
+
+  const [stewardToDeleteEmail, setStewardToDeleteEmail] = useState<
+    string | null
+  >(null);
+  const [stewardToEdit, setStewardToEdit] = useState<DataSteward | null>(null);
+
+  const removeStewardDialog = useDialogControls();
+  const addStewardDialog = useDialogControls();
+  const editStewardDialog = useDialogControls();
+
+  const { handleAPIRequest, isLoading } = useDataStewardsApi(
+    authResult,
+    country
   );
-  const [updatedDataStewards, setUpdatedDataStewards] =
-    useState<DataSteward[]>(dataStewards);
-
-  const [openRemoveStewardDialog, setOpenRemoveStewardDialog] = useState(false);
-  const [openAddStewardDialog, setOpenAddStewardDialog] = useState(false);
-  const [idToDelete, setIdToDelete] = useState<number | null>(null);
-
-  useEffect(() => {
-    setUpdatedDataStewards(dataStewards);
-  }, [dataStewards]);
-
-  useEffect(() => {}, [openRemoveStewardDialog]);
 
   const columns: GridColDef<any>[] = [
     {
@@ -57,11 +71,31 @@ function DataStewardsTable({ dataStewards }: { dataStewards: DataSteward[] }) {
       },
       width: 100,
       flex: 1,
-      renderCell: (params) => (
+      renderCell: ({ value, row }) => (
         <ActiveSwitch
-          value={params.value === 1}
-          onChange={(event) => handleActiveChange(event, params.id)}
+          value={value === 1}
+          onChange={(event) =>
+            handleActiveChange(event, row.email, row.name, row.active)
+          }
         />
+      ),
+    },
+    {
+      field: "edit",
+      headerName: "",
+      width: 50,
+      sortable: false,
+      filterable: false,
+      disableColumnMenu: true,
+      renderCell: (params) => (
+        <IconButton
+          onClick={() => {
+            handleOpenEditStewardDialog(params.row.email);
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          <EditIcon fontSize="small" />
+        </IconButton>
       ),
     },
     {
@@ -73,7 +107,9 @@ function DataStewardsTable({ dataStewards }: { dataStewards: DataSteward[] }) {
       disableColumnMenu: true,
       renderCell: (params) => (
         <IconButton
-          onClick={() => handleOpenRemoveStewardDialog(params.id as number)}
+          onClick={() => {
+            handleOpenRemoveStewardDialog(params.row.email);
+          }}
           style={{ cursor: "pointer" }}
         >
           <DeleteOutlineIcon fontSize="small" />
@@ -82,74 +118,157 @@ function DataStewardsTable({ dataStewards }: { dataStewards: DataSteward[] }) {
     },
   ];
 
-  const handleOpenRemoveStewardDialog = (id: number) => {
-    setIdToDelete(id);
-    setOpenRemoveStewardDialog(true);
+  const handleOpenRemoveStewardDialog = (email: string) => {
+    setStewardToDeleteEmail(email);
+    removeStewardDialog.openDialog();
   };
 
-  const handleCloseRemoveStewardDialogDialog = () => {
-    setOpenRemoveStewardDialog(false);
+  const handleOpenEditStewardDialog = (email: string) => {
+    const stewardToEdit = dataStewards.find(
+      (dataSteward) => dataSteward.email === email
+    );
+    if (!stewardToEdit) return;
+    setStewardToEdit(stewardToEdit);
+    editStewardDialog.openDialog();
   };
 
-  const handleCloseAddStewardDialog = () => {
-    setOpenAddStewardDialog(false);
+  const handleConfirmRemoveSteward = async () => {
+    if (!stewardToDeleteEmail) return;
+    const objectForRequestBody = {
+      distributor_id: "Data Steward",
+      country: country,
+      email: stewardToDeleteEmail,
+    };
+
+    const url = `${process.env.REACT_APP_API_PYTHON_API}/delete_recipients_email_metadata`;
+
+    const successMessage = "Data steward deleted successfully";
+    const errorMessage = "Failed to delete data steward";
+    handleAPIRequest(
+      url,
+      "POST",
+      objectForRequestBody,
+      successMessage,
+      errorMessage,
+      "success"
+    );
+
+    removeStewardDialog.closeDialog();
   };
 
-  const handleConfirmRemoveSteward = () => {
-    if (idToDelete !== null) {
-      const filteredDataStewards = updatedDataStewards.filter(
-        (item) => item.id !== idToDelete
-      );
-      const reindexedDataStewards = filteredDataStewards.map(
-        (steward, index) => ({
-          ...steward,
-          idx: index + 1,
-        })
-      );
-      setUpdatedDataStewards(reindexedDataStewards);
-    }
-    handleCloseRemoveStewardDialogDialog();
+  const handleSaveNewSteward = async (newSteward: Omit<DataSteward, "id">) => {
+    const objectForRequestBody = createObjectForRequestBody(
+      { name: "", email: "", country: "", distributor_id: "", active: 0 },
+      { ...newSteward, country, distributor_id: "Data Steward" }
+    );
+
+    const url = `${process.env.REACT_APP_API_PYTHON_API}/update_recipients_email_metadata`;
+
+    const successMessage = "Data steward added successfully";
+    const errorMessage = "Failed to add data steward";
+
+    handleAPIRequest(
+      url,
+      "POST",
+      { data: [objectForRequestBody] },
+      successMessage,
+      errorMessage,
+      "post_data"
+    );
+    addStewardDialog.closeDialog();
   };
 
-  const handleSaveNewSteward = (newSteward: DataSteward) => {
-    const newDataStewards = [newSteward, ...updatedDataStewards];
-    const newDataStewardsWithIdx = newDataStewards.map((steward, index) => ({
-      ...steward,
-      idx: index + 1,
-    }));
-    setUpdatedDataStewards(newDataStewardsWithIdx);
-    handleCloseAddStewardDialog();
+  const handleEditDataSteward = async (newSteward: Omit<DataSteward, "id">) => {
+    if (!stewardToEdit) return;
+
+    const { country, distributor_id, email, name, active } = stewardToEdit;
+    const oldDataStewardInfo = {
+      country: country,
+      distributor_id: distributor_id,
+      email: email,
+      name: name,
+      active: active,
+    };
+
+    const newDataStewardInfo = {
+      ...newSteward,
+      country,
+      distributor_id: "Data Steward",
+    };
+
+    const objectForRequestBody = createObjectForRequestBody(
+      oldDataStewardInfo,
+      newDataStewardInfo
+    );
+
+    const url = `${process.env.REACT_APP_API_PYTHON_API}/update_recipients_email_metadata`;
+
+    const successMessage = "Data steward edited successfully";
+    const errorMessage = "Failed to edit data steward";
+    handleAPIRequest(
+      url,
+      "POST",
+      { data: [objectForRequestBody] },
+      successMessage,
+      errorMessage,
+      "post_data"
+    );
+    editStewardDialog.closeDialog();
   };
 
-  const handleActiveChange = (
+  const handleActiveChange = async (
     event: ChangeEvent<HTMLInputElement>,
-    id: string | number
+    email: string,
+    name: string,
+    active: DataStewardActiveStatus
   ) => {
     const newStatus = event.target.checked ? 1 : 0;
-    const updatedDataStewardsTemp = updatedDataStewards.map((dataSteward) =>
-      dataSteward.id === id
-        ? { ...dataSteward, active: newStatus as DataStewardActiveStatus }
-        : dataSteward
+    const objectForRequestBody = createObjectForRequestBody(
+      { country, distributor_id: "Data Steward", name, email, active },
+      {
+        country,
+        distributor_id: "Data Steward",
+        name,
+        email,
+        active: newStatus,
+      }
     );
-    setUpdatedDataStewards(updatedDataStewardsTemp);
+
+    const url = `${process.env.REACT_APP_API_PYTHON_API}/update_recipients_email_metadata`;
+    const successMessage = "Data steward active status updated";
+    const errorMessage = "Failed to update active status";
+
+    handleAPIRequest(
+      url,
+      "POST",
+      { data: [objectForRequestBody] },
+      successMessage,
+      errorMessage,
+      "post_data"
+    );
   };
 
   const CustomToolbar = () => {
     return (
       <DatagridTableToolbar>
-        {selectionModel.length > 0 && (
-          <MenuList label="STATUS" options={options} onSelect={handleSelect} />
+        {selectedDataStewards.length > 0 && (
+          <MenuList
+            label="STATUS"
+            options={options}
+            onSelect={handleBulkStatusUpdate}
+          />
         )}
         <Button
+          disabled={isLoading}
           sx={{
-            marginLeft: selectionModel.length < 1 ? "auto" : "0",
+            marginLeft: selectedDataStewards.length < 1 ? "auto" : "0",
             fontFamily: "Helvetica Neue",
             lineHeight: "24px",
           }}
           variant="contained"
           color="primary"
           size="medium"
-          onClick={() => setOpenAddStewardDialog(true)}
+          onClick={addStewardDialog.openDialog}
         >
           ADD RECORD
         </Button>
@@ -162,17 +281,41 @@ function DataStewardsTable({ dataStewards }: { dataStewards: DataSteward[] }) {
     { value: "onHold", label: "On Hold" },
   ];
 
-  const handleSelect = (value: string) => {
+  const handleBulkStatusUpdate = async (value: string) => {
     const newStatus = value === "active" ? 1 : 0;
-    const updated = updatedDataStewards.map((dataSteward) =>
-      selectionModel.includes(dataSteward.id)
-        ? { ...dataSteward, active: newStatus as DataStewardActiveStatus }
-        : dataSteward
+
+    const editedDataStewardsArray = dataStewards
+      .filter((_, idx) => selectedDataStewards.includes(idx + 1))
+      .map((dataSteward) => {
+        const { country, distributor_id, email, name, active } = dataSteward;
+        return {
+          ...dataSteward,
+          country_old: country,
+          distributor_id_old: distributor_id,
+          email_old: email,
+          name_old: name,
+          active_old: active,
+          active: newStatus,
+        };
+      });
+
+    const url = `${process.env.REACT_APP_API_PYTHON_API}/update_recipients_email_metadata`;
+    const successMessage = "Data stewards statuses updated successfully";
+    const errorMessage = "Failed to update data stewards statuses";
+
+    handleAPIRequest(
+      url,
+      "POST",
+      { data: editedDataStewardsArray },
+      successMessage,
+      errorMessage,
+      "post_data"
     );
-    setUpdatedDataStewards(updated);
+
+    setSelectedDataStewards([]);
   };
 
-  const productsTableStyles = {
+  const dataStewardsTableStyles = {
     color: "#10384F",
     background: "#FFF",
     fontFamily: "Helvetica Neue",
@@ -198,15 +341,16 @@ function DataStewardsTable({ dataStewards }: { dataStewards: DataSteward[] }) {
         }}
       >
         <DataGridPro
-          sx={productsTableStyles}
+          sx={dataStewardsTableStyles}
+          loading={isLoading}
           checkboxSelection
           disableRowSelectionOnClick
-          onRowSelectionModelChange={(newSelectionModel) =>
-            setSelectionModel(newSelectionModel)
-          }
-          rowSelectionModel={selectionModel}
+          onRowSelectionModelChange={(newSelectedDataStewards) => {
+            setSelectedDataStewards(newSelectedDataStewards);
+          }}
+          rowSelectionModel={selectedDataStewards}
           columns={columns}
-          rows={updatedDataStewards}
+          rows={dataStewards}
           rowHeight={72}
           slots={{
             toolbar: CustomToolbar,
@@ -218,17 +362,25 @@ function DataStewardsTable({ dataStewards }: { dataStewards: DataSteward[] }) {
           }}
           pageSizeOptions={[5, 10, 25]}
         />
-        {openRemoveStewardDialog && (
+        {removeStewardDialog.isOpen && (
           <RemoveDataStewardDialog
-            open={openRemoveStewardDialog}
-            onClose={handleCloseRemoveStewardDialogDialog}
-            onConfirm={handleConfirmRemoveSteward}
+            open={removeStewardDialog.isOpen}
+            onClose={removeStewardDialog.closeDialog}
+            onConfirmDelete={handleConfirmRemoveSteward}
           />
         )}
-        {openAddStewardDialog && (
+        {editStewardDialog.isOpen && (
+          <EditDataStewardDialog
+            open={editStewardDialog.isOpen}
+            onClose={editStewardDialog.closeDialog}
+            onSave={handleEditDataSteward}
+            steward={stewardToEdit}
+          />
+        )}
+        {addStewardDialog.isOpen && (
           <AddDataStewardDialog
-            open={openAddStewardDialog}
-            onClose={handleCloseAddStewardDialog}
+            open={addStewardDialog.isOpen}
+            onClose={addStewardDialog.closeDialog}
             onSave={handleSaveNewSteward}
           />
         )}
