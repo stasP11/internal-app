@@ -64,7 +64,7 @@ export default function TableMenuPopup({ onSelect, params }) {
         <MenuItem
           onClick={() =>
             handleChoose({
-              selectedAction: "approve",
+              selectedAction: "view",
               params: params?.row,
             })
           }

@@ -32,7 +32,7 @@ type AlternativitesType = {
 type ReportDetailsData = {
   alternatives: Array<AlternativitesType> | [];
   id: number;
-  matched: number;
+  matched: number | null;
   material_number: number;
   product_name: string;
   uom: string;
@@ -42,7 +42,7 @@ type ReportDetailsData = {
 type ProductDetailsData = {
   alternatives: Array<AlternativitesType> | [];
   id: number;
-  matched: number;
+  matched: number | null;
   material_number: number;
   product_name: string;
   uom: string;
@@ -73,6 +73,7 @@ const CustomToolbar = ({
   onRejectReport,
   fileStatus,
   isReportStatusUpdated,
+  isApproveDisabled,
 }: any) => {
   return (
     <GridToolbarContainer>
@@ -95,7 +96,7 @@ const CustomToolbar = ({
           <Button
             variant="contained"
             onClick={onApproveReport}
-            disabled={isReportStatusUpdated}
+            disabled={isApproveDisabled}
           >
             Approve
           </Button>
@@ -221,6 +222,11 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
     } else return columns;
   };
 
+  const disableApproveReportButton = (data: Array<ReportDetailsData>) => {
+    if (!data || !data.length) return true;
+    return data.some((item) => item.matched === null);
+  };
+
   return (
     <>
       <Box sx={{ height: "calc(100vh - 132px)", width: "100%" }}>
@@ -246,6 +252,7 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
               onRejectReport: onRejectReport,
               fileStatus: fileStatus,
               isReportStatusUpdated: isReportStatusUpdated,
+              isApproveDisabled: disableApproveReportButton(data),
             },
           }}
           initialState={{
