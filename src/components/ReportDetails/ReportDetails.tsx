@@ -131,6 +131,9 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
 
   function handleAlternativeChoose(productData: any) {
     onAlternativeChoose(productData);
+    /*
+    temporarily inactive functionality
+
     const { material_number, product_name, uom, id } = productData?.params;
     if (
       !sameProductsData.some(
@@ -152,6 +155,7 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
         setNumbersOfSimilarCases(sameProducts?.products.length);
       }
     }
+    */
   }
 
   function handleSameProductsApprove(materialNumber: any) {
@@ -224,7 +228,7 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
 
   const disableApproveReportButton = (data: Array<ReportDetailsData>) => {
     if (!data || !data.length) return true;
-    return data.some((item) => item.matched === null);
+      return data.some((item) => item.matched === null &&  item?.alternatives.length > 0 );
   };
 
   return (

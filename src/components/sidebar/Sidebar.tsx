@@ -173,7 +173,11 @@ function Sidebar({
               )}
             </>
             <>
-              {isIncludePermission(pages, "templates", "read") && (
+            {/* 
+            
+            isIncludePermission(pages, "templates", "read")
+            */}
+              {false && (
                 <div
                   className={`board-name
             ${isActive("templates") ? "--active-board" : "--inactive-board"}`}
@@ -190,7 +194,8 @@ function Sidebar({
               )}
             </>
             <>
-              {isIncludePermission(pages, "products", "read") && (
+            {/*isIncludePermission(pages, "products", "read")*/}
+              {false && (
                 <div
                   className={`board-name
             ${isActive("products") ? "--active-board" : "--inactive-board"}`}
@@ -207,7 +212,8 @@ function Sidebar({
               )}
             </>
             <>
-              {isIncludePermission(pages, "stewards", "read") && (
+            {/* isIncludePermission(pages, "stewards", "read")  */}
+              {false && (
                 <div
                   className={`board-name
             ${isActive("stewards") ? "--active-board" : "--inactive-board"}`}
@@ -241,7 +247,7 @@ function Sidebar({
               )}
             </>
           </div>
-          {isEMEA && <Divider />}
+          {false && <Divider />}
           <div className="sidebar__onboarding">
             <>
               {isIncludePermission(pages, "onboardingHide", "read") && (

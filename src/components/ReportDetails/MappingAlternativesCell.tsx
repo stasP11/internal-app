@@ -30,6 +30,7 @@ const ItemMapping = ({
   matched,
   updateStatus,
   product_name,
+  material_number
 }: any) => {
   const defineValue = (value: string | number) => {
     if (typeof value === "string") {
@@ -38,7 +39,7 @@ const ItemMapping = ({
       const result = alternatives.find(
         ({ material_number }: any) => material_number == value
       );
-      return result?.material_name;
+      return `${result?.material_number} ${result?.material_name}`;
     }
   };
 
@@ -100,7 +101,7 @@ const ItemMapping = ({
         </MenuItem>
         {alternatives.map(({ material_number, material_name }: any) => (
           <MenuItem key={material_number} value={material_number}>
-            {material_name}
+            { material_number} {material_name}
           </MenuItem>
         ))}
       </Select>
@@ -122,11 +123,11 @@ const ItemMapping = ({
           alternatives.length > 1 ? "s" : ""
         } found`}
       >
-        {product_name}
+        {material_number} {product_name}
       </MenuItem>
       {alternatives.map(({ material_number, material_name }: any) => (
         <MenuItem key={material_number} value={material_number}>
-          {material_name}
+          {material_number} {material_name}
         </MenuItem>
       ))}
     </Select>
@@ -153,6 +154,7 @@ const MappingAlternativesCell: React.FC<MappingAlternativesCellProps> = ({
         matched={matched}
         updateStatus={statusUpdate}
         product_name={product_name}
+        material_number={material_number}
       />
       <img src={RemoveIcon} alt="remove-bucket" />
     </div>

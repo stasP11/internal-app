@@ -73,7 +73,8 @@ export default function DistributorsPage() {
   };
 
   function handleRowClick(id: number) {
-    setDistributorToShowId(id);
+    /*temporarily inactive functionality*/
+   // setDistributorToShowId(id);
   }
 
   if (distributorToShowWithPhoneArray) {

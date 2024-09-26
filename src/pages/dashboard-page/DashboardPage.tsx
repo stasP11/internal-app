@@ -13,5 +13,6 @@ export default function DashboardPage() {
     });
   }, []);
 
-  return <>{isEMEA ? <Dashboard2 /> : <Dashboard />}</>;
+  /*  <Dashboard2 /> */
+  return <>{isEMEA ? <div></div> : <Dashboard />}</>;
 }
