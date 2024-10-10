@@ -65,17 +65,23 @@ export default function DistributorsTable({
         const [name, id] = params.value;
         return (
           <div style={{ lineHeight: "normal" }}>
-            {name}
-            <br />
+            {name && name}
+            {name && <br />}
             {id}
           </div>
         );
       },
       sortComparator: (distributorA, distributorB) => {
         if (!distributorA || !distributorB) return 0;
-        const distributorNameA = distributorA[0];
-        const distributorNameB = distributorB[0];
-        return distributorNameA[0].localeCompare(distributorNameB[0]);
+
+        const distributorAComparator = distributorA[0]
+          ? `${distributorA[0]} ${distributorA[1]}`
+          : `${distributorA[1]}`;
+        const distributorBComparator = distributorB[0]
+          ? `${distributorB[0]} ${distributorB[1]}`
+          : `${distributorB[1]}`;
+
+        return distributorAComparator.localeCompare(distributorBComparator);
       },
       flex: 1,
     },

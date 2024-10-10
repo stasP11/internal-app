@@ -29,7 +29,7 @@ function StatusSelector({ value, onChange, isEmea }: SelectStatusFieldProps) {
       disabled={!isEmea}
       sx={{width: '240px'}}
     >
-      <MenuItem value="Success">
+      <MenuItem value="success">
         <div
           style={{
             display: "flex",
@@ -49,7 +49,7 @@ function StatusSelector({ value, onChange, isEmea }: SelectStatusFieldProps) {
           </span>
         </div>
       </MenuItem>
-      <MenuItem value="Error">
+      <MenuItem value="error">
         <div
           style={{
             display: "flex",
@@ -69,7 +69,7 @@ function StatusSelector({ value, onChange, isEmea }: SelectStatusFieldProps) {
           </span>
         </div>
       </MenuItem>
-      <MenuItem value="Info">
+      <MenuItem value="info">
         <div
           style={{
             display: "flex",
@@ -89,7 +89,7 @@ function StatusSelector({ value, onChange, isEmea }: SelectStatusFieldProps) {
           </span>
         </div>
       </MenuItem>
-      <MenuItem value="Attention">
+      <MenuItem value="attention">
         <div
           style={{
             display: "flex",

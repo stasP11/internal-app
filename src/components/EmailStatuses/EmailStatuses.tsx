@@ -8,8 +8,8 @@ function EmailStatuses({ emailType }: any) {
     lineHeight: "18px",
     color: "#FFF",
   };
-  console.log(emailType, emailType === "Success", "emailType");
-  if (emailType === "Success") {
+
+  if (emailType === "success") {
     return (
       <Chip
         label="Success"
@@ -19,21 +19,21 @@ function EmailStatuses({ emailType }: any) {
         }}
       />
     );
-  } else if (emailType === "Error") {
+  } else if (emailType === "error") {
     return (
       <Chip
         label="Error"
         sx={{ backgroundColor: "rgba(224, 87, 129, 1)", ...chipStyles }}
       />
     );
-  } else if (emailType === "Info") {
+  } else if (emailType === "info") {
     return (
       <Chip
         label="Info"
         sx={{ backgroundColor: "rgba(53, 160, 254, 1)", ...chipStyles }}
       />
     );
-  } else if (emailType === "Attention") {
+  } else if (emailType === "attention") {
     return (
       <Chip
         label="Attention"

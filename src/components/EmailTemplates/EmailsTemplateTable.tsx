@@ -7,10 +7,7 @@ import useAuthFetchWithMsal from "../../fetch/auth-hooks/authHook";
 import { protectedResources } from "../../authConfig";
 import { DataGridPro } from "@mui/x-data-grid-pro";
 import { type RichTextEditorRef } from "mui-tiptap";
-import {
-  EmailTemplateEditor,
-  EmailTemplateEditorHidden,
-} from "components/EmailTemplates/EmailTemplateEditor";
+import  EmailTemplateEditorWrapper  from "components/EmailTemplates/EmailTemplateEditor";
 import EmailPreviewWindow from "components/EmailTemplates/EmailPreviewWindow";
 import BannerTextEditor from "components/EmailTemplates/BannerTextEditor";
 import CircularProgressMUI from "../../customized-mui-elements/CircularProgressMUI/CircularProgressMUI";
@@ -19,7 +16,9 @@ import {
   handleApiRequest,
 } from "fetch/fetch-requests/handleApiRequest";
 import { AlertsContext } from "contexts/AlertsContext";
-import EmailStatuses from "components/EmailStatuses/EmailStatuses"
+import EmailStatuses from "components/EmailStatuses/EmailStatuses";
+import { EmailTemplateType } from "types/emailTemplatesTypes";
+import clsx from "clsx";
 
 function EmailsTemplateTable({
   data,
@@ -28,55 +27,27 @@ function EmailsTemplateTable({
   setSelectedEmail,
   isLoading,
   onSaveUpdateEmailTemplate,
+  setSelectedImageName,
 }: any) {
-  const bannerCanvasRef = useRef(null);
-  const emailBodyRef = useRef<RichTextEditorRef>(null);
-  const emailSignatureRef = useRef<RichTextEditorRef>(null);
-  const [ emailTemplateType, setEmailTemplateType] = useState('');
-  const [isEditStatus, setIsEditStatus] = useState(false);
-  const [isPreviewMode, setIsPreviewMode] = useState(false);
-  const [emailBodyContent, setEmailBodyContent] = useState("");
-  const [emailSignatureContent, setEmailSignatureContent] = useState("");
-  const [base64Image, setBase64Image] = useState("");
-  const [subjectText, setSubjectText] = useState("");
-  const [bannertText, setBannertText] = useState<any>(null);
-  const [isFirstPreviewMode, setIsFirstPreviewMode] = useState(false);
-  const [isHiddenEditorLoaded, setHiddenEditorLoaded] = useState(false);
-
+  console.log(data, "current emails data");
   const [isUpdateLoaded, setUpdateLoaded] = useState(false);
   const { setNewAlert } = useContext(AlertsContext);
+  const [choosedEmail, setChoosedEmail] = useState<EmailTemplateType | null>(
+    null
+  );
+  const [isPreviewMode, setPreviewMode] = useState<boolean>(false);
+  const [isEditMode, setEditMode] = useState<boolean>(false);
+  const [ headerMessageFragment, setHeaderMessageFragment] = useState<EmailTemplateType | null>(null);
+  const [ footerMessageFragment, setFooterMessageFragment] = useState<EmailTemplateType | null>(null);
 
-  function handleClearAll() {
-    setBannertText(null);
-    setSubjectText("");
-    setEmailSignatureContent("");
-    setEmailBodyContent("");
-  }
-
-  useEffect(() => {
-    if (isHiddenEditorLoaded && isFirstPreviewMode) {
-      if (emailSignatureRef.current) {
-        handlePreview();
-      }
+  useEffect(()=>{
+    if(data){
+        const headerMessageFragmentObj = data.find((obj:EmailTemplateType)=> obj.notification_type === 'composite_error_message_header')
+        const footerMessageFragmentObj = data.find((obj:EmailTemplateType)=> obj.notification_type === 'composite_error_message_footer')
+        headerMessageFragmentObj && setHeaderMessageFragment(headerMessageFragmentObj.notification_body);
+        footerMessageFragmentObj && setFooterMessageFragment(footerMessageFragmentObj.notification_body);
     }
-  });
-
-  useEffect(() => {
-    if (!!emailTemplateData) {
-      setEmailTemplateType(emailTemplateData?.type);
-      setBannertText(emailTemplateData?.defaultBaneerText);
-      setSubjectText(emailTemplateData?.title);
-      setEmailBodyContent(emailTemplateData?.emailBody);
-      setEmailSignatureContent(emailTemplateData?.emailSignature);
-    }
-    if (isLoading) {
-      console.log("is loaded punk");
-    }
-
-    if (!isLoading) {
-      console.log("is finish loading punk");
-    }
-  }, [emailTemplateData, isLoading]);
+  }, [data])
 
   const columns = [
     {
@@ -88,18 +59,35 @@ function EmailsTemplateTable({
       flex: 0.02,
     },
     {
-      field: "title",
-      headerName: "Title",
+      field: "notification_name",
+      headerName: "Name",
       filterable: false,
 
       flex: 0.45,
     },
     {
-      field: "type",
+      field: "notification_type",
       headerName: "Type",
       filterable: false,
-      renderCell: (params: any) => (<EmailStatuses emailType={params?.row?.type}/>),
-            flex: 0.45,
+      flex: 0.45,
+    },
+
+    {
+      field: "notification_title",
+      headerName: "Title",
+      flex: 0.45,
+    },
+    {
+      field: "default_image_text",
+      headerName: "Banner",
+      flex: 0.45,
+      cellClassName: (params: any) =>
+        clsx("super-app", {
+          error: params.row.image_type === 'error',
+          success: params.row.image_type === 'success',
+          info: params.row.image_type === 'info',
+          attention: params.row.image_type === 'attention',
+        }),
     },
     {
       field: "actions",
@@ -120,149 +108,93 @@ function EmailsTemplateTable({
     },
   ];
 
-  function handlePreviewFirst(title: any) {
-    setSelectedEmail(title);
-    setIsFirstPreviewMode(true);
-  }
-
   function handleActionClick(event: React.MouseEvent, params: any) {
-    event.stopPropagation();
-    setSelectedEmail(params.row.title);
-    setIsEditStatus(true);
+    console.log(params?.row, "params");
+    //  event.stopPropagation();
+    //  setSelectedEmail(params.row.notification_name);
+    //  setSelectedImageName(params.row.image_name)
+    //  setIsEditStatus(true);
   }
 
-  function handlePreview() {
-    handleToBase64();
-    setEmailBodyContent(emailBodyRef.current?.editor?.getHTML() ?? "");
-    setEmailSignatureContent(
-      emailSignatureRef.current?.editor?.getHTML() ?? ""
-    );
-    setIsPreviewMode(true);
-    setIsEditStatus(false);
+  function closePrewiewWindow() {
+    setPreviewMode(false);
+    setChoosedEmail(null);
   }
 
-  function handleBackToEdit() {
-    setIsPreviewMode(false);
-    setIsEditStatus(true);
-
-    if (isFirstPreviewMode) {
-      setBannertText(emailTemplateData?.defaultBaneerText);
-      setSubjectText(emailTemplateData?.title);
-      setEmailBodyContent(emailBodyRef.current?.editor?.getHTML() ?? "");
-      setEmailSignatureContent(
-        emailSignatureRef.current?.editor?.getHTML() ?? ""
-      );
-      setIsFirstPreviewMode(false);
-      setHiddenEditorLoaded(false);
-    }
+  function closeEditWindow() {
+    setEditMode(false);
+    setChoosedEmail(null);
   }
 
-  function handleCloseEmailPreviewWindow() {
-    setIsFirstPreviewMode(false);
-    setHiddenEditorLoaded(false);
-    setIsPreviewMode(false);
+  function openEditWindow() {
+    setPreviewMode(false);
+    setEditMode(true);
   }
-
-  const handleToBase64 = () => {
-    const canvas: any = bannerCanvasRef.current;
-    if (canvas) {
-      const base64 = canvas.toDataURL("image/png");
-      setBase64Image(base64); // Save base64 string
-    }
-  };
 
   function handleRowClick(clickedRow: any, e: any) {
-    const { title } = clickedRow?.row;
-    handlePreviewFirst(title);
+    setChoosedEmail(null);
+    setTimeout(() => {
+      setChoosedEmail({ ...clickedRow?.row });
+    }, 0);
+    setPreviewMode(true);
+    //
+    //   handlePreviewFirst(notification_name, image_name);
   }
 
-  function handleChangeEmailTempleteType(e: any){
-     console.log(e, 'test-01');
-     setEmailTemplateType("Error");
+  function handleSave(data: EmailTemplateType) {
+    onSaveUpdateEmailTemplate(data);
+    setEditMode(false);
+    setChoosedEmail(null);
   }
 
-  async function handleSave() {
-    console.log(emailBodyContent, emailSignatureRef, 'test-6')
-    onSaveUpdateEmailTemplate(
-      setIsEditStatus,
-      setUpdateLoaded,
-      handleToBase64,
-      bannertText,
-      base64Image,
-      { test: 1 }
-    );
+  function openPreviewWindow(obj: EmailTemplateType) {
+    setEditMode(false);
+    setPreviewMode(true);
+    if (obj) {
+      setChoosedEmail(obj);
+    }
   }
 
   return (
     <>
-      {!!bannertText && !!emailTemplateData?.defaultBanner && (
-        <BannerTextEditor
-          bannerCanvasRef={bannerCanvasRef}
-          base64ImageDefault={emailTemplateData?.defaultBanner}
-          text={bannertText}
-        />
-      )}
-
-      {isFirstPreviewMode && (
-        <EmailTemplateEditorHidden
-          emailBodyRef={emailBodyRef}
-          emailSignatureRef={emailSignatureRef}
-          onPreview={handlePreview}
-          onSave={handleSave}
-          emailBody={emailTemplateData?.emailBody}
-          emailSignature={emailTemplateData?.emailSignature}
-          bannerText={bannertText}
-          isLoading={isLoading}
-          onChangeBannerText={setBannertText}
-          onComponentLoaded={setHiddenEditorLoaded}
-        />
-      )}
-
-      {emailBodyContent && emailSignatureContent && (
-        <EmailTemplateEditor
-          open={isEditStatus}
-          onClose={() => {
-            setIsEditStatus(false);
-            handleClearAll();
-            setSelectedEmail(null);
-          }}
-          emailBodyRef={emailBodyRef}
-          emailSignatureRef={emailSignatureRef}
-          onPreview={handlePreview}
-          onSave={handleSave}
-          emailBody={emailBodyContent}
-          emailSignature={emailSignatureContent}
-          bannerText={bannertText}
-          isLoading={isLoading}
-          subjectText={subjectText}
-          onChangeBannerText={setBannertText}
-          onChangeEmailSubject={setSubjectText}
-          onChangeEmailTempleteType={handleChangeEmailTempleteType}
-          isEmea={false}
-          emailType={emailTemplateType}
-        />
-      )}
-
       <EmailPreviewWindow
-        open={isPreviewMode}
-        onClose={handleCloseEmailPreviewWindow}
-        emailBodyContent={emailBodyContent}
-        emailSignatureContent={emailSignatureContent}
-        onBackToEdit={handleBackToEdit}
-        base64Image={base64Image}
-        text={bannertText}
-        bannerCanvasRef={bannerCanvasRef}
+        open={!!choosedEmail && isPreviewMode}
+        onClose={closePrewiewWindow}
+        emailBodyContent={choosedEmail?.notification_body}
+        emailSignatureContent={choosedEmail?.signature_body}
+        onBackToEdit={openEditWindow}
+        base64Image={choosedEmail?.default_image_value}
+        bannerText={choosedEmail?.default_image_text}
+        headerFragment={headerMessageFragment}
+        footerFragment={footerMessageFragment}
+        type={choosedEmail?.notification_type}
       />
+
+      {isEditMode && !!choosedEmail && (
+        <EmailTemplateEditorWrapper
+          open={isEditMode && !!choosedEmail}
+          isEmea={true}
+          selectedEmailData={choosedEmail}
+          isLoading={false}
+          onClose={closeEditWindow}
+          onPreview={openPreviewWindow}
+          onSave={handleSave}
+          onChangeBannerText={() => console.log("e")}
+          onChangeEmailSubject={() => console.log("e")}
+          onChangeEmailTempleteType={() => console.log("e")}
+        />
+      )}
+
       <DataGridPro
         columns={columns}
         rows={data}
-        getRowId={(row: any) => row.title}
+        getRowId={(row) => row.notification_name}
         loading={isTableDataLoaded}
         onRowClick={handleRowClick}
         pagination
-        pageSizeOptions={[10, 15]}
+        pageSizeOptions={[10, 25, 50, 100]}
         initialState={{
-          pagination: { paginationModel: { pageSize: 10 } },
+          pagination: { paginationModel: { pageSize: 25 } },
         }}
         sx={{
           height: "calc(100vh - 180px)",
@@ -276,9 +208,22 @@ function EmailsTemplateTable({
           "& .MuiDataGrid-columnHeader, .MuiDataGrid-scrollbarFiller": {
             backgroundColor: "rgba(245, 245, 245, 1)",
           },
+
+          "& .super-app.success": {
+            backgroundColor: "rgba(102, 181, 18, 1)",
+          },
+          "& .super-app.error": {
+            backgroundColor: "rgba(224, 87, 129, 1)",
+          },
+          "& .super-app.info": {
+            backgroundColor: "rgba(53, 160, 254, 1)",
+          },
+          "& .super-app.attention": {
+            backgroundColor: "rgba(223, 147, 0, 1)",
+          },
         }}
       />
-      <CircularProgressMUI isLoaded={isLoading || isUpdateLoaded} />
+      <CircularProgressMUI isLoaded={isLoading} />
     </>
   );
 }

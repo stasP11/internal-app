@@ -31,25 +31,27 @@ export function formatBarChartData(
     }
   });
 
-  return Array.from(distributorMap.values()).map((distributor) => {
-    if (distributor.selloutSuccessCount !== 0) {
-      distributor.selloutSuccessCount = 0;
-    } else {
-      distributor.selloutSuccessCount = distributor.selloutAverage;
-    }
+  return Array.from(distributorMap.values())
+    .slice(0, 8)
+    .map((distributor) => {
+      if (distributor.selloutSuccessCount !== 0) {
+        distributor.selloutSuccessCount = 0;
+      } else {
+        distributor.selloutSuccessCount = distributor.selloutAverage;
+      }
 
-    if (distributor.inventorySuccessCount !== 0) {
-      distributor.inventorySuccessCount = 0;
-    } else {
-      distributor.inventorySuccessCount = distributor.inventoryAverage;
-    }
+      if (distributor.inventorySuccessCount !== 0) {
+        distributor.inventorySuccessCount = 0;
+      } else {
+        distributor.inventorySuccessCount = distributor.inventoryAverage;
+      }
 
-    return {
-      ...distributor,
-      inventoryAverage: Math.abs(distributor.inventoryAverage) * -1,
-      inventorySuccessCount: Math.abs(distributor.inventorySuccessCount) * -1,
-    };
-  });
+      return {
+        ...distributor,
+        inventoryAverage: Math.abs(distributor.inventoryAverage) * -1,
+        inventorySuccessCount: Math.abs(distributor.inventorySuccessCount) * -1,
+      };
+    });
 }
 
 export function trimLabelString(value: string, context: any) {

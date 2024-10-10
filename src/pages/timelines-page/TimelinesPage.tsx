@@ -10,7 +10,7 @@ import { PageInfoContext } from "../../contexts/PageInfoContext";
 import transformNotificationsDataForFrontEnd from "../../utils/transformNotificationsDataForFrontEnd";
 import extractUpdateForTimelines from "../../utils/extractUpdateForTimelines";
 import updateObj from "../../utils/updateObj";
-import formatDataForBackEnd from "../../utils/formatDataForBackEnd";
+import formatDataForBackEnd from "utils/formatDataForBackEnd";
 import { AlertsContext } from "contexts/AlertsContext";
 
 const scrollToTop = () => {

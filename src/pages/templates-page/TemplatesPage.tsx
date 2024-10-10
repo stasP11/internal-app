@@ -8,14 +8,77 @@ import useFetchReportTemplateData from "../../fetch/fetch-hooks/template-hooks/u
 import {
   useSWREmailsTemplates,
   useSWREmailTemplate,
+  useSWREmailsTemplatesMix,
 } from "../../fetch/fetch-hooks/template-hooks/useSWREmailsTemplates";
 import ReportTemplateTable from "components/ReportTemplateTable/ReportTemplateTable";
 import fetchData from "../../utils/fetchData";
 import useAuthFetchWithMsal from "../../fetch/auth-hooks/authHook";
 import { protectedResources } from "../../authConfig";
 import EmailsTemplateTable from "components/EmailTemplates/EmailsTemplateTable";
-import { FetchParams, handleApiRequest } from "fetch/fetch-requests/handleApiRequest";
+import {
+  FetchParams,
+  handleApiRequest,
+} from "fetch/fetch-requests/handleApiRequest";
 import { AlertsContext } from "contexts/AlertsContext";
+import generateRandomId from "utils/genereteRandomId.js";
+import formatDataForBackEnd from "utils/formatDataForBackEnd";
+import { EmailTemplateType } from "types/emailTemplatesTypes";
+
+function useData(selectedCountry: any, authResult: any) {
+  const [isLoaded, setIsloaded] = useState(true);
+  const [emailsTemplatesData, setEmailsTemplatesData] =
+    useState<any>(undefined);
+
+  const { data: emailsMonolitData, isLoading: isLoadingEmailsMonolitData } =
+    useSWREmailsTemplatesMix(
+      true,
+      selectedCountry,
+      authResult,
+      "get_monolit_email_templates"
+    );
+
+  const { data: emailsCompositData, isLoading: isLoadingemailsCompositData } =
+    useSWREmailsTemplatesMix(
+      true,
+      selectedCountry,
+      authResult,
+      "get_composite_email_templates"
+    );
+  useEffect(() => {
+    if (emailsMonolitData && emailsCompositData) {
+      setIsloaded(false);
+      setEmailsTemplatesData([
+        ...emailsMonolitData?.data,
+        ...emailsCompositData?.data,
+      ]);
+    }
+  }, [emailsMonolitData, emailsCompositData]);
+
+  return { isLoaded, emailsTemplatesData };
+}
+
+function escapeHtmlForSql(inputString: any) {
+  if (inputString) {
+    // Replace double quotes with \&quot; and single quotes with ''
+    const escapedString = inputString
+      .replace(/"/g, "\\&quot;") // Escape double quotes
+      .replace(/'/g, "''"); // Escape single quotes for SQL
+
+    return escapedString;
+  }
+}
+
+function removeDuplicates(arr: any) {
+  const seenIds = new Set();
+
+  return arr.filter((obj: any) => {
+    if (!seenIds.has(obj.id)) {
+      seenIds.add(obj.id);
+      return true; // Keep the object if the id is unique
+    }
+    return false; // Exclude the object if the id is a duplicate
+  });
+}
 
 async function fetchUpdateTempleteRow(
   authResult: any,
@@ -84,27 +147,44 @@ function TemplatesPage() {
     1: "sell-out",
     2: "emails",
   };
+
   const selectedCountry = getFromLocalStorage("selectedCountry");
-  const [templateNumber, setTemplateNumber] = useState(0);
+  const [templateNumber, setTemplateNumber] = useState(2);
   const { data } = useFetchReportTemplateData(
     templeteType[templateNumber],
     selectedCountry,
     authResult
   );
+
+  const { isLoaded, emailsTemplatesData } = useData(
+    selectedCountry,
+    authResult
+  );
+
+  console.log(isLoaded, emailsTemplatesData, "test-01");
+
   const { data: emailsData } = useSWREmailsTemplates(
     true,
     selectedCountry,
     authResult
   );
-  const [selectedEmail, setSelectedEmail] = useState(null);
-  const { data: emailTemplateData, isLoading: isEmailTemplateLoading } =
-    useSWREmailTemplate(!!selectedEmail, selectedEmail, authResult);
 
+  const [selectedEmail, setSelectedEmail] = useState(null);
+  const [selectedImageName, setSelectedImageName] = useState(null);
+  const { data: emailTemplateData, isLoading: isEmailTemplateLoading } =
+    useSWREmailTemplate(
+      !!selectedEmail,
+      selectedCountry,
+      selectedEmail,
+      selectedImageName,
+      authResult
+    );
   const [templatesData, setTemplatesData] = useState<Array<ColumnDataType>>([]);
   const [emailsTemplates, setEmailsTemplates] = useState<Array<ColumnDataType>>(
     []
   );
   const { setNewAlert } = useContext(AlertsContext);
+  const [emailsUpdateInProgress, setEmailsUpdateInProgress] = useState(false);
 
   useEffect(() => {
     if (
@@ -115,12 +195,22 @@ function TemplatesPage() {
       setTemplatesData(data);
       setIsTableDataLoaded(false);
     }
-    if (emailsData && templeteType[templateNumber] === "emails") {
-      console.log("emailsData");
-      setEmailsTemplates(emailsData);
+  }, [data]);
+
+  useEffect(() => {
+    if (emailsData) {
+      const resultDataWithId: any = [];
+      for (let obj of emailsData?.data) {
+        resultDataWithId.push({
+          id: `${obj.notification_name}/${obj?.image_name}`,
+          ...obj,
+        });
+      }
+      const uncicsWithId = removeDuplicates(resultDataWithId);
+      setEmailsTemplates(uncicsWithId);
       setIsTableDataLoaded(false);
     }
-  }, [data, emailsData]);
+  }, [emailsData]);
 
   const handleTabChange = async (
     event: React.SyntheticEvent,
@@ -227,27 +317,68 @@ function TemplatesPage() {
   };
 
   const handleSaveUpdateEmailTemplate = async (
-    setIsEditStatus: any,
-    setUpdateLoaded: any,
-    handleToBase64: any,
-    bannertText: any,
-    base64Image: any,
-    updatedData: any
-
+    data: any | EmailTemplateType
   ) => {
-    setIsEditStatus(false);
-    handleToBase64();
-    if (emailTemplateData?.defaultBaneerText !== bannertText) {
-      console.log(base64Image, "save-02");
+    console.log("test save function 1");
+    const objectBeforChanges = formatDataForBackEnd(
+      emailsTemplatesData.find(
+        (obj: EmailTemplateType) =>
+          obj.notification_name === data.notification_name
+      )
+    );
+    for (let key in data) {
+      objectBeforChanges[key] = data[key];
+    }
+
+    console.log(data, objectBeforChanges, "test save function 0");
+    const isMonolitEmail = data.notification_type.includes('monolit');
+
+    const fetchParams: FetchParams = {
+      authResult,
+      method: "POST",
+      url: `${process.env.REACT_APP_API_PYTHON_API}/${isMonolitEmail? 'update_monolit_email_templates' : 'update_composite_email_templates'}`,
+      data: { data: [objectBeforChanges] },
+    };
+
+    await handleApiRequest(
+      fetchParams,
+      setEmailsUpdateInProgress,
+      setNewAlert,
+      "Email template was updated successfully",
+      "Something went wrong, please try again"
+    );
+
+    // const updatedEmailTemplate = formatDataForBackEnd(emailTemplateData?.data[0]);
+    // escapeHtmlForSql
+    // setIsEditStatus(false);
+    // handleToBase64();
+    /*
+    if (emailTemplateData?.data[0]?.default_image_text !== bannertText) {
+      updatedEmailTemplate.default_image_text = bannertText;
+      updatedEmailTemplate.image_value = base64Image;
+      updatedEmailTemplate.notification_body = body? `"""${body}"""` : "";
+      updatedEmailTemplate.signature_body = signature? `"""${signature}"""` : "";
+      updatedEmailTemplate.notification_title = emailTitle
+
+
+      updatedEmailTemplate.notification_body_old = updatedEmailTemplate.notification_body_old? escapeHtmlForSql(updatedEmailTemplate.notification_body_old) : "";
+      updatedEmailTemplate.signature_body__old = updatedEmailTemplate.signature_body__old? escapeHtmlForSql(updatedEmailTemplate.signature_body__old) : "";
+
+
     } else {
-      console.log("simple update!");
+      updatedEmailTemplate.notification_body = body? `"""${body}"""` : "";
+      updatedEmailTemplate.signature_body = signature? `"""${signature}"""` : "";
+      updatedEmailTemplate.notification_title = emailTitle
+
+      updatedEmailTemplate.notification_body_old = updatedEmailTemplate.notification_body_old? escapeHtmlForSql(updatedEmailTemplate.notification_body_old) : "";
+      updatedEmailTemplate.signature_body__old = updatedEmailTemplate.signature_body__old? escapeHtmlForSql(updatedEmailTemplate.signature_body__old) : "";
     }
 
     const fetchParams: FetchParams = {
       authResult,
       method: "POST",
-      url: `${process.env.REACT_APP_API_URL_PROXY}/update-email-template`,
-      data: updatedData,
+      url: `${process.env.REACT_APP_API_PYTHON_API}/update_email_templates`,
+      data: {"data": [updatedEmailTemplate]},
     };
 
     await handleApiRequest(
@@ -257,6 +388,8 @@ function TemplatesPage() {
       "Email template was updated successfully",
       "Something went wrong, please try again"
     );
+
+    */
   };
 
   return (
@@ -274,7 +407,7 @@ function TemplatesPage() {
           />
         </div>
         <div className="inventory-template-table">
-          {templeteType[templateNumber] !== "emails" ? (
+          {templeteType[templateNumber] !== "emails" && (
             <ReportTemplateTable
               isTableDataLoaded={isTableDataLoaded}
               data={templatesData ? templatesData : []}
@@ -283,17 +416,17 @@ function TemplatesPage() {
               onAddNewRow={handleAddNewRow}
               onDelete={handleDeleteRow}
             />
-          ) : (
-            emailsTemplates.length > 1 && (
-              <EmailsTemplateTable
-                data={emailsTemplates}
-                isTableDataLoaded={false}
-                setSelectedEmail={setSelectedEmail}
-                emailTemplateData={emailTemplateData}
-                isLoading={isEmailTemplateLoading}
-                onSaveUpdateEmailTemplate={handleSaveUpdateEmailTemplate}
-              />
-            )
+          )}
+          {templateNumber == 2 && emailsTemplatesData && (
+            <EmailsTemplateTable
+              data={emailsTemplatesData}
+              isTableDataLoaded={false}
+              setSelectedEmail={setSelectedEmail}
+              setSelectedImageName={setSelectedImageName}
+              emailTemplateData={emailTemplateData?.data[0]}
+              isLoading={isEmailTemplateLoading || emailsUpdateInProgress}
+              onSaveUpdateEmailTemplate={handleSaveUpdateEmailTemplate}
+            />
           )}
         </div>
         <div className="sellout-template-report-table"></div>

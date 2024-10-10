@@ -1,28 +1,102 @@
 import { Dialog, DialogContent, Box, Button } from "@mui/material";
+import { useState, useEffect, useRef, useContext } from "react";
 import TextField from "@mui/material/TextField";
 import Editor from "components/Editor/Editor";
 import StatusSelector from "components/StatusSelector/StatusSelector";
 import PreviewIcon from "icons/preview/previewIcon.svg";
 import "./EmailsTemplateTable";
+import { type RichTextEditorRef } from "mui-tiptap";
+import { EmailTemplateType } from "types/emailTemplatesTypes";
+import BannerTextEditor from "components/EmailTemplates/BannerTextEditor";
 
-export function EmailTemplateEditor({
+function EmailTemplateEditorMonolit({
   open,
-  emailType,
+  selectedEmailData,
   isEmea,
-  emailBodyRef,
-  emailSignatureRef,
-  bannerText,
   isLoading,
-  emailBody,
-  emailSignature,
-  subjectText,
   onClose,
   onPreview,
   onSave,
-  onChangeBannerText,
-  onChangeEmailSubject,
   onChangeEmailTempleteType,
-}: any) {
+  isMonolitEmail
+}: any | EmailTemplateType) {
+  const emailBodyRef: any = useRef<RichTextEditorRef>(null);
+  const subjectTextRef = useRef<any>(null);
+  const bannerTextRef = useRef<any>(null);
+  const emailSignatureRef = useRef<RichTextEditorRef>(null);
+  const updatedBannerText = useRef<any>(null);
+  const {
+    notification_body: emailBody,
+    signature_body: emailSignature,
+    notification_title: subjectText,
+    default_image_text: bannerText,
+    default_image_value: base64Image,
+    image_type: emailType,
+  } = selectedEmailData;
+  useEffect(() => {
+    bannerTextRef.current = bannerText;
+  }, []);
+
+  const [updatedText, setUpdatedText] = useState(null);
+  const [updatedBannerImage, setUpdatedBannerImage] = useState<any | string>(
+    null
+  );
+
+  function updateSelectedValue(obj: EmailTemplateType) {
+    obj.notification_body =
+      typeof emailBodyRef?.current?.editor?.getHTML() === "string"
+        ? emailBodyRef?.current.editor?.getHTML()
+        : emailBody;
+    obj.signature_body =
+      typeof emailSignatureRef?.current?.editor?.getHTML() === "string"
+        ? emailSignatureRef?.current.editor?.getHTML()
+        : emailSignature;
+
+    if (subjectTextRef.current) {
+      obj.notification_title = subjectTextRef.current;
+    }
+
+    if (bannerTextRef.current) {
+      obj.default_image_text = bannerTextRef.current;
+    }
+
+    if (updatedBannerImage) {
+      console.log(updatedBannerImage, "updated image");
+      obj.image_value = updatedBannerImage;
+    }
+
+    return obj;
+  }
+
+  function handlePreview() {
+    const updatedEmailTemplate = updateSelectedValue(selectedEmailData);
+    onPreview(updatedEmailTemplate);
+  }
+
+  const [saveProucess, setSaveProucess] = useState<null | "start" | "loading">(
+    null
+  );
+
+  useEffect(() => {
+    if (saveProucess === "start") {
+      if (bannerTextRef.current !== bannerText) {
+        /*necessary to avoid constant re-rendering of elements when changing the banner text.*/
+        setUpdatedText(bannerTextRef.current);
+
+        if (updatedBannerImage) {
+          const updatedEmailTemplate = updateSelectedValue(selectedEmailData);
+          updatedEmailTemplate.image_value = updatedBannerImage;
+          onSave(updatedEmailTemplate);
+          setSaveProucess(null);
+        }
+      } else {
+        const updatedEmailTemplate = updateSelectedValue(selectedEmailData);
+        onSave(updatedEmailTemplate);
+        setSaveProucess(null);
+      }
+    }
+  }, [saveProucess, updatedText, updatedBannerImage]);
+
   return (
     <Dialog
       fullScreen
@@ -38,16 +112,24 @@ export function EmailTemplateEditor({
       }}
     >
       <div className="dialog-header">
-        <h2>Edit Notification</h2>
+        <h2>Edit Notification {!isMonolitEmail && 'Fragment'}</h2>
       </div>
+      <BannerTextEditor
+        base64ImageDefault={base64Image}
+        text={updatedText ? updatedText : ""}
+        isEditable={true}
+        setUpdatedBanner={setUpdatedBannerImage}
+      />
       {isLoading ? (
         "is loaded"
       ) : (
         <DialogContent
           className="dialog-content"
           sx={{ height: "calc(100vh - 113px - 64px - 64px)" }}
-        >
-          <div className="dialog-content__email-type">
+        > {
+          isMonolitEmail && (
+            <>
+            <div className="dialog-content__email-type">
             <StatusSelector
               value={emailType}
               onChange={() => onChangeEmailTempleteType()}
@@ -59,8 +141,8 @@ export function EmailTemplateEditor({
               sx={{ width: "100%" }}
               id="outlined-required"
               label="Banner title"
-              value={bannerText}
-              onChange={(e) => onChangeBannerText(e.target.value)}
+              defaultValue={bannerText}
+              onChange={(e) => (bannerTextRef.current = e.target.value)}
             />
           </div>
           <div className="dialog-content__input">
@@ -68,100 +150,92 @@ export function EmailTemplateEditor({
               sx={{ width: "100%" }}
               id="outlined-required"
               label="Subject"
-              value={subjectText}
-              onChange={(e) => onChangeEmailSubject(e.target.value)}
+              defaultValue={subjectText}
+              onChange={(e) => subjectTextRef.current = (e.target.value)}
             />
           </div>
+          </>
+          )
+          }
           <div className="editor-wrapper">
             <Editor content={emailBody} rteRef={emailBodyRef} />
           </div>
-          <div className="editor-wrapper">
-            <Editor content={emailSignature} rteRef={emailSignatureRef} />
-          </div>
+
+          {
+            isMonolitEmail && (
+              <div className="editor-wrapper">
+              <Editor content={emailSignature} rteRef={emailSignatureRef} />
+            </div>
+            )
+          }
         </DialogContent>
       )}
       <div className="dialog-footer --email-template-editor">
         <div></div>
         <div className="footer-buttons">
-        <Button onClick={onPreview}  startIcon={<img src={PreviewIcon} alt={'preview-icon'}/>}>Preview</Button>
-        <Button onClick={onClose} variant="outlined" sx={{color: "#10384F", borderColor: 'rgba(0, 0, 0, 0.42)'}}>Cancel</Button>
-        <Button onClick={onSave} variant="contained">Save</Button>
+          <Button
+            onClick={handlePreview}
+            startIcon={<img src={PreviewIcon} alt={"preview-icon"} />}
+          >
+            Preview
+          </Button>
+          <Button
+            onClick={onClose}
+            variant="outlined"
+            sx={{ color: "#10384F", borderColor: "rgba(0, 0, 0, 0.42)" }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              setSaveProucess("start");
+            }}
+            variant="contained"
+          >
+            Save
+          </Button>
         </div>
       </div>
     </Dialog>
   );
 }
 
-export function EmailTemplateEditorHidden({
-  emailBodyRef,
-  emailSignatureRef,
-  bannerText,
+
+export default function EmailTemplateEditorWrapper({
+  open,
+  selectedEmailData,
+  isEmea,
   isLoading,
-  emailBody,
-  emailSignature,
+  onClose,
   onPreview,
   onSave,
-  onChangeBannerText,
-  onComponentLoaded,
+  onChangeEmailTempleteType,
 }: any) {
+
+  function handleEmailType(type: string) {
+    const isComposite = type.includes('composite');
+    
+    // Determine if it's a composite email and set isMonolitEmail accordingly
+    const isMonolitEmail = !isComposite;
+    
+    return (
+      <EmailTemplateEditorMonolit
+        open={open}
+        selectedEmailData={selectedEmailData}
+        isEmea={false} // hardcoded to false in all cases
+        isLoading={isLoading}
+        onClose={onClose}
+        onPreview={onPreview}
+        onSave={onSave}
+        onChangeEmailTempleteType={onChangeEmailTempleteType}
+        isMonolitEmail={isMonolitEmail}
+      />
+    );
+  }
+
   return (
-    <div style={{ display: "none" }}>
-      <Box className="dialog-header">
-        <h2>Edit Notification</h2>
-      </Box>
-      {isLoading ? (
-        "is loaded"
-      ) : (
-        <DialogContent className="dialog-content">
-          <div className="dialog-content__input">
-            <TextField
-              sx={{ width: "100%" }}
-              id="outlined-required"
-              label="Banner title"
-              value={bannerText}
-              onChange={(e) => onChangeBannerText(e.target.value)}
-            />
-          </div>
-          <div className="dialog-content__input">
-            <TextField
-              sx={{ width: "100%" }}
-              id="outlined-required"
-              label="Subject"
-              defaultValue="text"
-            />
-          </div>
-          <div
-            style={{
-              width: "100%",
-              maxHeight: "525px",
-              minHeight: "225px",
-              overflowY: "scroll",
-              border: "1px solid",
-            }}
-          >
-            <Editor
-              content={emailBody}
-              rteRef={emailBodyRef}
-              onComponentLoaded={onComponentLoaded}
-            />
-          </div>
-          <div
-            style={{
-              width: "100%",
-              maxHeight: "525px",
-              minHeight: "225px",
-              overflowY: "scroll",
-              border: "1px solid",
-            }}
-          >
-            <Editor
-              content={emailSignature}
-              rteRef={emailSignatureRef}
-              onComponentLoaded={onComponentLoaded}
-            />
-          </div>
-        </DialogContent>
-      )}
+    <div>
+      {handleEmailType(selectedEmailData.notification_type)}
     </div>
   );
 }
