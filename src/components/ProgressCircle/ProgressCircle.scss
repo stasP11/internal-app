@@ -1,0 +1,32 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+  }
+  
+  .progress-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+  }
+  
+  canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  
+  .progress-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: Arial, sans-serif;
+    font-size: 38px;
+    color: #333;
+    width: 150px;
+  }
+  

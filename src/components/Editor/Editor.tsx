@@ -1,19 +1,16 @@
-import { Lock, LockOpen, TextFields } from "@mui/icons-material";
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import type { EditorOptions } from "@tiptap/core";
-import './Editor.scss'
-import { useCallback, useEffect, useRef, useState } from "react";
+import "./Editor.scss";
+import { useCallback, useEffect, useState } from "react";
 import {
   LinkBubbleMenu,
-  MenuButton,
   RichTextEditor,
-  RichTextReadOnly,
   TableBubbleMenu,
   insertImages,
-  type RichTextEditorRef,
 } from "mui-tiptap";
 import EditorMenuControls from "./EditorMenuControls";
 import useExtensions from "./useExtensions";
+import fileToBase64 from "utils/fileToBase64";
 
 function fileListToImageFiles(fileList: FileList): File[] {
   // You may want to use a package like attr-accept
@@ -25,49 +22,46 @@ function fileListToImageFiles(fileList: FileList): File[] {
   });
 }
 
-export default function Editor({rteRef, content, onComponentLoaded}: any) {
+export default function Editor({ rteRef, content, onComponentLoaded }: any) {
   const extensions = useExtensions({
     placeholder: "Add your own content here...",
   });
 
-  useEffect(()=>{
-   if(rteRef.current) {
-    console.log( rteRef , 'test')
-    if(onComponentLoaded){
-      onComponentLoaded(true);
+  useEffect(() => {
+    if (rteRef.current) {
+      console.log(rteRef, "test");
+      if (onComponentLoaded) {
+        onComponentLoaded(true);
+      }
     }
-   }
-  }, [rteRef])
+  }, [rteRef]);
 
   const [isEditable, setIsEditable] = useState(true);
   const [showMenuBar, setShowMenuBar] = useState(true);
 
   const handleNewImageFiles = useCallback(
-    (files: File[], insertPosition?: number): void => {
+    async (files: File[], insertPosition?: number): Promise<void> => {
       if (!rteRef.current?.editor) {
         return;
       }
 
-      // For the sake of a demo, we don't have a server to upload the files to,
-      // so we'll instead convert each one to a local "temporary" object URL.
-      // This will not persist properly in a production setting. You should
-      // instead upload the image files to your server, or perhaps convert the
-      // images to bas64 if you would like to encode the image data directly
-      // into the editor content, though that can make the editor content very
-      // large. You will probably want to use the same upload function here as
-      // for the MenuButtonImageUpload `onUploadFiles` prop.
-      const attributesForImageFiles = files.map((file) => ({
-        src: URL.createObjectURL(file),
-        alt: file.name,
-      }));
+      // Convert each file to a Base64 data URL using the updated fileToBase64 function
+      const attributesForImageFiles = await Promise.all(
+        files.map(async (file) => ({
+          src: await fileToBase64(file), // This will return a string formatted like canvas.toDataURL()
+          alt: file.name,
+        }))
+      );
 
+      console.log(attributesForImageFiles, "reader attributesForImageFiles");
+      // Insert the images into the editor
       insertImages({
         images: attributesForImageFiles,
         editor: rteRef.current.editor,
-        insertPosition,
+        position: insertPosition,
       });
     },
-    [],
+    []
   );
 
   // Allow for dropping images into the editor
@@ -95,7 +89,7 @@ export default function Editor({rteRef, content, onComponentLoaded}: any) {
 
         return false;
       },
-      [handleNewImageFiles],
+      [handleNewImageFiles]
     );
 
   // Allow for pasting images
@@ -107,7 +101,7 @@ export default function Editor({rteRef, content, onComponentLoaded}: any) {
         }
 
         const pastedImageFiles = fileListToImageFiles(
-          event.clipboardData.files,
+          event.clipboardData.files
         );
         if (pastedImageFiles.length > 0) {
           handleNewImageFiles(pastedImageFiles);
@@ -122,7 +116,7 @@ export default function Editor({rteRef, content, onComponentLoaded}: any) {
         // We return false here to allow the standard paste-handler to run.
         return false;
       },
-      [handleNewImageFiles],
+      [handleNewImageFiles]
     );
 
   return (

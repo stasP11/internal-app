@@ -31,6 +31,7 @@ import {
   MenuSelectTextAlign,
   isTouchDevice,
 } from "mui-tiptap";
+import fileToBase64 from "utils/fileToBase64";
 
 export default function EditorMenuControls() {
   const theme = useTheme();
@@ -138,7 +139,7 @@ export default function EditorMenuControls() {
       <MenuDivider />
 
       <MenuButtonImageUpload
-        onUploadFiles={(files) =>
+        onUploadFiles={async (files) =>
           // For the sake of a demo, we don't have a server to upload the files
           // to, so we'll instead convert each one to a local "temporary" object
           // URL. This will not persist properly in a production setting. You
@@ -146,10 +147,14 @@ export default function EditorMenuControls() {
           // convert the images to bas64 if you would like to encode the image
           // data directly into the editor content, though that can make the
           // editor content very large.
-          files.map((file) => ({
-            src: URL.createObjectURL(file),
-            alt: file.name,
-          }))
+
+          // Convert each file to a Base64 data URL using the updated fileToBase64 function
+          await Promise.all(
+            files.map(async (file) => ({
+              src: await fileToBase64(file), // This will return a string formatted like canvas.toDataURL()
+              alt: file.name,
+            }))
+          )
         }
       />
 

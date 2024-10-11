@@ -40,6 +40,7 @@ import {
   TableImproved,
 } from "mui-tiptap";
 
+
 export type UseExtensionsOptions = {
   /** Placeholder hint to show in the text input area before a user types a message. */
   placeholder?: string;
@@ -109,7 +110,6 @@ export default function useExtensions({
       TableRow,
       TableHeader,
       TableCell,
-
       BulletList,
       CodeBlock,
       Document,
@@ -160,7 +160,7 @@ export default function useExtensions({
       Highlight.configure({ multicolor: true }),
       HorizontalRule,
 
-      ResizableImage,
+      ResizableImage.configure({ inline: true, allowBase64: true }),
       // When images are dragged, we want to show the "drop cursor" for where they'll
       // land
       Dropcursor,

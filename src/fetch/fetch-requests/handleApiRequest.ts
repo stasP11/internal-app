@@ -14,14 +14,15 @@ export const handleApiRequest = async (
     setUpdateLoaded: (value: boolean) => void,
     setNewAlert: (alert: any) => void,
     successMessage: string,
-    errorMessage: string
+    errorMessage: string,
+    mutateAfterSuccessFn?: any,
   ) => {
     setUpdateLoaded(true);
     try {
       const response: any = await defaultFetchRequest(fetchParams);
-      console.log(response, 'response')
   
       if (response.ok) {
+        await mutateAfterSuccessFn();
         setUpdateLoaded(false);
         setNewAlert({ alertType: 'success', text: successMessage });
       } else {

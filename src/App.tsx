@@ -9,7 +9,7 @@ import {
   AuthenticatedTemplate,
   UnauthenticatedTemplate,
 } from "@azure/msal-react";
-import {  protectedResources } from "./authConfig";
+import { protectedResources } from "./authConfig";
 import { LicenseInfo } from "@mui/x-data-grid-pro";
 import { useFetchWithMsal } from "./hooks/useFetchWithMsal";
 import ErrorPage from "./pages/error/ErrorPage";
@@ -19,7 +19,7 @@ import {
 } from "./services/storageInterection";
 import { PageInfoContextWrapper } from "./contexts/PageInfoContext";
 import { AlertsContextWrapper } from "./contexts/AlertsContext";
-
+import ProgressCircle from "components/ProgressCircle/ProgressCircle";
 
 type UserDataContextType = {
   pages?: Array<any>;
@@ -29,9 +29,9 @@ type UserDataContextType = {
 };
 
 type PageInfoContextType = {
-    headerContent?: string,
-    selectedPage?: string
-    selectedTab?: string
+  headerContent?: string;
+  selectedPage?: string;
+  selectedTab?: string;
 };
 
 export const UserDataContext = createContext<UserDataContextType>({});
@@ -74,13 +74,12 @@ const MainContent = () => {
     }
   }, [data]);
 
-
-  if (data?.status === '404' || data?.status === '500') {
+  if (data?.status === "404" || data?.status === "500") {
     return <ErrorPage errorText={data?.description} />;
   }
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <ProgressCircle />;
   }
 
   if (error) {
@@ -92,16 +91,15 @@ const MainContent = () => {
   return (
     <div className="App">
       <AuthenticatedTemplate>
-      <PageInfoContextWrapper>
-        <UserDataContext.Provider value={{ ...data?.userData }}>
-          <AlertsContextWrapper>
-          <Router status={data?.status} userProfile={data?.userData} />
-          </AlertsContextWrapper>
-        </UserDataContext.Provider>
+        <PageInfoContextWrapper>
+          <UserDataContext.Provider value={{ ...data?.userData }}>
+            <AlertsContextWrapper>
+              <Router status={data?.status} userProfile={data?.userData} />
+            </AlertsContextWrapper>
+          </UserDataContext.Provider>
         </PageInfoContextWrapper>
       </AuthenticatedTemplate>
-      <UnauthenticatedTemplate>
-      </UnauthenticatedTemplate>
+      <UnauthenticatedTemplate></UnauthenticatedTemplate>
     </div>
   );
 };

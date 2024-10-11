@@ -1,53 +1,45 @@
 import ActionCellTemplates from "./ActionCellTemplates";
 import "./EmailsTemplateTable";
 import React from "react";
-import { useState, useEffect, useRef, useContext } from "react";
-import { useSWREmailTemplate } from "../../fetch/fetch-hooks/template-hooks/useSWREmailsTemplates";
-import useAuthFetchWithMsal from "../../fetch/auth-hooks/authHook";
-import { protectedResources } from "../../authConfig";
+import { useState, useEffect } from "react";
 import { DataGridPro } from "@mui/x-data-grid-pro";
-import { type RichTextEditorRef } from "mui-tiptap";
-import  EmailTemplateEditorWrapper  from "components/EmailTemplates/EmailTemplateEditor";
+import EmailTemplateEditor from "components/EmailTemplates/EmailTemplateEditor";
 import EmailPreviewWindow from "components/EmailTemplates/EmailPreviewWindow";
-import BannerTextEditor from "components/EmailTemplates/BannerTextEditor";
-import CircularProgressMUI from "../../customized-mui-elements/CircularProgressMUI/CircularProgressMUI";
-import {
-  FetchParams,
-  handleApiRequest,
-} from "fetch/fetch-requests/handleApiRequest";
-import { AlertsContext } from "contexts/AlertsContext";
-import EmailStatuses from "components/EmailStatuses/EmailStatuses";
 import { EmailTemplateType } from "types/emailTemplatesTypes";
 import clsx from "clsx";
 
 function EmailsTemplateTable({
   data,
-  isTableDataLoaded,
-  emailTemplateData,
-  setSelectedEmail,
   isLoading,
   onSaveUpdateEmailTemplate,
-  setSelectedImageName,
 }: any) {
   console.log(data, "current emails data");
-  const [isUpdateLoaded, setUpdateLoaded] = useState(false);
-  const { setNewAlert } = useContext(AlertsContext);
   const [choosedEmail, setChoosedEmail] = useState<EmailTemplateType | null>(
     null
   );
   const [isPreviewMode, setPreviewMode] = useState<boolean>(false);
   const [isEditMode, setEditMode] = useState<boolean>(false);
-  const [ headerMessageFragment, setHeaderMessageFragment] = useState<EmailTemplateType | null>(null);
-  const [ footerMessageFragment, setFooterMessageFragment] = useState<EmailTemplateType | null>(null);
+  const [headerMessageFragment, setHeaderMessageFragment] =
+    useState<EmailTemplateType | null>(null);
+  const [footerMessageFragment, setFooterMessageFragment] =
+    useState<EmailTemplateType | null>(null);
 
-  useEffect(()=>{
-    if(data){
-        const headerMessageFragmentObj = data.find((obj:EmailTemplateType)=> obj.notification_type === 'composite_error_message_header')
-        const footerMessageFragmentObj = data.find((obj:EmailTemplateType)=> obj.notification_type === 'composite_error_message_footer')
-        headerMessageFragmentObj && setHeaderMessageFragment(headerMessageFragmentObj.notification_body);
-        footerMessageFragmentObj && setFooterMessageFragment(footerMessageFragmentObj.notification_body);
+  useEffect(() => {
+    if (data) {
+      const headerMessageFragmentObj = data.find(
+        (obj: EmailTemplateType) =>
+          obj.notification_type === "composite_error_message_header"
+      );
+      const footerMessageFragmentObj = data.find(
+        (obj: EmailTemplateType) =>
+          obj.notification_type === "composite_error_message_footer"
+      );
+      headerMessageFragmentObj &&
+        setHeaderMessageFragment(headerMessageFragmentObj.notification_body);
+      footerMessageFragmentObj &&
+        setFooterMessageFragment(footerMessageFragmentObj.notification_body);
     }
-  }, [data])
+  }, [data]);
 
   const columns = [
     {
@@ -83,10 +75,10 @@ function EmailsTemplateTable({
       flex: 0.45,
       cellClassName: (params: any) =>
         clsx("super-app", {
-          error: params.row.image_type === 'error',
-          success: params.row.image_type === 'success',
-          info: params.row.image_type === 'info',
-          attention: params.row.image_type === 'attention',
+          error: params.row.image_type === "error",
+          success: params.row.image_type === "success",
+          info: params.row.image_type === "info",
+          attention: params.row.image_type === "attention",
         }),
     },
     {
@@ -109,7 +101,7 @@ function EmailsTemplateTable({
   ];
 
   function handleActionClick(event: React.MouseEvent, params: any) {
-    console.log(params?.row, "params");
+    //console.log(params?.row, "params");
     //  event.stopPropagation();
     //  setSelectedEmail(params.row.notification_name);
     //  setSelectedImageName(params.row.image_name)
@@ -137,8 +129,6 @@ function EmailsTemplateTable({
       setChoosedEmail({ ...clickedRow?.row });
     }, 0);
     setPreviewMode(true);
-    //
-    //   handlePreviewFirst(notification_name, image_name);
   }
 
   function handleSave(data: EmailTemplateType) {
@@ -171,7 +161,7 @@ function EmailsTemplateTable({
       />
 
       {isEditMode && !!choosedEmail && (
-        <EmailTemplateEditorWrapper
+        <EmailTemplateEditor
           open={isEditMode && !!choosedEmail}
           isEmea={true}
           selectedEmailData={choosedEmail}
@@ -179,17 +169,15 @@ function EmailsTemplateTable({
           onClose={closeEditWindow}
           onPreview={openPreviewWindow}
           onSave={handleSave}
-          onChangeBannerText={() => console.log("e")}
-          onChangeEmailSubject={() => console.log("e")}
-          onChangeEmailTempleteType={() => console.log("e")}
+          isMonolitEmail={choosedEmail?.notification_type.includes("monolit")}
         />
       )}
 
       <DataGridPro
         columns={columns}
-        rows={data}
+        rows={!!data ? data : []}
         getRowId={(row) => row.notification_name}
-        loading={isTableDataLoaded}
+        loading={isLoading}
         onRowClick={handleRowClick}
         pagination
         pageSizeOptions={[10, 25, 50, 100]}
@@ -223,7 +211,6 @@ function EmailsTemplateTable({
           },
         }}
       />
-      <CircularProgressMUI isLoaded={isLoading} />
     </>
   );
 }

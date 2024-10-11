@@ -51,3 +51,8 @@
 .status-modal-window {
   position: fixed;
 }
+
+// part if text editor, need for interect with table
+.MuiTiptap-ControlledBubbleMenu-root.css-c60ki7-MuiPopper-root-ControlledBubbleMenu-root.MuiPopper-root {
+   z-index: 1000000;
+}

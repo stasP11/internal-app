@@ -45,6 +45,24 @@ function EmailPreviewWindowMonolit({
             />
           )}
           <Box mt={3}>
+
+            <RichTextReadOnly
+            content={emailBodyContent}
+            extensions={extensions}
+          />
+          <RichTextReadOnly
+            content={emailSignatureContent}
+            extensions={extensions}
+          />
+                {
+                  /*
+            <div dangerouslySetInnerHTML={{ __html: emailBodyContent }}
+                />
+                  <div
+            dangerouslySetInnerHTML={{ __html: emailSignatureContent }}
+                />
+
+
             <RichTextReadOnly
               content={emailBodyContent}
               extensions={extensions}
@@ -53,6 +71,8 @@ function EmailPreviewWindowMonolit({
               content={emailSignatureContent}
               extensions={extensions}
             />
+                  */
+                }
           </Box>
         </>
       </DialogContent>
@@ -192,6 +212,10 @@ function EmailPreviewWindow({
   footerFragment,
   type,
 }: any) {
+
+  console.log(emailSignatureContent, 'emailBodyContent test');
+
+
   return (
     <>
       {type && type.includes("monolit") ? (
