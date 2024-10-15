@@ -13,7 +13,9 @@ import {
 import "./ReportDetails.scss";
 import Button from "@mui/material/Button";
 import MultiSelectorSnackBar from "components/MultiSelectorSnackBar/MultiSelectorSnackBar";
-import MappingAlternativesCell from "components/ReportDetails/MappingAlternativesCell";
+import MappingAlternativesCell, {
+  AlternativesType,
+} from "components/MappingAlternatives/MappingAlternativesCell";
 import { findSameProducts } from "./services";
 
 type ReportStatusType =
@@ -24,23 +26,19 @@ type ReportStatusType =
   | "PROCESSING"
   | "SUCCESS";
 
-type AlternativitesType = {
-  material_number: number;
-  material_name: string;
-};
-
 type ReportDetailsData = {
-  alternatives: Array<AlternativitesType> | [];
+  alternatives: Array<AlternativesType> | [];
   id: number;
   matched: number | null;
   material_number: number;
   product_name: string;
   uom: string;
   volume: number;
+  smart_search: number | null;
 };
 
 type ProductDetailsData = {
-  alternatives: Array<AlternativitesType> | [];
+  alternatives: Array<AlternativesType> | [];
   id: number;
   matched: number | null;
   material_number: number;
@@ -52,7 +50,6 @@ type ProductDetailsData = {
 interface ReportDetailsProps {
   data: Array<ReportDetailsData>;
   country: string;
-  onUpdateTemporaryData: any;
   filename: any;
   fileStatus: any;
   onRejectReport: any;
@@ -85,7 +82,15 @@ const CustomToolbar = ({
       </Box>
 
       {fileStatus === "REVIEW" && (
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, ml: "auto" }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            ml: "auto",
+            padding: "18px 16px",
+          }}
+        >
           <Button
             variant="outlined"
             onClick={onRejectReport}
@@ -108,14 +113,12 @@ const CustomToolbar = ({
 
 const ReportDetails: React.FC<ReportDetailsProps> = ({
   data,
-  filename,
-  country,
-  onUpdateTemporaryData,
   fileStatus,
   onRejectReport,
   onApproveReport,
   isReportStatusUpdated,
   onAlternativeChoose,
+  country,
 }): JSX.Element => {
   const [isLoaded, setLoaded] = React.useState<boolean>(false);
   const [sameProductsData, setSameProductsData] = useState<SameProductsType[]>(
@@ -129,8 +132,14 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
     setNumbersOfSimilarCases(null);
   }
 
-  function handleAlternativeChoose(productData: any) {
-    onAlternativeChoose(productData);
+  function handleAlternativeChoose(
+    productData: any,
+    fromSmartSearch: boolean,
+    setRequestStatus: any
+  ) {
+
+    onAlternativeChoose(productData, fromSmartSearch, setRequestStatus);
+
     const { material_number, product_name, uom, id } = productData?.params;
     if (
       !sameProductsData.some(
@@ -173,7 +182,7 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
     }
   }
 
-  const columns: any = [
+  const columns: any[] = [
     {
       field: "#",
       headerName: "#",
@@ -183,14 +192,25 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
       flex: 0.1,
     },
     {
-      field: "material_number",
-      headerName: "Material number",
+      field: "initial_product_data",
+      headerName: "Material Number",
       flex: 0.5,
+      valueGetter: (params: any, row: any) => {
+        console.log(row, 'row')
+        // Access the nested property safely
+        const materialNumber = row?.initial_product_data?.material_number; 
+        // Check if it's "null" (string) and handle it
+        return materialNumber === "null" ? ' ' : materialNumber || ''; 
+      },
     },
     {
-      field: "product_name",
+      field: "initial_product_datas",
       headerName: "Item Name",
       flex: 1,
+      valueGetter: (params: any, row: any) => {
+        // Access the nested property safely
+        return row?.initial_product_data?.product_name || ''; // Default to empty string if undefined
+      },
     },
     {
       field: "uom",
@@ -207,12 +227,15 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
   const mappingColumn = {
     field: "alternatives",
     headerName: "Bayer Mapping",
-    renderCell: (params: any) => (
-      <MappingAlternativesCell
-        params={params?.row}
-        onAlternativeChoose={handleAlternativeChoose}
-      />
-    ),
+    renderCell: (params: any) => {
+      return (
+        <MappingAlternativesCell
+          params={params?.row}
+          onAlternativeChoose={handleAlternativeChoose}
+          country={country}
+        />
+      );
+    },
     flex: 1.5,
   };
 

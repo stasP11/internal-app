@@ -64,7 +64,7 @@ function Sidebar({
         </div>
       </div>
       {!isCountryOnboarding && userData?.isEMEA && (
-        <div className="sidebar__countries-selector">
+        <div className="sidebar__selector">
           <div>
             <FormControl variant="outlined" fullWidth>
               <InputLabel id="appSelectorLabel">Country</InputLabel>
@@ -77,7 +77,7 @@ function Sidebar({
                 sx={styles.select}
               >
                 {userProfile?.countries
-                  ? userProfile.countries.sort().map(
+                  ? userProfile.countries.map(
                       (country: string, index: number) => (
                         <MenuItem key={index} value={country}>
                           {country}
@@ -118,58 +118,7 @@ function Sidebar({
               )}
             </>
             <>
-              {isIncludePermission(pages, "distributors", "read") && (
-                <div
-                  className={`board-name
-          ${isActive("distributors") ? "--active-board" : "--inactive-board"}`}
-                >
-                  <img className="icon" src={iconDistributors} alt="icon" />
-                  <Link
-                    onClick={() => onPageChoose("distributors")}
-                    className="nav-link"
-                    to="/distributors"
-                  >
-                    Distributors
-                  </Link>
-                </div>
-              )}
-            </>
-            <>
-              {isIncludePermission(pages, "stewards", "read") && (
-                <div
-                  className={`board-name
-            ${isActive("stewards") ? "--active-board" : "--inactive-board"}`}
-                >
-                  <img className="icon" src={iconStewards} alt="icon" />
-                  <Link
-                    onClick={() => onPageChoose("stewards")}
-                    className="nav-link"
-                    to="/stewards"
-                  >
-                    Data Stewards
-                  </Link>
-                </div>
-              )}
-            </>
-            <>
-              {isIncludePermission(pages, "products", "read") && (
-                <div
-                  className={`board-name
-            ${isActive("products") ? "--active-board" : "--inactive-board"}`}
-                >
-                  <img className="icon" src={iconProducts} alt="icon" />
-                  <Link
-                    onClick={() => onPageChoose("products")}
-                    className="nav-link"
-                    to="/products"
-                  >
-                    Products
-                  </Link>
-                </div>
-              )}
-            </>
-            <>
-              {isIncludePermission(pages, "reports", "read") && (
+              {true && (
                 <div
                   className={`board-name
             ${
@@ -185,6 +134,23 @@ function Sidebar({
                     to="/reports"
                   >
                     <span>Reports</span>
+                  </Link>
+                </div>
+              )}
+            </>
+            <>
+              {isIncludePermission(pages, "distributors", "read") && (
+                <div
+                  className={`board-name
+          ${isActive("distributors") ? "--active-board" : "--inactive-board"}`}
+                >
+                  <img className="icon" src={iconDistributors} alt="icon" />
+                  <Link
+                    onClick={() => onPageChoose("distributors")}
+                    className="nav-link"
+                    to="/distributors"
+                  >
+                    Distributors
                   </Link>
                 </div>
               )}
@@ -219,6 +185,40 @@ function Sidebar({
                     to="/templates"
                   >
                     Templates
+                  </Link>
+                </div>
+              )}
+            </>
+            <>
+              {isIncludePermission(pages, "products", "read") && (
+                <div
+                  className={`board-name
+            ${isActive("products") ? "--active-board" : "--inactive-board"}`}
+                >
+                  <img className="icon" src={iconProducts} alt="icon" />
+                  <Link
+                    onClick={() => onPageChoose("products")}
+                    className="nav-link"
+                    to="/products"
+                  >
+                    Products
+                  </Link>
+                </div>
+              )}
+            </>
+            <>
+              {isIncludePermission(pages, "stewards", "read") && (
+                <div
+                  className={`board-name
+            ${isActive("stewards") ? "--active-board" : "--inactive-board"}`}
+                >
+                  <img className="icon" src={iconStewards} alt="icon" />
+                  <Link
+                    onClick={() => onPageChoose("stewards")}
+                    className="nav-link"
+                    to="/stewards"
+                  >
+                    Data Stewards
                   </Link>
                 </div>
               )}

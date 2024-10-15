@@ -12,10 +12,11 @@ import useFetchReportsData from "../../fetch/fetch-hooks/reports-hooks/useFetchR
 import useFetchReportContent from "../../fetch/fetch-hooks/reports-hooks/useFetchReportContent";
 import {
   aproveReport,
+  fetchDataForMappingChoice,
   rejectReport,
 } from "../../fetch/fetch-requests/reportsRequests";
 import { AlertsContext } from "contexts/AlertsContext";
-import { fetchDataForMappingChoice } from "../../fetch/fetch-requests/reportsRequests";
+import getInteger from "utils/getInteger";
 
 type ReportDataType = {
   data: Array<ReportDataObjType>;
@@ -65,6 +66,7 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
     data: reportContent,
     error,
     isLoading: isReportContentLoading,
+    mutate
   } = useFetchReportContent(filename, fileStatus, selectedCountry);
   // const country
   const [isApproveReportLoaded, setApproveReportLoaded] =
@@ -116,7 +118,8 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
 
   function handleUpdateTemporaryData(
     data: any,
-    statusUpdate: "success" | "error" | "loading"
+    statusUpdate: "success" | "error" | "loading",
+    isSmartSearchUpdate: boolean | undefined
   ) {
     const result: any = [];
     temporaryData.forEach((obj: any) => {
@@ -125,6 +128,15 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
           obj.matched = data?.matched_material_id;
           obj.product_name = data?.product_name;
           obj.statusUpdate = "success";
+          if (isSmartSearchUpdate) {
+            obj.smart_search = [
+              {
+                material_name: data?.name,
+                material_number: data.matched_material_id,
+              },
+            ];
+            obj.matched = data.matched_material_id;
+          }
         }
         if (statusUpdate === "error") {
           obj.statusUpdate = "error";
@@ -136,37 +148,59 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
       result.push(obj);
     });
 
+    console.log(result, "final result");
     setTemporaryData(result);
   }
 
+
+
   useEffect(() => {
-    if (reportContent) {
-      const reportTemporaryData: any = [];
-      reportContent.forEach((element: any) => {
-        if (
-          element?.matched &&
-          element?.alternatives.length > 0 &&
-          element?.statusUpdate !== "loading"
-        ) {
-          reportTemporaryData.push({ ...element, statusUpdate: "success" });
-        } else {
-          reportTemporaryData.push({ ...element, statusUpdate: null });
-        }
-      });
-      setTemporaryData(reportTemporaryData);
-    } else {
+    if (!reportContent) {
       setTemporaryData([]);
+      return;
     }
+
+    const getStatusUpdate = (element: any) => {
+      const { matched, alternatives, smart_search } = element;
+      if (
+        matched &&
+        alternatives?.length > 0 &&
+        element.statusUpdate !== "loading"
+      ) {
+        return "success";
+      }
+      if (
+        alternatives?.length === 0 &&
+        smart_search?.length > 0 &&
+        getInteger(matched) === getInteger(smart_search[0].material_number)
+      ) {
+        return "success";
+      }
+      return null;
+    };
+
+    const reportTemporaryData = reportContent.map((element: any) => ({
+      ...element,
+      statusUpdate: getStatusUpdate(element),
+    }));
+
+    setTemporaryData(reportTemporaryData);
   }, [reportContent]);
 
   // save data
-  async function handleAlternativeChoose(result: any) {
-    console.log(result, "result-11");
+  async function handleAlternativeChoose(
+    result: any,
+    fromSmartSearch: boolean,
+    setRequestStatus: any
+  ) {
+
+    console.log(result, 'test result');
     const data = {
       id: result.params.id,
       matched_material_id: result?.value,
       country: country,
-      product_name: result.params.product_name,
+      product_name: result.name,
+      from_smart_search: +fromSmartSearch,
     };
 
     const requestBody: any = {
@@ -174,13 +208,26 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
       data: [data],
     };
 
-    handleUpdateTemporaryData(data, "loading");
+    handleUpdateTemporaryData(data, "loading", fromSmartSearch);
+    setRequestStatus("loading");
     const responce = await fetchDataForMappingChoice(requestBody);
-
     if (responce?.ok) {
-      handleUpdateTemporaryData(data, "success");
+      setRequestStatus("success");
+      fromSmartSearch
+        ? handleUpdateTemporaryData(
+            {
+              ...data,
+              name:
+              result.name,
+            },
+            "success",
+            fromSmartSearch
+          )
+        : handleUpdateTemporaryData(data, "success", fromSmartSearch);
+        mutate();
     } else {
-      handleUpdateTemporaryData(data, "error");
+      handleUpdateTemporaryData(data, "error", fromSmartSearch);
+      setRequestStatus("error");
     }
   }
 
@@ -189,7 +236,6 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
       <div className="report-content-page">
         {reportContent && temporaryData && (
           <ReportDetails
-            onUpdateTemporaryData={handleUpdateTemporaryData}
             data={temporaryData}
             filename={filename}
             country={country}

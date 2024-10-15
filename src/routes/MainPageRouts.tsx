@@ -23,7 +23,7 @@ function MainPageRouts({ userProfile }: any) {
           path="/reports"
           element={
             <Suspense fallback={<div>Loaded</div>}>
-              {isIncludePermission(pages, "reports", "read") ? (
+              {true ? (
                 <ReportsListPage />
               ) : (
                 <span>
@@ -38,7 +38,7 @@ function MainPageRouts({ userProfile }: any) {
         <Route
           path="/report/*"
           element={
-            isIncludePermission(pages, "reports", "read") ? (
+            true ? (
               <ReportDetailsPage />
             ) : (
               <span>

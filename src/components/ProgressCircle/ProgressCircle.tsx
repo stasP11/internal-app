@@ -59,12 +59,14 @@ const ProgressCircle: React.FC = () => {
 
   return (
     <div className="progress-container">
+      <div className="progress">
       <canvas ref={canvasRef} width={200} height={200} />
       <img
         className="progress-label"
         src={LogoIcon}
         alt="Logo"
       />
+    </div>
     </div>
   );
 };
