@@ -1,7 +1,6 @@
 import { GridColDef, GridRowSelectionModel } from "@mui/x-data-grid";
 import { ChangeEvent, useState } from "react";
 import DatagridTableToolbar from "components/datagrid-table-toolbar/DatagridTableToolbar";
-import MenuList from "./components/MenuList";
 import { Box, Button, IconButton } from "@mui/material";
 import { DataGridPro } from "@mui/x-data-grid-pro";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
@@ -18,6 +17,7 @@ import EditDataStewardDialog from "./components/EditDataStewardDialog";
 import useDialogControls from "hooks/useDialogControls";
 import { createObjectForRequestBody } from "utils/createObjectForRequestBody";
 import useDataStewardsApi from "./useDataStewardsApi";
+import MenuList from "components/MenuList/MenuList";
 
 function DataStewardsTable({
   dataStewards,
@@ -375,6 +375,7 @@ function DataStewardsTable({
             onClose={editStewardDialog.closeDialog}
             onSave={handleEditDataSteward}
             steward={stewardToEdit}
+            dataStewards={dataStewards}
           />
         )}
         {addStewardDialog.isOpen && (
@@ -382,6 +383,7 @@ function DataStewardsTable({
             open={addStewardDialog.isOpen}
             onClose={addStewardDialog.closeDialog}
             onSave={handleSaveNewSteward}
+            dataStewards={dataStewards}
           />
         )}
       </Box>

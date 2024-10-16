@@ -17,53 +17,13 @@ import MappingAlternativesCell, {
   AlternativesType,
 } from "components/MappingAlternatives/MappingAlternativesCell";
 import { findSameProducts } from "./services";
-
-type ReportStatusType =
-  | "MISSING"
-  | "REWORK"
-  | "APPROVED"
-  | "REVIEW"
-  | "PROCESSING"
-  | "SUCCESS";
-
-type ReportDetailsData = {
-  alternatives: Array<AlternativesType> | [];
-  id: number;
-  matched: number | null;
-  material_number: number;
-  product_name: string;
-  uom: string;
-  volume: number;
-  smart_search: number | null;
-};
-
-type ProductDetailsData = {
-  alternatives: Array<AlternativesType> | [];
-  id: number;
-  matched: number | null;
-  material_number: number;
-  product_name: string;
-  uom: string;
-  volume: number;
-};
-
-interface ReportDetailsProps {
-  data: Array<ReportDetailsData>;
-  country: string;
-  filename: any;
-  fileStatus: any;
-  onRejectReport: any;
-  onApproveReport: any;
-  onAlternativeChoose: any;
-  isReportStatusUpdated: boolean;
-}
-
-type SameProductsType = {
-  isOpenForUse: boolean;
-  material_number: number;
-  matchedMaterialNumber: number;
-  products: any[];
-};
+import {
+  ReportStatusType,
+  ReportDetailsData,
+  ProductDetailsData,
+  ReportDetailsProps,
+  SameProductsType,
+} from "types/reportDetailsTypes";
 
 const CustomToolbar = ({
   onApproveReport,
@@ -78,7 +38,7 @@ const CustomToolbar = ({
         <GridToolbarColumnsButton />
         <GridToolbarFilterButton />
         <GridToolbarDensitySelector />
-        <GridToolbarExport />
+        <GridToolbarExport printOptions={{ disableToolbarButton: true }} />
       </Box>
 
       {fileStatus === "REVIEW" && (
@@ -137,7 +97,6 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
     fromSmartSearch: boolean,
     setRequestStatus: any
   ) {
-
     onAlternativeChoose(productData, fromSmartSearch, setRequestStatus);
 
     const { material_number, product_name, uom, id } = productData?.params;
@@ -182,7 +141,7 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
     }
   }
 
-  const columns: any[] = [
+  const columnsForDataMappingReport: any[] = [
     {
       field: "#",
       headerName: "#",
@@ -196,11 +155,11 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
       headerName: "Material Number",
       flex: 0.5,
       valueGetter: (params: any, row: any) => {
-        console.log(row, 'row')
+        console.log(row, "row");
         // Access the nested property safely
-        const materialNumber = row?.initial_product_data?.material_number; 
+        const materialNumber = row?.initial_product_data?.material_number;
         // Check if it's "null" (string) and handle it
-        return materialNumber === "null" ? ' ' : materialNumber || ''; 
+        return materialNumber === "null" ? " " : materialNumber || "";
       },
     },
     {
@@ -209,8 +168,53 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
       flex: 1,
       valueGetter: (params: any, row: any) => {
         // Access the nested property safely
-        return row?.initial_product_data?.product_name || ''; // Default to empty string if undefined
+        return row?.initial_product_data?.product_name || ""; // Default to empty string if undefined
       },
+    },
+    {
+      field: "uom",
+      headerName: "UOM",
+      flex: 0.3,
+    },
+    {
+      field: "volume",
+      headerName: "Volume",
+      flex: 0.3,
+    },
+    {
+      field: "alternatives",
+      headerName: "Bayer Mapping",
+      renderCell: (params: any) => {
+        return (
+          <MappingAlternativesCell
+            params={params?.row}
+            onAlternativeChoose={handleAlternativeChoose}
+            country={country}
+          />
+        );
+      },
+      flex: 1.5,
+    },
+  ];
+
+  const columnsForReport: any[] = [
+    {
+      field: "#",
+      headerName: "#",
+      filterable: false,
+      renderCell: (params: GridRenderCellParams) =>
+        params.api.getAllRowIds().indexOf(params.id) + 1,
+      flex: 0.1,
+    },
+    {
+      field: "material_number",
+      headerName: "Material Number",
+      flex: 0.5,
+    },
+    {
+      field: "product_name",
+      headerName: "Item Name",
+      flex: 1,
     },
     {
       field: "uom",
@@ -224,25 +228,10 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
     },
   ];
 
-  const mappingColumn = {
-    field: "alternatives",
-    headerName: "Bayer Mapping",
-    renderCell: (params: any) => {
-      return (
-        <MappingAlternativesCell
-          params={params?.row}
-          onAlternativeChoose={handleAlternativeChoose}
-          country={country}
-        />
-      );
-    },
-    flex: 1.5,
-  };
-
   const suitableColums = (fileStatus: ReportStatusType) => {
     if (fileStatus === "REVIEW") {
-      return [...columns, mappingColumn];
-    } else return columns;
+      return [...columnsForDataMappingReport];
+    } else return [...columnsForReport];
   };
 
   const disableApproveReportButton = (data: Array<ReportDetailsData>) => {

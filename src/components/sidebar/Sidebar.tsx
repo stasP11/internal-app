@@ -20,6 +20,7 @@ import { Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 import isIncludePermission from "../../utils/isIncludePermission";
 import { Divider } from "@mui/material";
 import CountryOnboardingStepper from "components/CountryOnboardingStepper/CountryOnboardingStepper";
+import { useDistributorToShow } from "contexts/DistributorDetailsContext";
 
 const styles = {
   select: {
@@ -43,6 +44,8 @@ function Sidebar({
   const currentCountry = getFromLocalStorage("selectedCountry");
   const userData: any = useContext(UserDataContext);
   const { pages, isEMEA } = useContext(UserDataContext);
+
+  const { setDistributorToShowId } = useDistributorToShow();
 
   function chooseCountry(country: string) {
     saveToLocalStorage("selectedCountry", country);
@@ -146,7 +149,10 @@ function Sidebar({
                 >
                   <img className="icon" src={iconDistributors} alt="icon" />
                   <Link
-                    onClick={() => onPageChoose("distributors")}
+                    onClick={() => {
+                      setDistributorToShowId(null);
+                      onPageChoose("distributors");
+                    }}
                     className="nav-link"
                     to="/distributors"
                   >

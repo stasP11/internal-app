@@ -4,15 +4,14 @@ import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { ProductActiveStatus } from "pages/products-page/ProductsPage";
 import MenuList from "components/MenuList/MenuList";
 
-interface ProductsDatagridToolbarProps {
+interface DistributorsDatagridToolbarProps {
   selectionModel: GridRowSelectionModel;
   onUpdate: (newStatus: ProductActiveStatus) => void;
 }
 
-const ProductsDatagridToolbar: React.FC<ProductsDatagridToolbarProps> = ({
-  selectionModel,
-  onUpdate,
-}) => {
+const DistributorsDatagridToolbar: React.FC<
+  DistributorsDatagridToolbarProps
+> = ({ selectionModel, onUpdate }) => {
   const options = [
     { value: "active", label: "Active" },
     { value: "onHold", label: "On Hold" },
@@ -32,4 +31,4 @@ const ProductsDatagridToolbar: React.FC<ProductsDatagridToolbarProps> = ({
   );
 };
 
-export default ProductsDatagridToolbar;
+export default DistributorsDatagridToolbar;

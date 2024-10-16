@@ -18,17 +18,18 @@ function useFetchReportContent(
   const getRequestType = (status: string) => {
     if (status === "REVIEW") {
       return fileContentWithAlternatives;
-    } else {
+    } else if (status === "SUCCESS" || status === "APPROVED" ) {
       return fileContent;
     }
   };
+
   return useSWR(
     [
       authResult,
       "GET",
-      `${process.env.REACT_APP_API_PYTHON_API}/${getRequestType(
+      !!getRequestType(status)? `${process.env.REACT_APP_API_PYTHON_API}/${getRequestType(
         status
-      )}?filename=${filename}.csv&country=${country}`,
+      )}?filename=${filename}.csv&country=${country}` : null,
     ],
     fetchData,
     {

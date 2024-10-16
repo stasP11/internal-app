@@ -3,15 +3,16 @@ import {
   DataGridPro,
   GridColDef,
   GridRenderCellParams,
+  GridRowSelectionModel,
 } from "@mui/x-data-grid-pro";
 import ExpandableCell from "./components/ExpandableCell";
 import { DistributorRowData, DistributorsTableProps } from "./types";
-import DatagridTableToolbar from "../datagrid-table-toolbar/DatagridTableToolbar";
 import { Box } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { AlertsContext } from "contexts/AlertsContext";
 import useDistributorsHandlers from "./hooks/useDistributorsHandlers";
 import ActiveSwitch from "components/ActiveSwitch/ActiveSwitch";
+import DistributorsDatagridToolbar from "./components/DistributorsDatagridToolbar";
 
 export default function DistributorsTable({
   rowData,
@@ -19,18 +20,24 @@ export default function DistributorsTable({
   country,
   handleRowClick,
 }: DistributorsTableProps) {
+  const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>(
+    []
+  );
   const [updatedDistributors, setUpdatedDistributors] =
     useState<DistributorRowData[]>(rowData);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { setNewAlert } = useContext(AlertsContext);
-  const { handleActiveChange } = useDistributorsHandlers({
-    authResult,
-    updatedDistributors,
-    setUpdatedDistributors,
-    setIsLoading,
-    setNewAlert,
-    country,
-  });
+  const { handleActiveChange, handleBulkStatusUpdate } =
+    useDistributorsHandlers({
+      authResult,
+      updatedDistributors,
+      setUpdatedDistributors,
+      setIsLoading,
+      setNewAlert,
+      country,
+      selectionModel,
+      setSelectionModel,
+    });
 
   useEffect(() => {
     setUpdatedDistributors(rowData);
@@ -127,13 +134,23 @@ export default function DistributorsTable({
       <DataGridPro
         sx={distributorsTableStyles}
         loading={isLoading}
+        checkboxSelection
         disableRowSelectionOnClick
+        onRowSelectionModelChange={(newSelectionModel) =>
+          setSelectionModel(newSelectionModel)
+        }
         onRowClick={(e) => handleRowClick(e.row.distributorId)}
+        rowSelectionModel={selectionModel}
         columns={columns}
         rows={updatedDistributors}
         rowHeight={rowHeight}
         slots={{
-          toolbar: DatagridTableToolbar,
+          toolbar: () => (
+            <DistributorsDatagridToolbar
+              selectionModel={selectionModel}
+              onUpdate={handleBulkStatusUpdate}
+            />
+          ),
           exportIcon: ArrowUpwardIcon,
         }}
         getRowId={(row) => row.distributorId}

@@ -17,6 +17,7 @@ import {
 } from "../../fetch/fetch-requests/reportsRequests";
 import { AlertsContext } from "contexts/AlertsContext";
 import getInteger from "utils/getInteger";
+import { useNavigate } from "react-router-dom";
 
 type ReportDataType = {
   data: Array<ReportDataObjType>;
@@ -50,6 +51,7 @@ type ProductData = {
 };
 
 const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
+  const navigate = useNavigate();
   const selectedCountry = getFromLocalStorage("selectedCountry");
   const { setPageInfo } = useContext(PageInfoContext);
   const [searchParams] = useSearchParams();
@@ -61,6 +63,7 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
     error: reportsError,
     isLoading: isLoadingReportsData,
   } = useFetchReportsData(country);
+
   const [fileStatus, setFileStatus] = useState<ReportStatus>();
   const {
     data: reportContent,
@@ -68,7 +71,7 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
     isLoading: isReportContentLoading,
     mutate
   } = useFetchReportContent(filename, fileStatus, selectedCountry);
-  // const country
+
   const [isApproveReportLoaded, setApproveReportLoaded] =
     React.useState<boolean>(false);
   const { setNewAlert } = useContext(AlertsContext);
@@ -79,20 +82,23 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
     if (responceResult?.ok) {
       setApproveReportLoaded(false);
       setNewAlert({ alertType: "success", text: message });
+      setTimeout(() => {
+        navigate("/reports");
+      }, 3500);
     } else {
       setApproveReportLoaded(false);
       setNewAlert({ alertType: "error", text: message });
     }
   };
 
-  function handleApproveReport() {
+  async function handleApproveReport() {
     setApproveReportLoaded(true);
-    aproveReport(filename, handleFetchResult);
+    await aproveReport(filename, handleFetchResult);
   }
 
-  function handleRejectReport() {
+  async function handleRejectReport() {
     setApproveReportLoaded(true);
-    rejectReport(filename, handleFetchResult);
+    await rejectReport(filename, handleFetchResult);
   }
 
   useEffect(() => {
@@ -193,8 +199,6 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
     fromSmartSearch: boolean,
     setRequestStatus: any
   ) {
-
-    console.log(result, 'test result');
     const data = {
       id: result.params.id,
       matched_material_id: result?.value,

@@ -12,6 +12,7 @@ import {
 import { PageInfoContext } from "../../contexts/PageInfoContext";
 import DistributorDetailsPage from "pages/distributor-details-page/DistributorDetailsPage";
 import { getUniqueEmails } from "utils/getUniqueEmails";
+import { useDistributorToShow } from "contexts/DistributorDetailsContext";
 
 function getDistributorsRowData(
   data: DistributorDetailsType[]
@@ -24,13 +25,15 @@ function getDistributorsRowData(
     phone: distributor.phone,
     injectionChannels: distributor.injection_channels,
     active: distributor.active,
+    distributorType: distributor.distributor_type,
+    countryCode: distributor.country_code,
   }));
 }
 
 export default function DistributorsPage() {
-  const [distributorToShowId, setDistributorToShowId] = useState<number | null>(
-    null
-  );
+  const { distributorToShowId, setDistributorToShowId } =
+    useDistributorToShow();
+
   const { setPageInfo } = useContext(PageInfoContext);
   const { error: authError, result: authResult }: any = useFetchWithMsal2({
     scopes: protectedResources.apiTodoList.scopes.read,

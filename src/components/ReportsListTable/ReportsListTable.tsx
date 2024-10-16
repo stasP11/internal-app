@@ -28,25 +28,24 @@ import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import CircularProgress from "@mui/material/CircularProgress";
 import { AlertsContext } from "contexts/AlertsContext";
 
-
-import { aproveReport, rejectReport} from "../../fetch/fetch-requests/reportsRequests"
-
+import {
+  aproveReport,
+  rejectReport,
+} from "../../fetch/fetch-requests/reportsRequests";
 
 function ReportsListTableToolbar() {
   return (
     <GridToolbarContainer sx={{ minHeight: "38px" }}>
       <GridToolbarColumnsButton />
       <GridToolbarFilterButton />
-      {
-      /*
+      {/*
       <CustomButton
         IconComponent={ViewHeadlineOutlined}
         buttonText="View"
         handleClick={() => console.log("View button clicked")}
       />
-      */
-      }
-      <GridToolbarExport />
+      */}
+      <GridToolbarExport printOptions={{ disableToolbarButton: true }} />
       {/* <CustomButton
         IconComponent={MailOutlineIcon}
         buttonText="Share"
@@ -104,21 +103,21 @@ const DistributorCell: React.FC<any> = ({ params }) => {
 
 const ActionsCell: React.FC<any> = ({ params, onSelect }) => {
   const { setNewAlert } = useContext(AlertsContext);
-  const fullUrl = window.location.href; 
+  const fullUrl = window.location.href;
   const baseUrl = getBaseUrl(fullUrl);
-  const [ isLoaded, setIsLoaded] = useState<boolean>(false);
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
-  const handleFetchResult = (responceResult: any, message: string) =>{
-    if(responceResult?.ok){
+  const handleFetchResult = (responceResult: any, message: string) => {
+    if (responceResult?.ok) {
       setIsLoaded(false);
-      setNewAlert({ alertType: 'success', text: message});
-     } else {
+      setNewAlert({ alertType: "success", text: message });
+    } else {
       setIsLoaded(false);
-      setNewAlert({ alertType: 'error', text: message});
-     }
-  }
+      setNewAlert({ alertType: "error", text: message });
+    }
+  };
 
-  const handleClick = (SelectedActionParams: SelectedActionParams)=> {
+  const handleClick = (SelectedActionParams: SelectedActionParams) => {
     const { selectedAction, params } = SelectedActionParams;
     const { filename, distributor_id, country } = params;
 
@@ -137,8 +136,8 @@ const ActionsCell: React.FC<any> = ({ params, onSelect }) => {
       setIsLoaded(true);
       rejectReport(params?.filename, handleFetchResult);
     }
-  }
-   
+  };
+
   const isOpen = (status: string) => {
     if (status === "REVIEW") {
       return true;
@@ -146,14 +145,18 @@ const ActionsCell: React.FC<any> = ({ params, onSelect }) => {
   };
 
   return (
-    <div onClick={(e)=> e.stopPropagation()}>
-     <div className={isOpen(params?.row?.status) ? "actions-open" : "actions-hided"}>
-      {
-        isLoaded? (<CircularProgress
-        size={20}
-        />): <TableMenuPopup onSelect={handleClick} params={params} />
-      }
-    </div>
+    <div onClick={(e) => e.stopPropagation()}>
+      <div
+        className={
+          isOpen(params?.row?.status) ? "actions-open" : "actions-hided"
+        }
+      >
+        {isLoaded ? (
+          <CircularProgress size={20} />
+        ) : (
+          <TableMenuPopup onSelect={handleClick} params={params} />
+        )}
+      </div>
     </div>
   );
 };
@@ -176,7 +179,7 @@ const ReportsListTable: React.FC<ReportsListTableProps> = ({
     const { selectedAction, params } = SelectedActionParams;
     const { filename, distributor_id, country } = params;
 
-    console.log(SelectedActionParams, params, 'test-001')
+    console.log(SelectedActionParams, params, "test-001");
 
     if (selectedAction === "view") {
       console.log(params, "important-01");
@@ -254,11 +257,11 @@ const ReportsListTable: React.FC<ReportsListTableProps> = ({
       field: "reporting_period",
       headerName: "Reporting Period",
       filterable: false,
-//      type: "date",
+      //      type: "date",
       valueGetter: (value: any) => {
         if (value) {
-          const [month, year] = value.split('_');
-          return (`${month}/${year}`); 
+          const [month, year] = value.split("_");
+          return `${month}/${year}`;
         }
         return null;
       },
@@ -280,7 +283,7 @@ const ReportsListTable: React.FC<ReportsListTableProps> = ({
       <DataGridPro
         onRowClick={onRowClick}
         sx={{
-          background: 'white',
+          background: "white",
           fontFamily: "Helvetica Neue",
           color: "#10384F",
           "& .MuiDataGrid-columnHeader, .MuiDataGrid-scrollbarFiller": {
@@ -292,7 +295,7 @@ const ReportsListTable: React.FC<ReportsListTableProps> = ({
         rows={reportsListData}
         pagination
         initialState={{
-          pagination: { paginationModel: { pageSize: 15 }},
+          pagination: { paginationModel: { pageSize: 15 } },
         }}
         pageSizeOptions={[15, 25, 50, 75, 100]}
         slots={{

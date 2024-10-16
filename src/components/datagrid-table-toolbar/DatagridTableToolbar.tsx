@@ -21,7 +21,7 @@ export default function DatagridTableToolbar({
     >
       <GridToolbarColumnsButton />
       <GridToolbarFilterButton />
-      <GridToolbarExport />
+      <GridToolbarExport printOptions={{ disableToolbarButton: true }} />
       {/* <CustomButton
         IconComponent={MailOutlineIcon}
         buttonText="Share"

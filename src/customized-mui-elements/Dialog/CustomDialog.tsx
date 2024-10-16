@@ -14,6 +14,7 @@ interface CustomDialogProps {
   children?: React.ReactNode;
   contentText?: string;
   onClose: () => void;
+  isFormInvalid?: boolean;
 }
 type Action = { text: string; handler: any };
 
@@ -24,6 +25,7 @@ function CustomDialog({
   contentText,
   onClose,
   children,
+  isFormInvalid,
 }: CustomDialogProps) {
   return (
     <Dialog onClose={onClose} fullWidth maxWidth="sm" open={opened}>
@@ -53,6 +55,7 @@ function CustomDialog({
             color={idx === 1 ? "primary" : "inherit"}
             size="medium"
             onClick={action.handler}
+            disabled={action.text === "Save" ? isFormInvalid : false}
           >
             {action.text}
           </Button>

@@ -13,6 +13,8 @@ export type DistributorRowData = {
   phone: string;
   injectionChannels: string;
   active: DistributorActiveStatus;
+  countryCode: string;
+  distributorType: string;
 };
 
 export type DistributorDetailsType = {
@@ -23,7 +25,8 @@ export type DistributorDetailsType = {
   injection_channels: string;
   country: string;
   emails: string[];
-  country_code?: string;
+  country_code: string;
+  distributor_type: string;
 };
 
 export type DistributorWithPhoneArray = {
@@ -34,7 +37,8 @@ export type DistributorWithPhoneArray = {
   injection_channels: string;
   country: string;
   emails: string[];
-  country_code?: string;
+  country_code: string;
+  distributor_type: string;
 };
 
 export type DistributorActiveStatus = 1 | 0;

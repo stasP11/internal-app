@@ -1,31 +1,7 @@
-import React from "react";
-import { ChangeEvent, useState, useEffect, useRef } from "react";
-import { getFromLocalStorage } from "../../services/storageInterection";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-
-import {
-  DataGridPro,
-  GridToolbarContainer,
-  GridToolbarColumnsButton,
-  GridToolbarFilterButton,
-  GridToolbarExport,
-  GridRenderCellParams,
-  GridRowOrderChangeParams,
-} from "@mui/x-data-grid-pro";
-import { useDemoData } from "@mui/x-data-grid-generator";
-
-import ToggleActiveSwitch from "components/ToggleActiveSwitch/ToggleActiveSwitch";
-
+import { useState, useEffect, useRef } from "react";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import useFetchReportTemplateData from "../../fetch/fetch-hooks/template-hooks/useFetchReportTemplateData";
-
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
 
 import {
   Dialog,
@@ -35,14 +11,14 @@ import {
   FormControlLabel,
   Switch,
   Button,
-  Typography,
-  Popover,
   Box,
+  InputAdornment,
+  Tooltip,
+  tooltipClasses,
+  TooltipProps,
 } from "@mui/material";
-import { CountertopsOutlined } from "@mui/icons-material";
-import generateRandomId from "../../utils/genereteRandomId.js";
-import PriviewModal from "components/TemplatePriviewModal/TemplatePriviewModal";
-import Divider from '@mui/material/Divider';
+import Divider from "@mui/material/Divider";
+import styled from "@emotion/styled";
 
 function EditModal({ open, onClose, onSave, data }: any) {
   const {
@@ -74,6 +50,70 @@ function EditModal({ open, onClose, onSave, data }: any) {
     setDataType(dataType);
   }, []);
 
+  const LightTooltip = styled(({ className, ...props }: TooltipProps) => (
+    <Tooltip {...props} classes={{ popper: className }} />
+  ))(() => ({
+    [`& .${tooltipClasses.tooltip}`]: {
+      backgroundColor: "white",
+      color: "rgba(0, 0, 0, 0.87)",
+      boxShadow: `0px 3px 5px -1px #00000033, 
+                0px 6px 10px 0px #00000024, 
+                0px 1px 18px 0px #0000001F`,
+      minWidth: "400px",
+    },
+    [`& .${tooltipClasses.arrow}`]: {
+      color: "white",
+    },
+  }));
+
+  const tooltipContentStyles = {
+    "& div": {
+      marginBottom: "8px",
+      display: "flex",
+      flexDirection: "column",
+      fontFamily: "Helvetica Neue",
+      color: "#10384F",
+      "& p": {
+        fontSize: "10px",
+        margin: 0,
+        lineHeight: "14px",
+        fontWeight: 500,
+      },
+      "& p:first-child": {
+        fontSize: "12px",
+        lineHeight: "20px",
+        fontWeight: 400,
+      },
+    },
+  };
+
+  const TooltipContent = () => {
+    return (
+      <Box sx={tooltipContentStyles}>
+        <div>
+          <p>Number Data Type</p>
+          <p>Numeric values without decimal points, e.g. 375</p>
+        </div>
+        <div>
+          <p>Decimal Data Type</p>
+          <p>Numeric values with decimal points, e.g. 3.75</p>
+        </div>
+        <div>
+          <p>Date Data Type</p>
+          <p>Calendar dates in dd/mm/yyyy format, e.g. 13/01/2024</p>
+        </div>
+        <div>
+          <p>Text Data Type</p>
+          <p>
+            Alphanumeric characters, including letters, numbers, and symbols,
+            e.g. for Field 'Invoice Number' the value can be
+            UA-24-17-030/0001-21​33
+          </p>
+        </div>
+      </Box>
+    );
+  };
+
   return (
     <Dialog
       open={open}
@@ -81,13 +121,22 @@ function EditModal({ open, onClose, onSave, data }: any) {
       sx={{ "& .MuiDialog-paper": { width: 445 } }}
     >
       <DialogTitle>Edit</DialogTitle>
-      <Divider/>
+      <Divider />
       <DialogContent>
         <Box
           display="flex"
           flexDirection="column"
           gap={2}
-          sx={{ padding: "10px" }}
+          sx={{
+            padding: "10px",
+            "& .MuiInputBase-input, & .MuiButton-outlined": {
+              fontFamily: "Helvetica Neue",
+              color: "#10384F",
+            },
+            "& .MuiButton-outlined": {
+              borderColor: "rgba(0, 0, 0, 0.42)",
+            },
+          }}
         >
           <TextField
             label="Field Name in Local Language"
@@ -110,6 +159,17 @@ function EditModal({ open, onClose, onSave, data }: any) {
             defaultValue={dataType}
             select
             onChange={(e: any) => setDataType(e.target.value)}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment sx={{ marginRight: "8px" }} position="end">
+                  <LightTooltip title={<TooltipContent />} arrow>
+                    <IconButton>
+                      <InfoOutlinedIcon />
+                    </IconButton>
+                  </LightTooltip>
+                </InputAdornment>
+              ),
+            }}
           >
             {["Number", "Text", "Decimal"].map((option: string) => (
               <MenuItem key={option} value={option}>
@@ -118,7 +178,7 @@ function EditModal({ open, onClose, onSave, data }: any) {
             ))}
           </TextField>
           {!!(dataTypeState === "Number" || dataTypeState === "Decimal") && (
-            <>
+            <Box sx={{ display: "flex", gap: "16px" }}>
               <TextField
                 label="Min Value"
                 variant="outlined"
@@ -133,7 +193,7 @@ function EditModal({ open, onClose, onSave, data }: any) {
                 onChange={(e: any) => (maxValueRef.current = e.target.value)}
                 defaultValue={maxValue}
               />
-            </>
+            </Box>
           )}
           <FormControlLabel
             onChange={(e: any) => {
@@ -145,13 +205,28 @@ function EditModal({ open, onClose, onSave, data }: any) {
           />
         </Box>
       </DialogContent>
-      <Divider/>
-      <Box display="flex" justifyContent="flex-end" p={2}>
-        <Button onClick={onClose}>Cancel</Button>
+      <Divider />
+      <Box
+        fontFamily={"Helvetica Neue"}
+        display="flex"
+        justifyContent="flex-end"
+        p={2}
+      >
+        <Button
+          sx={{
+            borderColor: "rgba(0, 0, 0, 0.42)",
+            color: "#10384F",
+            fontFamily: "inherit",
+          }}
+          variant="outlined"
+          onClick={onClose}
+        >
+          Cancel
+        </Button>
         <Button
           variant="contained"
           color="primary"
-          sx={{ ml: 2 }}
+          sx={{ ml: 2, fontFamily: "inherit" }}
           onClick={() =>
             onSave({
               name: nameRef.current,

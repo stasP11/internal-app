@@ -5,6 +5,8 @@ interface UserControlsProps {
   handleEdit: () => void;
   handleCancel: () => void;
   handleSave: () => void;
+  hasInvalidEmail: boolean;
+  hasInvalidPhone: boolean;
 }
 
 function UserControls({
@@ -12,6 +14,8 @@ function UserControls({
   handleEdit,
   handleCancel,
   handleSave,
+  hasInvalidEmail,
+  hasInvalidPhone,
 }: UserControlsProps) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -50,6 +54,7 @@ function UserControls({
             variant="contained"
             color="primary"
             size="small"
+            disabled={hasInvalidEmail || hasInvalidPhone}
           >
             Save
           </Button>

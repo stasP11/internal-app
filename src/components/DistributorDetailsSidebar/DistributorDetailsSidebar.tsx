@@ -11,6 +11,8 @@ import fetchData from "utils/fetchData";
 import { AlertsContext } from "contexts/AlertsContext";
 import useDistributorsDetails from "hooks/swr-hooks/useDistributorsDetails";
 import { getFromLocalStorage } from "services/storageInterection";
+import { isValidEmail } from "utils/isValidEmail";
+import { isValidPhoneNumber } from "utils/isValidPhoneNumber";
 
 interface DistributorDetailsSidebarProps {
   distributor: DistributorWithPhoneArray;
@@ -28,6 +30,14 @@ function DistributorDetailsSidebar({
   const { setNewAlert } = useContext(AlertsContext);
   const country = getFromLocalStorage("selectedCountry");
   const { mutate } = useDistributorsDetails(authResult, country);
+
+  const hasInvalidEmail = editedDistributor.emails.some(
+    (email) => !isValidEmail(email)
+  );
+
+  const hasInvalidPhone = editedDistributor.phone.some(
+    (phone) => !isValidPhoneNumber(phone)
+  );
 
   const handleEdit = () => {
     setEditMode(true);
@@ -141,6 +151,8 @@ function DistributorDetailsSidebar({
           handleCancel={handleCancel}
           handleEdit={handleEdit}
           handleSave={handleSave}
+          hasInvalidEmail={hasInvalidEmail}
+          hasInvalidPhone={hasInvalidPhone}
         />
       </Box>
 

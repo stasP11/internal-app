@@ -10,6 +10,7 @@ import { DeleteOutline } from "@mui/icons-material";
 import { isValidEmail } from "utils/isValidEmail";
 import DeleteItemDialog from "components/DeleteItemDialog/DeleteItemDialog";
 import { useState } from "react";
+import { isValidPhoneNumber } from "utils/isValidPhoneNumber";
 
 interface RemovableListInputProps {
   items: string[];
@@ -60,11 +61,17 @@ function RemovableListInput({
           >
             <TextField
               required
-              type={isEmailField ? "email" : undefined}
-              error={isEmailField && !isValidEmail(item) && item !== ""}
+              type={isEmailField ? "email" : "tel"}
+              error={
+                ((isEmailField && !isValidEmail(item)) ||
+                  (!isEmailField && !isValidPhoneNumber(item))) &&
+                item !== ""
+              }
               helperText={
-                isEmailField && !isValidEmail(item) && item !== ""
-                  ? "Invalid email address"
+                ((isEmailField && !isValidEmail(item)) ||
+                  (!isEmailField && !isValidPhoneNumber(item))) &&
+                item !== ""
+                  ? `Invalid ${isEmailField ? "email address" : "phone number"}`
                   : null
               }
               fullWidth

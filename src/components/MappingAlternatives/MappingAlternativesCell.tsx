@@ -33,6 +33,7 @@ interface MappingAlternativesCellProps {
   onAlternativeChoose: any;
   country: string;
 }
+
 const MappingAlternativesCell: React.FC<MappingAlternativesCellProps> = ({
   params,
   onAlternativeChoose,

@@ -14,6 +14,8 @@ interface DataStewardFormProps {
   onNameChange: (name: string) => void;
   onEmailChange: (email: string) => void;
   onStatusChange: (status: number) => void;
+  isValidEmail: boolean;
+  isEmailDuplicate: boolean;
 }
 
 const DataStewardForm = ({
@@ -23,6 +25,8 @@ const DataStewardForm = ({
   onNameChange,
   onEmailChange,
   onStatusChange,
+  isValidEmail,
+  isEmailDuplicate,
 }: DataStewardFormProps) => {
   return (
     <Box
@@ -47,6 +51,16 @@ const DataStewardForm = ({
         value={email}
         onChange={(e) => onEmailChange(e.target.value)}
         fullWidth
+        error={(!isValidEmail || isEmailDuplicate) && email !== ""}
+        helperText={
+          email === ""
+            ? null
+            : !isValidEmail
+            ? "Invalid email address"
+            : isEmailDuplicate
+            ? "Email already exists in our system"
+            : null
+        }
       />
       <FormControl fullWidth>
         <InputLabel>Status</InputLabel>

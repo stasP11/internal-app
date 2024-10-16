@@ -6,6 +6,7 @@ import {
   DistributorDetailsType,
   DistributorRowData,
 } from "../types";
+import { GridRowSelectionModel } from "@mui/x-data-grid";
 
 interface HandlersProps {
   authResult: any;
@@ -14,21 +15,10 @@ interface HandlersProps {
   setIsLoading: Dispatch<SetStateAction<boolean>>;
   setNewAlert: Function;
   country: string;
-}
-
-interface CountryCodes {
-  [countryName: string]: string;
-}
-
-const countries: CountryCodes = {
-  Germany: "DE",
-  "South Africa": "ZA",
-  Ukraine: "UA",
-  Netherlands: "NL",
-};
-
-function getCountryCode(countryName: string) {
-  return countries[countryName] || "Country not found";
+  selectionModel: GridRowSelectionModel;
+  setSelectionModel: React.Dispatch<
+    React.SetStateAction<GridRowSelectionModel>
+  >;
 }
 
 const useDistributorsHandlers = ({
@@ -38,6 +28,8 @@ const useDistributorsHandlers = ({
   setIsLoading,
   setNewAlert,
   country,
+  selectionModel,
+  setSelectionModel,
 }: HandlersProps) => {
   function convertDistributorRowDataToDistributorDetails(
     data: DistributorRowData
@@ -48,7 +40,8 @@ const useDistributorsHandlers = ({
       active: data.active,
       phone: data.phone,
       country: country,
-      country_code: getCountryCode(country),
+      country_code: data.countryCode,
+      distributor_type: data.distributorType,
       injection_channels: data.injectionChannels,
     };
   }
@@ -66,7 +59,7 @@ const useDistributorsHandlers = ({
     );
 
     if (!oldDistributor) {
-      console.error("distributor not found!");
+      console.error("Distributor not found!");
       return;
     }
 
@@ -115,7 +108,69 @@ const useDistributorsHandlers = ({
     }
   }
 
-  return { handleActiveChange };
+  async function handleBulkStatusUpdate(newStatus: DistributorActiveStatus) {
+    setIsLoading(true);
+    const objectsForRequest = selectionModel
+      .map((id) => {
+        const distributor = updatedDistributors.find(
+          (dist) => dist.distributorId === id
+        );
+        if (distributor) {
+          const mappedDistributor =
+            convertDistributorRowDataToDistributorDetails(distributor);
+
+          const mappedUpdatedDistributor = {
+            ...mappedDistributor,
+            active: newStatus,
+          };
+          return createObjectForRequestBody(
+            mappedDistributor,
+            mappedUpdatedDistributor
+          );
+        }
+        return null;
+      })
+      .filter((p) => p !== null);
+
+    const url = `${process.env.REACT_APP_API_PYTHON_API}/update_distributor_list_metadata`;
+
+    try {
+      const response = await fetchData([
+        authResult,
+        "POST",
+        url,
+        { data: objectsForRequest },
+      ]);
+
+      if (response.post_data && response.post_data.length > 0) {
+        setUpdatedDistributors((prevDistributors) =>
+          prevDistributors.map((distr) => {
+            if (selectionModel.includes(distr.distributorId)) {
+              return { ...distr, active: newStatus };
+            }
+            return distr;
+          })
+        );
+        setNewAlert({
+          alertType: "success",
+          text: "Distributors updated successfully",
+        });
+        setSelectionModel([]);
+      } else {
+        throw new Error("No data was updated");
+      }
+    } catch (error) {
+      console.error("Error updating distributors:", error);
+      setNewAlert({
+        alertType: "error",
+        text: "Failed to update distributors",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  return { handleActiveChange, handleBulkStatusUpdate };
 };
 
 export default useDistributorsHandlers;
