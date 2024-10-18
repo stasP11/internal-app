@@ -31,7 +31,11 @@ function EditDataStewardDialog({
   useEffect(() => {
     if (isValidEmail(debouncedEmail)) {
       setIsEmailDuplicate(
-        dataStewards.some((steward) => steward.email === debouncedEmail)
+        dataStewards.some(
+          (otherSteward) =>
+            otherSteward.email === debouncedEmail &&
+            otherSteward.email !== steward.email
+        )
       );
     }
   }, [debouncedEmail, dataStewards, isValidEmail]);

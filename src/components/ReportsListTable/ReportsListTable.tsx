@@ -32,6 +32,7 @@ import {
   aproveReport,
   rejectReport,
 } from "../../fetch/fetch-requests/reportsRequests";
+import CustomDatagridPagination from "components/CustomDatagridPagination/CustomDatagridPagination";
 
 function ReportsListTableToolbar() {
   return (
@@ -297,10 +298,15 @@ const ReportsListTable: React.FC<ReportsListTableProps> = ({
         initialState={{
           pagination: { paginationModel: { pageSize: 15 } },
         }}
-        pageSizeOptions={[15, 25, 50, 75, 100]}
         slots={{
           toolbar: ReportsListTableToolbar,
           exportIcon: ArrowUpwardIcon,
+          pagination: (props) => (
+            <CustomDatagridPagination
+              {...props}
+              pageSizes={[15, 25, 50, 75, 100]}
+            />
+          ),
         }}
       />
     </Box>

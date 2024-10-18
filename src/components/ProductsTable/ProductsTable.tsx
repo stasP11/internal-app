@@ -8,6 +8,7 @@ import { AlertsContext } from "contexts/AlertsContext";
 import ProductsDatagridToolbar from "./components/ProductsDatagridToolbar";
 import useProductHandlers from "./hooks/useProductHandlers";
 import ActiveSwitch from "components/ActiveSwitch/ActiveSwitch";
+import CustomDatagridPagination from "components/CustomDatagridPagination/CustomDatagridPagination";
 
 function ProductsTable({
   products,
@@ -116,12 +117,12 @@ function ProductsTable({
             />
           ),
           exportIcon: ArrowUpwardIcon,
+          pagination: CustomDatagridPagination,
         }}
         pagination
         initialState={{
           pagination: { paginationModel: { pageSize: 10 } },
         }}
-        pageSizeOptions={[5, 10, 25]}
         getRowId={(row) => row.material_number}
       />
     </Box>

@@ -161,57 +161,7 @@ function Sidebar({
                 </div>
               )}
             </>
-            <>
-              {isIncludePermission(pages, "timelines", "read") && (
-                <div
-                  className={`board-name
-          ${isActive("timelines") ? "--active-board" : "--inactive-board"}`}
-                >
-                  <img className="icon" src={iconTimelines} alt="icon" />
-                  <Link
-                    onClick={() => onPageChoose("timelines")}
-                    className="nav-link"
-                    to="/timelines"
-                  >
-                    Timelines
-                  </Link>
-                </div>
-              )}
-            </>
-            <>
-              {isIncludePermission(pages, "templates", "read") && (
-                <div
-                  className={`board-name
-            ${isActive("templates") ? "--active-board" : "--inactive-board"}`}
-                >
-                  <img className="icon" src={iconTemplates} alt="icon" />
-                  <Link
-                    onClick={() => onPageChoose("templates")}
-                    className="nav-link"
-                    to="/templates"
-                  >
-                    Templates
-                  </Link>
-                </div>
-              )}
-            </>
-            <>
-              {isIncludePermission(pages, "products", "read") && (
-                <div
-                  className={`board-name
-            ${isActive("products") ? "--active-board" : "--inactive-board"}`}
-                >
-                  <img className="icon" src={iconProducts} alt="icon" />
-                  <Link
-                    onClick={() => onPageChoose("products")}
-                    className="nav-link"
-                    to="/products"
-                  >
-                    Products
-                  </Link>
-                </div>
-              )}
-            </>
+
             <>
               {isIncludePermission(pages, "stewards", "read") && (
                 <div
@@ -229,19 +179,56 @@ function Sidebar({
                 </div>
               )}
             </>
+
             <>
-              {false && (
+              {isIncludePermission(pages, "products", "read") && (
                 <div
                   className={`board-name
-          ${isActive("settings") ? "--active-board" : "--inactive-board"}`}
+            ${isActive("products") ? "--active-board" : "--inactive-board"}`}
                 >
-                  <img className="icon" src={iconDashboard} alt="icon" />
+                  <img className="icon" src={iconProducts} alt="icon" />
                   <Link
-                    onClick={() => onPageChoose("settings")}
+                    onClick={() => onPageChoose("products")}
                     className="nav-link"
-                    to="/settings"
+                    to="/products"
                   >
-                    Role Manager
+                    Products
+                  </Link>
+                </div>
+              )}
+            </>
+
+            <>
+              {isIncludePermission(pages, "timelines", "read") && (
+                <div
+                  className={`board-name
+          ${isActive("timelines") ? "--active-board" : "--inactive-board"}`}
+                >
+                  <img className="icon" src={iconTimelines} alt="icon" />
+                  <Link
+                    onClick={() => onPageChoose("timelines")}
+                    className="nav-link"
+                    to="/timelines"
+                  >
+                    Timelines
+                  </Link>
+                </div>
+              )}
+            </>
+
+            <>
+              {isIncludePermission(pages, "templates", "read") && (
+                <div
+                  className={`board-name
+            ${isActive("templates") ? "--active-board" : "--inactive-board"}`}
+                >
+                  <img className="icon" src={iconTemplates} alt="icon" />
+                  <Link
+                    onClick={() => onPageChoose("templates")}
+                    className="nav-link"
+                    to="/templates"
+                  >
+                    Templates
                   </Link>
                 </div>
               )}

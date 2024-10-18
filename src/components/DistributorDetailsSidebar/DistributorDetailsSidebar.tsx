@@ -4,7 +4,10 @@ import { useContext, useState } from "react";
 import EditDistributorDetails from "./components/EditDistributorDetails/EditDistributorDetails";
 import UserControls from "./components/UserControls/UserControls";
 import DistributorDetails from "./components/DistributorDetails/DistributorDetails";
-import { DistributorWithPhoneArray } from "components/DistributorsTable/types";
+import {
+  DistributorWithPhoneArray,
+  EditedDistributor,
+} from "components/DistributorsTable/types";
 import { createObjectForRequestBody } from "utils/createObjectForRequestBody";
 import { joinArrayWithComma } from "utils/joinArrayWithComma";
 import fetchData from "utils/fetchData";
@@ -26,14 +29,16 @@ function DistributorDetailsSidebar({
   setIsLoading,
 }: DistributorDetailsSidebarProps) {
   const [isEditMode, setEditMode] = useState(false);
-  const [editedDistributor, setEditedDistributor] = useState(distributor);
+  const [editedDistributor, setEditedDistributor] = useState<EditedDistributor>(
+    distributor as EditedDistributor
+  );
   const { setNewAlert } = useContext(AlertsContext);
   const country = getFromLocalStorage("selectedCountry");
   const { mutate } = useDistributorsDetails(authResult, country);
 
-  const hasInvalidEmail = editedDistributor.emails.some(
-    (email) => !isValidEmail(email)
-  );
+  const hasInvalidEmail = editedDistributor.emails
+    .filter((email) => email !== null)
+    .some((email) => !isValidEmail(email as string));
 
   const hasInvalidPhone = editedDistributor.phone.some(
     (phone) => !isValidPhoneNumber(phone)
@@ -44,22 +49,21 @@ function DistributorDetailsSidebar({
   };
 
   const handleSave = async () => {
-    const { emails, ...distributorWithoutEmails } = distributor;
-    const { emails: editedEmails, ...editedDistributorWithoutEmails } =
-      editedDistributor;
-
     const objectForRequest = createObjectForRequestBody(
       {
-        ...distributorWithoutEmails,
+        ...distributor,
         phone: joinArrayWithComma(distributor.phone),
-        email: joinArrayWithComma(distributor.emails),
       },
       {
-        ...editedDistributorWithoutEmails,
+        ...editedDistributor,
         phone: joinArrayWithComma(editedDistributor.phone),
-        email: joinArrayWithComma(editedDistributor.emails),
       }
     );
+
+    objectForRequest.email = objectForRequest.emails;
+    delete objectForRequest.emails;
+    objectForRequest.email_old = objectForRequest.emails_old;
+    delete objectForRequest.emails_old;
 
     const url = `${process.env.REACT_APP_API_PYTHON_API}/update_distributor_list_metadata`;
 
@@ -116,7 +120,11 @@ function DistributorDetailsSidebar({
 
   const handleDeleteEmail = (index: number) => {
     const emailsCopy = [...editedDistributor.emails];
-    emailsCopy.splice(index, 1);
+    if (emailsCopy[index] === "") {
+      emailsCopy.splice(index, 1);
+    } else {
+      emailsCopy[index] = null;
+    }
     handleChange("emails", emailsCopy);
   };
 

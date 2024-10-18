@@ -7,6 +7,7 @@ import EmailTemplateEditor from "components/EmailTemplates/EmailTemplateEditor";
 import EmailPreviewWindow from "components/EmailTemplates/EmailPreviewWindow";
 import { EmailTemplateType } from "types/emailTemplatesTypes";
 import clsx from "clsx";
+import CustomDatagridPagination from "components/CustomDatagridPagination/CustomDatagridPagination";
 
 function EmailsTemplateTable({
   data,
@@ -179,8 +180,15 @@ function EmailsTemplateTable({
         getRowId={(row) => row.notification_name}
         loading={isLoading}
         onRowClick={handleRowClick}
+        slots={{
+          pagination: (props) => (
+            <CustomDatagridPagination
+              {...props}
+              pageSizes={[10, 25, 50, 100]}
+            />
+          ),
+        }}
         pagination
-        pageSizeOptions={[10, 25, 50, 100]}
         initialState={{
           pagination: { paginationModel: { pageSize: 25 } },
         }}

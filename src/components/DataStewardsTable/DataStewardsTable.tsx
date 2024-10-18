@@ -18,6 +18,7 @@ import useDialogControls from "hooks/useDialogControls";
 import { createObjectForRequestBody } from "utils/createObjectForRequestBody";
 import useDataStewardsApi from "./useDataStewardsApi";
 import MenuList from "components/MenuList/MenuList";
+import CustomDatagridPagination from "components/CustomDatagridPagination/CustomDatagridPagination";
 
 function DataStewardsTable({
   dataStewards,
@@ -355,12 +356,12 @@ function DataStewardsTable({
           slots={{
             toolbar: CustomToolbar,
             exportIcon: ArrowUpwardIcon,
+            pagination: CustomDatagridPagination,
           }}
           pagination
           initialState={{
             pagination: { paginationModel: { pageSize: 10 } },
           }}
-          pageSizeOptions={[5, 10, 25]}
         />
         {removeStewardDialog.isOpen && (
           <RemoveDataStewardDialog

@@ -5,28 +5,20 @@ import { protectedResources } from "../../authConfig";
 import { getFromLocalStorage } from "../../services/storageInterection";
 import { CircularProgress } from "@mui/material";
 import { useMemo, useEffect, useContext, useState } from "react";
-import {
-  DistributorDetailsType,
-  DistributorRowData,
-} from "components/DistributorsTable/types";
 import { PageInfoContext } from "../../contexts/PageInfoContext";
 import DistributorDetailsPage from "pages/distributor-details-page/DistributorDetailsPage";
-import { getUniqueEmails } from "utils/getUniqueEmails";
 import { useDistributorToShow } from "contexts/DistributorDetailsContext";
+import {
+  DistributorType,
+  DistributorTypeWithIndex,
+} from "components/DistributorsTable/types";
 
 function getDistributorsRowData(
-  data: DistributorDetailsType[]
-): DistributorRowData[] {
+  data: DistributorType[]
+): DistributorTypeWithIndex[] {
   return data.map((distributor, index) => ({
     idx: index + 1,
-    distributorId: distributor.distributor_id,
-    distributorName: [distributor.distributor_name, distributor.distributor_id],
-    email: distributor.emails.join(", "),
-    phone: distributor.phone,
-    injectionChannels: distributor.injection_channels,
-    active: distributor.active,
-    distributorType: distributor.distributor_type,
-    countryCode: distributor.country_code,
+    ...distributor,
   }));
 }
 
@@ -44,14 +36,8 @@ export default function DistributorsPage() {
     authResult,
     selectedCountry
   );
-  const distributorsData: DistributorDetailsType[] = data?.data.map(
-    (distributor: DistributorDetailsType) => {
-      return {
-        ...distributor,
-        emails: getUniqueEmails(distributor.emails),
-      };
-    }
-  );
+
+  const distributors: DistributorType[] = data?.data;
 
   useEffect(() => {
     setPageInfo({
@@ -60,13 +46,13 @@ export default function DistributorsPage() {
   }, []);
 
   const rowData = useMemo(() => {
-    if (Array.isArray(distributorsData)) {
-      return getDistributorsRowData(distributorsData);
+    if (Array.isArray(distributors)) {
+      return getDistributorsRowData(distributors);
     }
     return [];
-  }, [distributorsData]);
+  }, [distributors]);
 
-  const distributorToShow = distributorsData?.find(
+  const distributorToShow = distributors?.find(
     (distributor) => distributor.distributor_id === distributorToShowId
   );
 
@@ -103,7 +89,7 @@ export default function DistributorsPage() {
           handleRowClick={handleRowClick}
           country={selectedCountry}
           authResult={authResult}
-          rowData={distributorsData?.length > 0 ? rowData : []}
+          rowData={distributors?.length > 0 ? rowData : []}
         />
       )}
     </>

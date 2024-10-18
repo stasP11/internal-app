@@ -1,17 +1,13 @@
 import { SetStateAction, Dispatch, ChangeEvent } from "react";
 import { createObjectForRequestBody } from "../../../utils/createObjectForRequestBody";
 import fetchData from "utils/fetchData";
-import {
-  DistributorActiveStatus,
-  DistributorDetailsType,
-  DistributorRowData,
-} from "../types";
+import { DistributorTypeWithIndex, DistributorActiveStatus } from "../types";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 
 interface HandlersProps {
   authResult: any;
-  updatedDistributors: DistributorRowData[];
-  setUpdatedDistributors: Dispatch<SetStateAction<DistributorRowData[]>>;
+  updatedDistributors: DistributorTypeWithIndex[];
+  setUpdatedDistributors: Dispatch<SetStateAction<DistributorTypeWithIndex[]>>;
   setIsLoading: Dispatch<SetStateAction<boolean>>;
   setNewAlert: Function;
   country: string;
@@ -27,25 +23,9 @@ const useDistributorsHandlers = ({
   setUpdatedDistributors,
   setIsLoading,
   setNewAlert,
-  country,
   selectionModel,
   setSelectionModel,
 }: HandlersProps) => {
-  function convertDistributorRowDataToDistributorDetails(
-    data: DistributorRowData
-  ): Omit<DistributorDetailsType, "emails"> {
-    return {
-      distributor_id: data.distributorId,
-      distributor_name: data.distributorName[0],
-      active: data.active,
-      phone: data.phone,
-      country: country,
-      country_code: data.countryCode,
-      distributor_type: data.distributorType,
-      injection_channels: data.injectionChannels,
-    };
-  }
-
   async function handleActiveChange(
     event: ChangeEvent<HTMLInputElement>,
     id: string | number
@@ -55,7 +35,7 @@ const useDistributorsHandlers = ({
       : (0 as DistributorActiveStatus);
 
     const oldDistributor = updatedDistributors.find(
-      (distributor) => distributor.distributorId === id
+      (distributor) => distributor.distributor_id === id
     );
 
     if (!oldDistributor) {
@@ -63,19 +43,18 @@ const useDistributorsHandlers = ({
       return;
     }
 
-    const mappedDistributor =
-      convertDistributorRowDataToDistributorDetails(oldDistributor);
-
     const newDistributor = { ...oldDistributor, active: newActiveStatus };
-    const newMappedDistributor = {
-      ...mappedDistributor,
-      active: newActiveStatus,
-    };
 
     const distributorObjectForRequest = createObjectForRequestBody(
-      mappedDistributor,
-      newMappedDistributor
+      oldDistributor,
+      newDistributor
     );
+
+    distributorObjectForRequest.email = distributorObjectForRequest.emails;
+    delete distributorObjectForRequest.emails;
+    distributorObjectForRequest.email_old =
+      distributorObjectForRequest.emails_old;
+    delete distributorObjectForRequest.emails_old;
 
     const url = `${process.env.REACT_APP_API_PYTHON_API}/update_distributor_list_metadata`;
 
@@ -90,7 +69,7 @@ const useDistributorsHandlers = ({
       if (response.post_data && response.post_data.length > 0) {
         setUpdatedDistributors((prevDistributors) =>
           prevDistributors.map((distributor) =>
-            distributor.distributorId === id ? newDistributor : distributor
+            distributor.distributor_id === id ? newDistributor : distributor
           )
         );
         setNewAlert({
@@ -113,24 +92,31 @@ const useDistributorsHandlers = ({
     const objectsForRequest = selectionModel
       .map((id) => {
         const distributor = updatedDistributors.find(
-          (dist) => dist.distributorId === id
+          (dist) => dist.distributor_id === id
         );
         if (distributor) {
-          const mappedDistributor =
-            convertDistributorRowDataToDistributorDetails(distributor);
+          const oldDistributor = { ...distributor };
 
-          const mappedUpdatedDistributor = {
-            ...mappedDistributor,
+          const updatedDistributor = {
+            ...oldDistributor,
             active: newStatus,
           };
-          return createObjectForRequestBody(
-            mappedDistributor,
-            mappedUpdatedDistributor
+
+          const objectForRequest = createObjectForRequestBody(
+            oldDistributor,
+            updatedDistributor
           );
+
+          objectForRequest.email = objectForRequest.emails;
+          delete objectForRequest.emails;
+          objectForRequest.email_old = objectForRequest.emails_old;
+          delete objectForRequest.emails_old;
+
+          return objectForRequest;
         }
         return null;
       })
-      .filter((p) => p !== null);
+      .filter((requestObject) => requestObject !== null);
 
     const url = `${process.env.REACT_APP_API_PYTHON_API}/update_distributor_list_metadata`;
 
@@ -145,7 +131,7 @@ const useDistributorsHandlers = ({
       if (response.post_data && response.post_data.length > 0) {
         setUpdatedDistributors((prevDistributors) =>
           prevDistributors.map((distr) => {
-            if (selectionModel.includes(distr.distributorId)) {
+            if (selectionModel.includes(distr.distributor_id)) {
               return { ...distr, active: newStatus };
             }
             return distr;

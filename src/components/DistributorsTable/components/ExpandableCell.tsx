@@ -1,9 +1,9 @@
 import { Button } from "@mui/material";
 import { useState } from "react";
 
-export default function ExpandableCell({ items }: { items: string }) {
+export default function ExpandableCell({ items }: { items: string[] }) {
   const [expanded, setExpanded] = useState(false);
-  const itemsArray = items.split(", ");
+  const itemsArray = [...items];
   const visibleItems = expanded ? itemsArray : itemsArray.slice(0, 2);
   const moreItemsCount = itemsArray.length - 2;
 

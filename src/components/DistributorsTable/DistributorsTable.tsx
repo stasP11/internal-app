@@ -6,13 +6,21 @@ import {
   GridRowSelectionModel,
 } from "@mui/x-data-grid-pro";
 import ExpandableCell from "./components/ExpandableCell";
-import { DistributorRowData, DistributorsTableProps } from "./types";
+import { DistributorTypeWithIndex } from "./types";
 import { Box } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { AlertsContext } from "contexts/AlertsContext";
 import useDistributorsHandlers from "./hooks/useDistributorsHandlers";
 import ActiveSwitch from "components/ActiveSwitch/ActiveSwitch";
 import DistributorsDatagridToolbar from "./components/DistributorsDatagridToolbar";
+import CustomDatagridPagination from "components/CustomDatagridPagination/CustomDatagridPagination";
+
+interface DistributorsTableProps {
+  rowData: DistributorTypeWithIndex[];
+  authResult: any;
+  country: string;
+  handleRowClick: (id: number) => void;
+}
 
 export default function DistributorsTable({
   rowData,
@@ -24,7 +32,7 @@ export default function DistributorsTable({
     []
   );
   const [updatedDistributors, setUpdatedDistributors] =
-    useState<DistributorRowData[]>(rowData);
+    useState<DistributorTypeWithIndex[]>(rowData);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { setNewAlert } = useContext(AlertsContext);
   const { handleActiveChange, handleBulkStatusUpdate } =
@@ -65,11 +73,13 @@ export default function DistributorsTable({
   const columns: GridColDef<any>[] = [
     { field: "idx", headerName: "#", flex: 0.1 },
     {
-      field: "distributorName",
+      field: "distributor_name",
       headerName: "Distributor Name",
       width: 200,
       renderCell: (params: GridRenderCellParams) => {
-        const [name, id] = params.value;
+        const name = params.value;
+        const id = params.row.distributor_id;
+
         return (
           <div style={{ lineHeight: "normal" }}>
             {name && name}
@@ -78,34 +88,28 @@ export default function DistributorsTable({
           </div>
         );
       },
-      sortComparator: (distributorA, distributorB) => {
-        if (!distributorA || !distributorB) return 0;
-
-        const distributorAComparator = distributorA[0]
-          ? `${distributorA[0]} ${distributorA[1]}`
-          : `${distributorA[1]}`;
-        const distributorBComparator = distributorB[0]
-          ? `${distributorB[0]} ${distributorB[1]}`
-          : `${distributorB[1]}`;
-
-        return distributorAComparator.localeCompare(distributorBComparator);
-      },
       flex: 1,
     },
     {
-      field: "email",
+      field: "emails",
       headerName: "Email",
       flex: 1.2,
-      renderCell: (params) => <ExpandableCell items={params.value} />,
+      renderCell: (params) => {
+        const emailArray = params.value ? params.value : [];
+        return <ExpandableCell items={emailArray} />;
+      },
     },
     {
       field: "phone",
       headerName: "Phone",
       flex: 1,
-      renderCell: (params) => <ExpandableCell items={params.value} />,
+      renderCell: (params) => {
+        const phoneArray = !params.value ? [] : params.value.split(", ");
+        return <ExpandableCell items={phoneArray} />;
+      },
     },
     {
-      field: "injectionChannels",
+      field: "injection_channels",
       headerName: "Ingestion Channels",
       width: 150,
     },
@@ -139,7 +143,7 @@ export default function DistributorsTable({
         onRowSelectionModelChange={(newSelectionModel) =>
           setSelectionModel(newSelectionModel)
         }
-        onRowClick={(e) => handleRowClick(e.row.distributorId)}
+        onRowClick={(e) => handleRowClick(e.row.distributor_id)}
         rowSelectionModel={selectionModel}
         columns={columns}
         rows={updatedDistributors}
@@ -152,13 +156,13 @@ export default function DistributorsTable({
             />
           ),
           exportIcon: ArrowUpwardIcon,
+          pagination: CustomDatagridPagination,
         }}
-        getRowId={(row) => row.distributorId}
+        getRowId={(row) => row.distributor_id}
         pagination
         initialState={{
           pagination: { paginationModel: { pageSize: 10 } },
         }}
-        pageSizeOptions={[5, 10, 25]}
       />
     </Box>
   );

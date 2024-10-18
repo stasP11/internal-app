@@ -2,10 +2,13 @@ import { Box, TextField } from "@mui/material";
 import InfoLabel from "../InfoLabel/InfoLabel";
 import SelectStatusField from "../SelectStatusField/SelectStatusField";
 import RemovableListInput from "../RemovableListInput/RemovableListInput";
-import { DistributorWithPhoneArray } from "components/DistributorsTable/types";
+import {
+  DistributorWithPhoneArray,
+  EditedDistributor,
+} from "components/DistributorsTable/types";
 
 type EditDistributorDetailsProps = {
-  distributor: DistributorWithPhoneArray;
+  distributor: EditedDistributor;
   handleChange: (prop: keyof DistributorWithPhoneArray, value: any) => void;
   handleAddPhone: () => void;
   handleDeletePhone: (index: number) => void;

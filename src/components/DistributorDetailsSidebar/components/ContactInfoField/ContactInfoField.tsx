@@ -3,7 +3,7 @@ import "./ContactInfoField.scss";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 
 interface ContactInfoFieldProps {
-  contacts: string[];
+  contacts: (string | null)[];
   label: string;
 }
 
@@ -23,22 +23,25 @@ function ContactInfoField({ contacts, label }: ContactInfoFieldProps) {
     <div className="info-field">
       <span>{label}</span>
       <div className="secondary-text-color container">
-        {contacts.map((contact, index) => (
-          <div
-            key={index}
-            onMouseEnter={() => setHoverIndex(index)}
-            onMouseLeave={() => setHoverIndex(null)}
-            onClick={() => copyToClipboard(contact)}
-            className="contacts-container"
-          >
-            <span>{contact}</span>
-            {hoverIndex === index && (
-              <ContentCopyIcon
-                style={{ marginLeft: "auto", fontSize: "1rem" }}
-              />
-            )}
-          </div>
-        ))}
+        {contacts.map(
+          (contact, index) =>
+            contact && (
+              <div
+                key={index}
+                onMouseEnter={() => setHoverIndex(index)}
+                onMouseLeave={() => setHoverIndex(null)}
+                onClick={() => copyToClipboard(contact)}
+                className="contacts-container"
+              >
+                <span>{contact}</span>
+                {hoverIndex === index && (
+                  <ContentCopyIcon
+                    style={{ marginLeft: "auto", fontSize: "1rem" }}
+                  />
+                )}
+              </div>
+            )
+        )}
       </div>
     </div>
   );

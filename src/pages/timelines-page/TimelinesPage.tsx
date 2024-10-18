@@ -17,7 +17,7 @@ const scrollToTop = () => {
   document.documentElement.scrollTop = 0;
   setTimeout(() => {
     window.scrollTo(10, 200);
-}, 3000);
+  }, 0);
 };
 interface ReportingData {
   after_due_date: number[];
@@ -154,23 +154,20 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
     const dataForSave = updateObj(formatedDataForBackEnd, updatedData);
     setUpdateStatus(true);
 
-    function getSaveRequestStatus(responce: any) {
+    async function getSaveRequestStatus(responce: any) {
       if (responce?.ok) {
-        setUpdateStatus(false);
-        setNewAlert({
-          alertType: "success",
-          text: "The update was completed successfully",
-        });
-        scrollToTop();
-        setDefaultReportStatus(false);
-        setDefaultReportStatus(false);
-        setEditMode(false);
-
-        // temporary
-        setTimeout(() => {
-          mutate(
-            `${process.env.REACT_APP_API_PYTHON_API}/get_reporting_periods?country=${selectedCountry}&report_type=${reportType}`
-          );
+        // setTimeout is temporary solution until the backend is fixed;
+        setTimeout(async () => {
+          await mutate();
+          scrollToTop();
+          setUpdateStatus(false);
+          setNewAlert({
+            alertType: "success",
+            text: "The update was completed successfully",
+          });
+          setDefaultReportStatus(false);
+          setDefaultReportStatus(false);
+          setEditMode(false);
         }, 2000);
       } else {
         setNewAlert({
