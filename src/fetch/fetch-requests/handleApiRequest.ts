@@ -22,9 +22,12 @@ export const handleApiRequest = async (
       const response: any = await defaultFetchRequest(fetchParams);
   
       if (response.ok) {
-        await mutateAfterSuccessFn();
-        setUpdateLoaded(false);
-        setNewAlert({ alertType: 'success', text: successMessage });
+        // added delay until back-end will be fixed
+        setTimeout( async ()=>{
+          await mutateAfterSuccessFn();
+          setUpdateLoaded(false);
+          setNewAlert({ alertType: 'success', text: successMessage });
+        }, 2000)
       } else {
         setUpdateLoaded(false);
         setNewAlert({ alertType: 'error', text: errorMessage });

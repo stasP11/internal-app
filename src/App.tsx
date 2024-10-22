@@ -87,13 +87,13 @@ const MainContent = () => {
     return <ErrorPage errorText={error.message} />;
   }
 
-  console.log(data, "data-01");
+  console.log(data?.userData, data?.userData, "data?.userData");
 
   return (
     <div className="App">
       <AuthenticatedTemplate>
         <PageInfoContextWrapper>
-          <UserDataContext.Provider value={{ ...data?.userData }}>
+          <UserDataContext.Provider value={{ ...data?.userData, countries: data?.userData?.countries.sort()}}>
             <AlertsContextWrapper>
               <DistributorDetailsProvider>
                 <Router status={data?.status} userProfile={data?.userData} />

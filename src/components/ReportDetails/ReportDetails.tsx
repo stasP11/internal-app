@@ -20,10 +20,17 @@ import { findSameProducts } from "./services";
 import {
   ReportStatusType,
   ReportDetailsData,
-  ProductDetailsData,
+  ProductDetailsType,
   ReportDetailsProps,
   SameProductsType,
 } from "types/reportDetailsTypes";
+
+
+type SelectedOptionType = {
+  name: string;
+  value: number;
+  params: ProductDetailsType
+}
 
 const CustomToolbar = ({
   onApproveReport,
@@ -84,7 +91,7 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
   const [sameProductsData, setSameProductsData] = useState<SameProductsType[]>(
     []
   );
-  const [sameProductsAlertStatus, setSameProductsAlertStatus] = useState(null);
+  const [sameProductsAlertStatus, setSameProductsAlertStatus] = useState<string | null>(null);
   const [numbersOfSimilarCases, setNumbersOfSimilarCases] = useState(null);
 
   function handleSameProductsSelectReject() {
@@ -93,30 +100,35 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
   }
 
   function handleAlternativeChoose(
-    productData: any,
+    productData: SelectedOptionType,
     fromSmartSearch: boolean,
     setRequestStatus: any
   ) {
+    
     onAlternativeChoose(productData, fromSmartSearch, setRequestStatus);
 
-    const { material_number, product_name, uom, id } = productData?.params;
+    const { initial_product_data, uom, id}: ProductDetailsType = productData?.params;
+
     if (
       !sameProductsData.some(
-        (obj: any) => obj?.material_number === material_number
+        (obj: any) => obj?.initial_product_data?.material_number === initial_product_data.material_number
       )
     ) {
+
       const sameProducts = findSameProducts(
         data,
         sameProductsData,
-        material_number,
+        initial_product_data.material_number,
         uom,
-        product_name,
+        initial_product_data.product_name,
         id,
-        productData?.value
+        productData?.value,
+        productData?.name,
       );
-      if (sameProducts?.products.length > 0) {
+
+      if (!!sameProducts?.products && sameProducts?.products.length > 0) {
         setSameProductsData((prev: any) => [...prev, sameProducts]);
-        setSameProductsAlertStatus(material_number);
+        setSameProductsAlertStatus(initial_product_data.material_number);
         setNumbersOfSimilarCases(sameProducts?.products.length);
       }
     }
@@ -129,14 +141,12 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
     const sameProductsArray = sameProductsObj?.products;
     if (Array.isArray(sameProductsArray)) {
       setSameProductsAlertStatus(null);
-      sameProductsArray.forEach((product: ProductDetailsData) => {
+      sameProductsArray.forEach((product: ProductDetailsType) => {
         onAlternativeChoose({
           value: sameProductsObj?.matchedMaterialNumber,
-          params: {
-            id: product?.id,
-            product_name: product?.product_name,
-          },
-        });
+          name: sameProductsObj?.matchedMaterialName,
+          params: {...product},
+        }, 0);
       });
     }
   }
@@ -155,7 +165,6 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
       headerName: "Material Number",
       flex: 0.5,
       valueGetter: (params: any, row: any) => {
-        console.log(row, "row");
         // Access the nested property safely
         const materialNumber = row?.initial_product_data?.material_number;
         // Check if it's "null" (string) and handle it
@@ -228,7 +237,7 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
     },
   ];
 
-  const suitableColums = (fileStatus: ReportStatusType) => {
+  const suitableColumns = (fileStatus: ReportStatusType) => {
     if (fileStatus === "REVIEW") {
       return [...columnsForDataMappingReport];
     } else return [...columnsForReport];
@@ -243,6 +252,7 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
     <>
       <Box sx={{ height: "calc(100vh - 132px)", width: "100%" }}>
         <DataGridPro
+        //rowBufferPx={100}
           sx={{
             padding: 0,
             background: "white",
@@ -253,7 +263,7 @@ const ReportDetails: React.FC<ReportDetailsProps> = ({
                 backgroundColor: "rgba(245, 245, 245, 1)",
               },
           }}
-          columns={suitableColums(fileStatus)}
+          columns={suitableColumns(fileStatus)}
           rows={data}
           rowHeight={52}
           pagination

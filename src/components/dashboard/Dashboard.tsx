@@ -239,7 +239,7 @@ function Dashboard() {
                       (obj: any) => obj.status === "SUCCESS"
                     ).length
                   }`}
-                  bodyExplaining={"reports to approve"}
+                  bodyExplaining={""}
                   status={"."}
                 >
                   {" "}

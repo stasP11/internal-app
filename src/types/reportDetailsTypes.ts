@@ -22,15 +22,25 @@ export type ReportDetailsData = {
   smart_search: number | null;
 };
 
-export type ProductDetailsData = {
-  alternatives: Array<AlternativesType> | [];
+type initialPproductData = {
+  material_number: string;
+  product_name: string;
+  initially_matched_material_number: string;
+  initially_matched_item_name: string;
+};
+
+export type ProductDetailsType = {
   id: number;
-  matched: number | null;
+  uom: any;
+  volume: any;
+  alternatives: AlternativesType[];
+  matched: number;
   material_number: number;
   product_name: string;
-  uom: string;
-  volume: number;
-};
+  statusUpdate: string;
+  smart_search: AlternativesType[];
+  initial_product_data: initialPproductData;
+}
 
 export interface ReportDetailsProps {
   data: Array<ReportDetailsData>;
@@ -47,5 +57,6 @@ export type SameProductsType = {
   isOpenForUse: boolean;
   material_number: number;
   matchedMaterialNumber: number;
+  matchedMaterialName: string;
   products: any[];
 };

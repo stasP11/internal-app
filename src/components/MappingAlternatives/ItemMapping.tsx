@@ -41,7 +41,6 @@ const ItemMapping = ({
   onChange,
   matched,
   updateStatus,
-  product_name,
   smart_search,
   material_number,
   handleRemove,
@@ -89,14 +88,24 @@ const ItemMapping = ({
       !alternatives.length &&
       matched === Number(initialData.material_number)
     ) {
-      if (isAutomaticallyMapped) {
-        return `${matched} ${initialData.product_name}`;
+      if (isAutomaticallyMapped && initialData.initially_matched_item_name) {
+        return `${matched} ${initialData.initially_matched_item_name}`;
       }
     }
 
+        // Check if 'matched' is the same as initial 'material_number' and there are no alternatives
+        if (
+            !alternatives.length &&
+            matched === Number(initialData.initially_matched_material_number)
+          ) {
+            if (isAutomaticallyMapped && initialData.initially_matched_item_name) {
+              return `${matched} ${initialData.initially_matched_item_name}`;
+            }
+          }
+
     // When no specific matches found, but there's a valid 'matched' scenario
     if (matched) {
-      return `${matched} ${product_name}`;
+     // return `${matched} ${product_name}`;
     }
 
     // Fallback to a default phrase or handling when value could not match any conditions

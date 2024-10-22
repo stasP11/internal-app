@@ -193,12 +193,12 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
     setTemporaryData(reportTemporaryData);
   }, [reportContent]);
 
-  // save data
   async function handleAlternativeChoose(
     result: any,
     fromSmartSearch: boolean,
     setRequestStatus: any
   ) {
+
     const data = {
       id: result.params.id,
       matched_material_id: result?.value,
@@ -213,10 +213,11 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
     };
 
     handleUpdateTemporaryData(data, "loading", fromSmartSearch);
-    setRequestStatus("loading");
+
+   // setRequestStatus("loading");
     const responce = await fetchDataForMappingChoice(requestBody);
     if (responce?.ok) {
-      setRequestStatus("success");
+    //  setRequestStatus("success");
       fromSmartSearch
         ? handleUpdateTemporaryData(
             {
@@ -231,7 +232,7 @@ const ReportDetailsPage: React.FC<any> = (): JSX.Element => {
         mutate();
     } else {
       handleUpdateTemporaryData(data, "error", fromSmartSearch);
-      setRequestStatus("error");
+    //  setRequestStatus("error");
     }
   }
 

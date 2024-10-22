@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { SelectChangeEvent } from "@mui/material";
-
 import RightIcon from "icons/right-arrow/ArrowForwardFilled.svg";
 import RemoveIcon from "icons/bucket-icon-light/bucketIconLight.svg";
 import SmartSearch from "components/SmartSearch/SmartSearch";
@@ -50,6 +49,7 @@ const MappingAlternativesCell: React.FC<MappingAlternativesCellProps> = ({
   } = params;
 
   const [showSmartSearch, setShowSmartSearch] = useState(false);
+  /*
   const [updateStatus, setUpdateStatus] = useState<string | null>(statusUpdate);
 
   useEffect(() => {
@@ -57,7 +57,7 @@ const MappingAlternativesCell: React.FC<MappingAlternativesCellProps> = ({
       setUpdateStatus("success");
     }
   }, [matched, alternatives, statusUpdate]);
-
+*/
   async function handleOptionSelect(
     e: SelectChangeEvent<any>,
     fromSmartSearch: boolean
@@ -89,7 +89,6 @@ const MappingAlternativesCell: React.FC<MappingAlternativesCellProps> = ({
       return undefined;
     };
 
-    setUpdateStatus(null);
     if (!fromSmartSearch) {
       await onAlternativeChoose(
         {
@@ -98,13 +97,11 @@ const MappingAlternativesCell: React.FC<MappingAlternativesCellProps> = ({
           params,
         },
         fromSmartSearch,
-        setUpdateStatus
       );
     } else {
       await onAlternativeChoose(
         { ...e.target, params },
         fromSmartSearch,
-        setUpdateStatus
       );
     }
   }
@@ -148,20 +145,6 @@ const MappingAlternativesCell: React.FC<MappingAlternativesCellProps> = ({
       });
     } else if (
       !alternatives.length &&
-      Number(initial_product_data?.material_number) &&
-      initial_product_data?.product_name
-    ) {
-      return [
-        {
-          label:
-            initial_product_data?.material_number +
-            " " +
-            initial_product_data?.product_name,
-          type: "Suggested Toolbox Mapping" as const,
-        },
-      ];
-    } else if (
-      !alternatives.length &&
       Number(initial_product_data?.initially_matched_material_number) &&
       initial_product_data?.initially_matched_item_name
     ) {
@@ -171,25 +154,6 @@ const MappingAlternativesCell: React.FC<MappingAlternativesCellProps> = ({
             initial_product_data?.initially_matched_material_number +
             " " +
             initial_product_data?.initially_matched_item_name,
-          type: "Suggested Toolbox Mapping" as const,
-        },
-      ];
-    }
-
-    // no need
-    if (smart_search) {
-      return smart_search.map((product: AlternativesType) => {
-        return [
-          {
-            label: product.material_number + " " + product.material_name,
-            type: "Result of previous date mapping" as const,
-          },
-        ];
-      });
-    } else if (matched && product_name) {
-      return [
-        {
-          label: matched + " " + product_name,
           type: "Suggested Toolbox Mapping" as const,
         },
       ];
@@ -211,7 +175,7 @@ const MappingAlternativesCell: React.FC<MappingAlternativesCellProps> = ({
           alternatives={alternatives}
           onChange={(e: SelectChangeEvent<any>) => handleOptionSelect(e, false)}
           matched={matched}
-          updateStatus={updateStatus}
+          updateStatus={statusUpdate}
           product_name={product_name}
           smart_search={smart_search}
           material_number={material_number}
